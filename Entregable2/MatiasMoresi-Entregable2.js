@@ -1,5 +1,4 @@
-const fsSync = require('fs');
-// const fsPromises = require('fs').promises;
+const fs = require('fs');
 
 class ProductManager {
 
@@ -16,12 +15,10 @@ class ProductManager {
     } catch (error) {
       return console.error(`Error while initializing ProducManager class. ${error}`);
     }
-    console.log('Class initialized', ' | id:', this.#id, ' | product codes:', this.products.map(m => m.code))
+    console.log('Class initialized', '| MaxID:', this.#id, '| Number of Products:', this.products.length)
     console.table(this.products)
   };
 
-  // Since we are initializing the properties of the constructor, 
-  // we use Sync methods to stop the Main Thread until the DB is fully loaded.
   initializeProductsAndMaxID() {
     try {
       const products = this.#readDatabase();
@@ -76,8 +73,6 @@ class ProductManager {
   };
 
   updateProductById(id, title, description, price, thumbnail, code, stock, comment = '') {
-
-    // console.log(`updateProductById | [${id}] ${JSON.stringify({ title, description, price, thumbnail, code, stock })}`)
 
     const productToUpdate = this.#getProductById(id);
     if (!productToUpdate) { return console.error(`Product ID ${id} not found. Update cancelled.`) }
@@ -156,7 +151,7 @@ class ProductManager {
 
   #updateDatabase(content) {
     try {
-      fsSync.writeFileSync(this.path, content, 'utf8');
+      fs.writeFileSync(this.path, content, 'utf8');
     } catch (error) {
       console.error(`Error updating the Database. ${error}`)
       return error;
@@ -165,16 +160,15 @@ class ProductManager {
 
   #readDatabase() {
     try {
-      const fileExists = fsSync.existsSync(this.path);
+      let fileContent = [];
+      const fileExists = fs.existsSync(this.path);
       if (!fileExists) {
         console.log(`File ${this.path} does not exists. Creating it! (with an empty array).`)
-        fsSync.writeFileSync(this.path, JSON.stringify([], null, 2), 'utf-8')
-        return [];
+        fs.writeFileSync(this.path, JSON.stringify([], null, 2), 'utf-8')
       } else {
-        const fileContent = fsSync.readFileSync(this.path, 'utf-8')
+        fileContent = fs.readFileSync(this.path, 'utf-8')
         if (fileContent.length < 1) {
           console.log('No file content!');
-          return [];
         }
         return JSON.parse(fileContent);
       }
