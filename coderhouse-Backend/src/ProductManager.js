@@ -85,12 +85,14 @@ class ProductManager {
   };
 
   async getProducts() {
+    return await this.#readFromDb();
     return console.table(await this.#readFromDb());
   };
 
   async getProductById(id) {
     const product = await this.#getProductById(id)
-    return product ? console.log(product) : console.error(`Product ID ${id} not found.`);
+    return product ?? undefined;
+    // return product ? console.log(product) : console.error(`Product ID ${id} not found.`);
   }
 
   async #getProductById(id) {
@@ -118,7 +120,10 @@ class ProductManager {
 
   async #writeToDb(content) {
     try {
-      await fs.writeFile(this.path, JSON.stringify(content, null, 2));
+      const fileStatus = await fs.stat(this.path)
+      if (fileStatus) {
+        await fs.writeFile(this.path, JSON.stringify(content, null, 2));
+      }
     } catch (error) {
       console.error(`Error at Database writting: ${error}.`);
     }
@@ -126,15 +131,20 @@ class ProductManager {
 
   async #readFromDb() {
     try {
-      return JSON.parse(await fs.readFile(this.path, "utf-8"));
+      const fileStatus = await fs.stat(this.path)
+      if (fileStatus) {
+        return JSON.parse(await fs.readFile(this.path, "utf-8"));
+      }
+      return [{}];
     } catch (error) {
       console.error(`Error at Database reading: ${error}.`);
     }
   }
 };
 
+/*
 console.group('Class init')
-const dbPath = './myDatabase.json';
+const dbPath = './storage/myDatabase.json';
 const productManager = new ProductManager(dbPath);
 console.groupEnd()
 
@@ -157,7 +167,7 @@ async function tests_AddProducts() {
 
 async function tests_GetProductsByID() {
   console.group('Buscamos productos por ID:');
-  
+
   console.group('ID 2:');
   await productManager.getProductById(2);
   console.groupEnd()
@@ -167,13 +177,13 @@ async function tests_GetProductsByID() {
   console.group('ID 7:');
   await productManager.getProductById(7);
   console.groupEnd()
-  
+
   console.groupEnd()
 }
 
 async function tests_EditProducts() {
   console.group('Editamos algunos productos:')
-  
+
   console.group('Editamos producto ID 100:');
   await productManager.updateProductById(100, 'Teclado Genius Negro', 'Teclado Genius genérico negro', 10, '../productos/perifericos/teclado01.jpeg', 'tecla-1', 0) // => ID not found
   console.groupEnd()
@@ -193,7 +203,7 @@ async function tests_EditProducts() {
 
 async function tests_DeleteProducts() {
   console.group('Eliminamos algunos productos por ID:')
-  
+
   console.group('ID 100:')
   await productManager.deleteProductByID(100);
   console.groupEnd()
@@ -201,7 +211,7 @@ async function tests_DeleteProducts() {
   console.group('ID 1:')
   await productManager.deleteProductByID(1);
   console.groupEnd()
-  
+
   console.group('ID 4:')
   await productManager.deleteProductByID(4);
   console.groupEnd()
@@ -224,13 +234,21 @@ async function tests_AddMoreProducts() {
   console.groupEnd()
 }
 
-async function runTests() {
-  await tests_AddProducts();
-  await tests_GetProductsByID();
-  await tests_EditProducts();
-  await tests_DeleteProducts();
-  await tests_AddMoreProducts();
+async function tests_showProducts() {
+  return await productManager.getProducts();
 }
+async function runTests() {
+  // initManager();
+  // await tests_AddProducts();
+  // await tests_GetProductsByID();
+  // await tests_EditProducts();
+  // await tests_DeleteProducts();
+  // await tests_AddMoreProducts();
+  const PORT = 8080;
+  app.listen(PORT, () => {
+    console.log(`Server up at port http://localhost:${PORT}`);
+  })
+}
+*/
 
-module.exports = { runTests };
-
+module.exports = ProductManager;
