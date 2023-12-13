@@ -1,0 +1,56 @@
+[
+  {
+    "id": 0,
+    "title": "Teclado Genius Negro",
+    "description": "Teclado Genius genérico negro",
+    "price": 10,
+    "thumbnail": "../productos/perifericos/teclado01.jpeg",
+    "code": "tecla-1",
+    "stock": 10
+  },
+  {
+    "id": 2,
+    "title": "Mouse Genius Blanco",
+    "description": "Mouse Genius genérico blanco",
+    "price": 18,
+    "thumbnail": "../productos/perifericos/mouse01.jpeg",
+    "code": "mouse-2",
+    "stock": 50
+  },
+  {
+    "id": 3,
+    "title": "Mouse Genius Rosa",
+    "description": "Mouse Genius genérico rosa",
+    "price": 10,
+    "thumbnail": "../productos/perifericos/mouse99.jpeg",
+    "code": "mouse-3",
+    "stock": 330
+  },
+  {
+    "id": 5,
+    "title": "Auriculares Rzer",
+    "description": "Auriculares Rzer",
+    "price": 13,
+    "thumbnail": "../productos/perifericos/auris02.jpeg",
+    "code": "auris-2",
+    "stock": 12
+  },
+  {
+    "id": 6,
+    "title": "Mic Rzer",
+    "description": "Microfono Rzer",
+    "price": 8,
+    "thumbnail": "../productos/perifericos/mic01.jpeg",
+    "code": "mic-1",
+    "stock": 24
+  },
+  {
+    "id": 7,
+    "title": "Mic Asus",
+    "description": "Microfono Asus",
+    "price": 5,
+    "thumbnail": "../productos/perifericos/mic02.jpeg",
+    "code": "mic-2",
+    "stock": 14
+  }
+]
