@@ -92,7 +92,6 @@ class ProductManager {
   async getProductById(id) {
     const product = await this.#getProductById(id)
     return product ?? undefined;
-    // return product ? console.log(product) : console.error(`Product ID ${id} not found.`);
   }
 
   async #getProductById(id) {
@@ -141,114 +140,5 @@ class ProductManager {
     }
   }
 };
-
-/*
-console.group('Class init')
-const dbPath = './storage/myDatabase.json';
-const productManager = new ProductManager(dbPath);
-console.groupEnd()
-
-async function tests_AddProducts() {
-  console.group('Agregamos productos:');
-  await productManager.addProduct('Teclado Genius Negro', 'Teclado Genius genérico negro', 10, '../productos/perifericos/teclado01.jpeg', 'tecla-1', 10);
-  await productManager.addProduct('Teclado Genius Blanco', 'Teclado Genius genérico blanco', 12, '../productos/perifericos/teclado02.jpeg', 'tecla-2', 8);
-  await productManager.addProduct('Teclado Genius Rosa', 'Teclado Genius genérico rosa', '', '../productos/perifericos/teclado03.jpeg', 'tecla-3', 8);
-  await productManager.addProduct('Mouse Genius Blanco', 'Mouse Genius genérico blanco', 10, '../productos/perifericos/mouse01.jpeg', 'mouse-2', 8);
-  await productManager.addProduct('Mouse Genius Rosa', 'Mouse Genius genérico rosa', 10, '../productos/perifericos/mouse02.jpeg', 'mouse-3', 8);
-  await productManager.addProduct('Mouse Genius Negro', 'Mouse Genius genérico negro', 7, undefined, 'mouse-1', 10);
-  await productManager.addProduct('Auriculares Genius negro', 'Auriculares Genius negro', 8, '../productos/perifericos/auris01.jpeg', 'auris-1', 20);
-  await productManager.addProduct('Auriculares Rzer', 'Auriculares Rzer', 13, '../productos/perifericos/auris02.jpeg', 'auris-2', 12);
-  console.groupEnd()
-
-  console.group('Mostramos todos los productos');
-  console.table(await productManager.getProducts());
-  console.groupEnd()
-}
-
-async function tests_GetProductsByID() {
-  console.group('Buscamos productos por ID:');
-
-  console.group('ID 2:');
-  await productManager.getProductById(2);
-  console.groupEnd()
-  console.group('ID 3:');
-  await productManager.getProductById(3);
-  console.groupEnd()
-  console.group('ID 7:');
-  await productManager.getProductById(7);
-  console.groupEnd()
-
-  console.groupEnd()
-}
-
-async function tests_EditProducts() {
-  console.group('Editamos algunos productos:')
-
-  console.group('Editamos producto ID 100:');
-  await productManager.updateProductById(100, 'Teclado Genius Negro', 'Teclado Genius genérico negro', 10, '../productos/perifericos/teclado01.jpeg', 'tecla-1', 0) // => ID not found
-  console.groupEnd()
-  console.group('Editamos producto ID 100:');
-  await productManager.updateProductById(2, undefined, undefined, 18, undefined, undefined, 50) // => New price and stock
-  console.groupEnd()
-  console.group('Editamos producto ID 100:');
-  await productManager.updateProductById(3, undefined, undefined, undefined, '../productos/perifericos/mouse99.jpeg', undefined, 330) // => New picture path
-  console.groupEnd()
-
-  console.group('Mostramos todos los productos');
-  console.table(await productManager.getProducts());
-  console.groupEnd()
-
-  console.groupEnd()
-}
-
-async function tests_DeleteProducts() {
-  console.group('Eliminamos algunos productos por ID:')
-
-  console.group('ID 100:')
-  await productManager.deleteProductByID(100);
-  console.groupEnd()
-
-  console.group('ID 1:')
-  await productManager.deleteProductByID(1);
-  console.groupEnd()
-
-  console.group('ID 4:')
-  await productManager.deleteProductByID(4);
-  console.groupEnd()
-
-  console.groupEnd()
-
-  console.group('Mostramos todos los productos');
-  console.table(await productManager.getProducts());
-  console.groupEnd()
-}
-
-async function tests_AddMoreProducts() {
-  console.group('Agregamos mas productos:')
-  await productManager.addProduct('Mic Rzer', 'Microfono Rzer', 8, '../productos/perifericos/mic01.jpeg', 'mic-1', 24);
-  await productManager.addProduct('Mic Asus', 'Microfono Asus', 5, '../productos/perifericos/mic02.jpeg', 'mic-2', 14);
-  console.groupEnd()
-
-  console.group('Mostramos todos los productos');
-  console.table(await productManager.getProducts());
-  console.groupEnd()
-}
-
-async function tests_showProducts() {
-  return await productManager.getProducts();
-}
-async function runTests() {
-  // initManager();
-  // await tests_AddProducts();
-  // await tests_GetProductsByID();
-  // await tests_EditProducts();
-  // await tests_DeleteProducts();
-  // await tests_AddMoreProducts();
-  const PORT = 8080;
-  app.listen(PORT, () => {
-    console.log(`Server up at port http://localhost:${PORT}`);
-  })
-}
-*/
 
 module.exports = ProductManager;
