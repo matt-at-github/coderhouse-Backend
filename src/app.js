@@ -1,9 +1,12 @@
+const PORT = 8080;
+
 const express = require('express');
 const app = express();
 
 const ProductManager = require('./ProductManager.js');
 const manager = new ProductManager(`${__dirname}/myDatabase.json`)
 
+// Styling for the Web interface
 const styles = {
   nav: "background: black; padding: 10px; text-align: left; font-size:16px;",
   subNav: "background: grey; padding: 10px; text-align: left; font-size:16px;",
@@ -19,6 +22,8 @@ const nav = (description) => {
   <a style="${styles.a}" href="/products">Products</a></li>
 </nav>
 `}
+////
+
 app.get("/", async (req, res) => {
   res.send(nav('Welcome to Home'))
 });
@@ -58,9 +63,8 @@ app.get("/products", async (req, res) => {
     ${links.join('')}
   </nav >
   <br>
-    ${products.slice(0, limit).map(m => `<pre>${JSON.stringify(m, undefined, 2)}</pre>`)}
-    `);
+  ${products.slice(0, limit).map(m => `<pre>${JSON.stringify(m, undefined, 2)}</pre>`)}
+  `);
 });
 
-const PORT = 8080;
 app.listen(PORT, () => console.log(`Server running at http://localhost:${PORT}`))
