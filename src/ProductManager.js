@@ -9,14 +9,14 @@ class ProductManager {
   constructor(path) {
     this.path = path;
     this.products = [];
-  };
+  }
 
   async updateProductById(id, title, description, price, thumbnails, code, stock) {
 
     const productToUpdate = await this.#getProductById(id)
     if (!productToUpdate) { return console.error(`Product ID ${id} not found. Update cancelled.`) }
 
-    if (code && this.#isCodeDuplicated(code)) { return console.error(`Product code for product ID '${id}' duplicated. Product was not updated.`) };
+    if (code && this.#isCodeDuplicated(code)) { return console.error(`Product code for product ID '${id}' duplicated. Product was not updated.`) }
 
     Object.assign(productToUpdate, {
       title: title || productToUpdate.title,
@@ -32,7 +32,7 @@ class ProductManager {
       console.log(`Product ID ${id} updated successfuly.`);
       return true;
     }
-    
+
     console.error(`Product ID ${id} not updated, ID not found.`);
     return false;
   }
@@ -46,15 +46,15 @@ class ProductManager {
       await this.#writeToDb(this.products)
       return console.log(`Product ID ${id} deleted succesfully.`)
     }
-
-    return console.error(`Product ID ${id} was not deleted, ID not found.`)
+    console.error(`Product ID ${id} was not deleted, ID not found.`);
+    return false;
   }
 
-  async addProduct (title, description, price, thumbnails, code, stock ) {
+  async addProduct(title, description, price, thumbnails, code, stock, status = true) {
 
     this.products = await this.getProducts();
 
-    const getUniqueID = () => { 
+    const getUniqueID = () => {
       return this.products.at(-1).id + 1;
     }
 
@@ -62,28 +62,27 @@ class ProductManager {
 
       const emptyEntries = [];
 
-      Object.entries({ title, description, price, thumbnails, code, stock })
+      Object.entries({ title, description, price, thumbnails, code, stock, status })
         .forEach(([key, value]) => {
-          
-          console.log(key, value);
-          
-          if (key !== 'thumbnails'){
-          if (value === null || value === undefined || value.toString()?.trim() === '') {
-            emptyEntries.push(key);
-          }}
+          if (key !== 'thumbnails') {
+            if (value === null || value === undefined || value.toString()?.trim() === '') {
+              emptyEntries.push(key);
+            }
+          }
         });
       return (emptyEntries);
     }
 
     const invalidField = validateFields();
-    if (invalidField.length > 0) { 
+    if (invalidField.length > 0) {
       console.error(`Fields [${invalidField.join(', ')}] empty. All fields are mandatory. Product was not added.`);
-      return `Fields [${invalidField.join(', ')}] empty. All fields are mandatory. Product was not added.`;
+
+      return { success: false, message: `Fields [${invalidField.join(', ')}] empty. All fields are mandatory. Product was not added.` };
     }
 
-    if (this.#isCodeDuplicated()) { 
+    if (this.#isCodeDuplicated()) {
       console.error(`Product code for '${title}' duplicated. Product was not added.`);
-      return `Product code for '${title}' duplicated. Product was not added.`;
+      return { success: false, message: `Product code for '${title}' duplicated. Product was not added.` };
     }
 
     const newProduct = {
@@ -93,19 +92,20 @@ class ProductManager {
       price,
       thumbnails,
       code,
-      stock
+      stock,
+      status
     }
     this.products.push(newProduct);
 
     await this.#writeToDb(this.products);
     console.log(`Product '${title}' added successfully!`)
     return newProduct;
-  };
+  }
 
   async getProducts() {
     this.products = await this.#readFromDb();
     return this.products;
-  };
+  }
 
   async getProductById(id) {
     const product = await this.#getProductById(id)
@@ -157,6 +157,6 @@ class ProductManager {
       console.error(`Error at Database reading: ${error}.`);
     }
   }
-};
+}
 
 module.exports = ProductManager;

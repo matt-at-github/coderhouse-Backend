@@ -5,7 +5,7 @@ const path = require("node:path")
 
 const ProductManager = require('../ProductManager.js');
 
-const nodePath = path.join(path.dirname(__dirname),'/repositories/myDatabase.json');
+const nodePath = path.join(path.dirname(__dirname), '/repositories/myDatabase.json');
 const manager = new ProductManager(nodePath)
 
 router.get("/:cid", async (req, res) => {

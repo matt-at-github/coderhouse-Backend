@@ -4,7 +4,9 @@
     "title": "Teclado Genius Negro",
     "description": "Teclado Genius genérico negro",
     "price": 10,
-    "thumbnail": "../productos/perifericos/teclado01.jpeg",
+    "thumbnails": [
+      "../productos/perifericos/teclado01.jpeg"
+    ],
     "code": "tecla-1",
     "stock": 10
   },
@@ -13,7 +15,9 @@
     "title": "Mouse Genius Blanco",
     "description": "Mouse Genius genérico blanco",
     "price": 18,
-    "thumbnail": "../productos/perifericos/mouse01.jpeg",
+    "thumbnails": [
+      "../productos/perifericos/mouse01.jpeg"
+    ],
     "code": "mouse-2",
     "stock": 50
   },
@@ -22,7 +26,9 @@
     "title": "Mouse Genius Rosa",
     "description": "Mouse Genius genérico rosa",
     "price": 10,
-    "thumbnail": "../productos/perifericos/mouse99.jpeg",
+    "thumbnails": [
+      "../productos/perifericos/mouse99.jpeg"
+    ],
     "code": "mouse-3",
     "stock": 330
   },
@@ -31,7 +37,9 @@
     "title": "Auriculares Rzer",
     "description": "Auriculares Rzer",
     "price": 13,
-    "thumbnail": "../productos/perifericos/auris02.jpeg",
+    "thumbnails": [
+      "../productos/perifericos/auris02.jpeg"
+    ],
     "code": "auris-2",
     "stock": 12
   },
@@ -40,7 +48,9 @@
     "title": "Mic Rzer",
     "description": "Microfono Rzer",
     "price": 8,
-    "thumbnail": "../productos/perifericos/mic01.jpeg",
+    "thumbnails": [
+      "../productos/perifericos/mic01.jpeg"
+    ],
     "code": "mic-1",
     "stock": 24
   },
@@ -49,16 +59,10 @@
     "title": "Mic Asus",
     "description": "Microfono Asus",
     "price": 5,
-    "thumbnail": "../productos/perifericos/mic02.jpeg",
+    "thumbnails": [
+      "../productos/perifericos/mic02.jpeg"
+    ],
     "code": "mic-2",
     "stock": 14
-  },
-  {
-    "id": 8,
-    "title": "Auriculres",
-    "description": "Auriculres JBL",
-    "price": 25,
-    "code": "aur-3",
-    "stock": 9
   }
 ]
