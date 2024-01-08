@@ -1,5 +1,5 @@
 const PORT = 8080;
-const STATIC = ""
+const STATIC = "";
 
 const express = require('express');
 const app = express();

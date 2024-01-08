@@ -11,12 +11,18 @@ class ProductManager {
     this.products = [];
   }
 
-  async updateProductById(id, title, description, price, thumbnails, code, stock) {
+  async updateProductById(id, title, description, price, thumbnails, code, stock, status) {
 
-    const productToUpdate = await this.#getProductById(id)
-    if (!productToUpdate) { return console.error(`Product ID ${id} not found. Update cancelled.`) }
+    const productToUpdate = await this.#getProductById(id);
+    if (!productToUpdate) {
+      console.error(`Product ID ${id} not found. Update cancelled.`);
+      return { success: false, message: `Product ID ${id} not found. Update cancelled.` };
+    }
 
-    if (code && this.#isCodeDuplicated(code)) { return console.error(`Product code for product ID '${id}' duplicated. Product was not updated.`) }
+    if (code && this.#isCodeDuplicated(code)) {
+      console.error(`Product code for product ID '${id}' duplicated. Product was not updated.`);
+      return { success: false, message: `Product code for product ID '${id}' duplicated. Product was not updated.` };
+    }
 
     Object.assign(productToUpdate, {
       title: title || productToUpdate.title,
@@ -25,38 +31,45 @@ class ProductManager {
       thumbnails: thumbnails || productToUpdate.thumbnails,
       code: code || productToUpdate.code,
       stock: stock || productToUpdate.stock,
+      status: status || productToUpdate.status
     });
 
-    if (this.#replaceProduct(productToUpdate, productToUpdate)) {
-      await this.#writeToDb(this.products)
-      console.log(`Product ID ${id} updated successfuly.`);
-      return true;
+    if (!this.#replaceProduct(productToUpdate, productToUpdate)) {
+      console.error(`Product ID ${id} not updated, ID not found.`);
+      return { success: false, message: `Product ID ${id} not updated, ID not found.` };
     }
 
-    console.error(`Product ID ${id} not updated, ID not found.`);
-    return false;
+    await this.#writeToDb(this.products);
+    console.log(`Product ID ${id} updated successfully.`);
+    return { success: true, message: productToUpdate };
   }
 
   async deleteProductByID(id) {
     const productToDelete = await this.#getProductById(id);
-    if (!productToDelete) { return console.error(`Product ID ${id} not found. Delete not done!`) }
-
-    const productDeleted = this.#replaceProduct(productToDelete)
-    if (productDeleted) {
-      await this.#writeToDb(this.products)
-      return console.log(`Product ID ${id} deleted succesfully.`)
+    if (!productToDelete) {
+      console.error(`Product ID ${id} not found. Delete not done!`);
+      return { success: false, message: `Product ID ${id} not found. Delete not done!` };
     }
+
+    const productDeleted = this.#replaceProduct(productToDelete);
+    if (productDeleted) {
+      await this.#writeToDb(this.products);
+
+      console.log(`Product ID ${id} deleted succesfully.`);
+      return { success: true, message: `Product ID ${id} deleted succesfully.` };
+    }
+
     console.error(`Product ID ${id} was not deleted, ID not found.`);
-    return false;
+    return { success: false, message: `Product ID ${id} was not deleted, ID not found.` };
   }
 
   async addProduct(title, description, price, thumbnails, code, stock, status = true) {
 
-    this.products = await this.getProducts();
+    await this.#populateProducts();
 
     const getUniqueID = () => {
-      return this.products.at(-1).id + 1;
-    }
+      return this.products.at(-1)?.id ?? 0 + 1;
+    };
 
     const validateFields = () => {
 
@@ -71,7 +84,7 @@ class ProductManager {
           }
         });
       return (emptyEntries);
-    }
+    };
 
     const invalidField = validateFields();
     if (invalidField.length > 0) {
@@ -94,22 +107,27 @@ class ProductManager {
       code,
       stock,
       status
-    }
+    };
     this.products.push(newProduct);
 
     await this.#writeToDb(this.products);
-    console.log(`Product '${title}' added successfully!`)
-    return newProduct;
+    console.log(`Product '${title}' added successfully!`);
+    return { success: true, message: newProduct };
   }
 
   async getProducts() {
-    this.products = await this.#readFromDb();
-    return this.products;
+    await this.#populateProducts();
+    return { success: true, message: this.products };
   }
 
   async getProductById(id) {
-    const product = await this.#getProductById(id)
-    return product ?? undefined;
+    const product = await this.#getProductById(id);
+    if (!product) { return { success: false, message: `Product of ID ${id} does not exists.` }; }
+    return { success: true, message: product };
+  }
+
+  async #populateProducts() {
+    this.products = await this.#readFromDb();
   }
 
   async #getProductById(id) {
@@ -117,27 +135,28 @@ class ProductManager {
     ProductManager.id = (this.products.map(m => m.id)
       .sort((x, y) => y - x)
       .at(0) || 0) + 1;
-    return this.products.find(f => f.id === id)
+    return this.products.find(f => f.id === id);
   }
 
   #replaceProduct(replacee, replacement) {
     const productToReplaceIndex = this.products.indexOf(replacee);
-    if (productToReplaceIndex === -1) { return false }
+    if (productToReplaceIndex === -1) { return false; }
     if (!replacement) {
       this.products = this.products.filter(f => f.id != replacee.id);
     } else {
       this.products.splice(productToReplaceIndex, 1, replacement);
     }
-    return true
+    return true;
   }
 
   #isCodeDuplicated(code) {
+    console.log(this.products);
     return this.products.some(f => f.code === code?.trim() ?? '');
   }
 
   async #writeToDb(content) {
     try {
-      const fileStatus = await fs.stat(this.path)
+      const fileStatus = await fs.stat(this.path);
       if (fileStatus) {
         await fs.writeFile(this.path, JSON.stringify(content, null, 2));
       }
@@ -148,7 +167,7 @@ class ProductManager {
 
   async #readFromDb() {
     try {
-      const fileStatus = await fs.stat(this.path)
+      const fileStatus = await fs.stat(this.path);
       if (fileStatus) {
         return JSON.parse(await fs.readFile(this.path, "utf-8"));
       }

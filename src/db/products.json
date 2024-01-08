@@ -64,5 +64,18 @@
     ],
     "code": "mic-2",
     "stock": 14
+  },
+  {
+    "id": 8,
+    "title": "Auriculres",
+    "description": "Auriculres JBL black",
+    "price": 25,
+    "thumbnails": [
+      "auri-1.jpg",
+      "auri-1-2.jpg"
+    ],
+    "code": "aur-3",
+    "stock": 12,
+    "status": true
   }
 ]

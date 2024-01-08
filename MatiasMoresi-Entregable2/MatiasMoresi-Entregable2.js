@@ -29,7 +29,7 @@ class ProductManager {
 
     if (this.#replaceProduct(productToUpdate, productToUpdate)) {
       await this.#writeToDb(this.products)
-      return console.log(`Product ID ${id} updated successfuly.`);
+      return console.log(`Product ID ${id} updated successfully.`);
     }
 
     return console.error(`Product ID ${id} not updated, ID not found.`)
@@ -157,7 +157,7 @@ async function tests_AddProducts() {
 
 async function tests_GetProductsByID() {
   console.group('Buscamos productos por ID:');
-  
+
   console.group('ID 2:');
   await productManager.getProductById(2);
   console.groupEnd()
@@ -167,13 +167,13 @@ async function tests_GetProductsByID() {
   console.group('ID 7:');
   await productManager.getProductById(7);
   console.groupEnd()
-  
+
   console.groupEnd()
 }
 
 async function tests_EditProducts() {
   console.group('Editamos algunos productos:')
-  
+
   console.group('Editamos producto ID 100:');
   await productManager.updateProductById(100, 'Teclado Genius Negro', 'Teclado Genius genérico negro', 10, '../productos/perifericos/teclado01.jpeg', 'tecla-1', 0) // => ID not found
   console.groupEnd()
@@ -193,7 +193,7 @@ async function tests_EditProducts() {
 
 async function tests_DeleteProducts() {
   console.group('Eliminamos algunos productos por ID:')
-  
+
   console.group('ID 100:')
   await productManager.deleteProductByID(100);
   console.groupEnd()
@@ -201,7 +201,7 @@ async function tests_DeleteProducts() {
   console.group('ID 1:')
   await productManager.deleteProductByID(1);
   console.groupEnd()
-  
+
   console.group('ID 4:')
   await productManager.deleteProductByID(4);
   console.groupEnd()
