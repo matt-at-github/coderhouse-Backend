@@ -52,5 +52,13 @@
     "thumbnail": "../productos/perifericos/mic02.jpeg",
     "code": "mic-2",
     "stock": 14
+  },
+  {
+    "id": 8,
+    "title": "Auriculres",
+    "description": "Auriculres JBL",
+    "price": 25,
+    "code": "aur-3",
+    "stock": 9
   }
 ]
