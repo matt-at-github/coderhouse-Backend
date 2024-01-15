@@ -20,7 +20,8 @@ router.get("/:pid", async (req, res) => {
 
   const getProduct = await productManager.getProductById(id);
   if (getProduct.success === false) { return res.status(400).send(getProduct.message); }
-  return res.status(200).send(getProduct.message);
+  // return res.status(200).send(getProduct.message);
+  return res.render('products', { data: getProduct.message });
 });
 
 router.get("/", async (req, res) => {
