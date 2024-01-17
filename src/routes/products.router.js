@@ -20,12 +20,17 @@ router.get("/:pid", async (req, res) => {
 
   const getProduct = await productManager.getProductById(id);
   if (getProduct.success === false) { return res.status(400).send(getProduct.message); }
-  return res.status(200).send(getProduct.message);
+  console.log(getProduct.message);
+  // return res.status(200).send(getProduct.message);
+  return res.render('product', { data: getProduct.message });
 });
 
 router.get("/", async (req, res) => {
   const limit = parseInt(req.query.limit) || undefined;
-  return res.status(200).send((await productManager.getProducts()).message.slice(0, limit));
+  console.log('limit', limit);
+  const products = (await productManager.getProducts()).message.slice(0, limit);
+  // return res.status(200).send(products);
+  return res.render('home', { data: products });
 });
 
 router.post("/", async (req, res) => {
