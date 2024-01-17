@@ -29,6 +29,10 @@ class SocketIOManager {
       });
 
       this.io.sockets.emit('connectionResponse', await productManager.getProducts());
+
+      socket.on('deleteProduct', (data) => {
+        console.log(data);
+      });
     });
   }
 }

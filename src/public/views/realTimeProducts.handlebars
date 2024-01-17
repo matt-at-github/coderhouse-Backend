@@ -66,7 +66,7 @@
               <div class="row justify-content-center mt-4">
                 <div class="col-4">
                   <div class="page-item mr-auto">
-                    <a href="/realtimeProducts" class="btn btn-danger"> <i class="bi bi-x me-1"></i> Anular </a>
+                    <a href="/realtimeProducts" id="abortUpdate" class="btn btn-danger"> <i class="bi bi-x me-1"></i> Anular </a>
                   </div>
                 </div>
                 <div class="col-4">
@@ -82,23 +82,26 @@
 
       <div class="col-xl-8">
         <div class="row row-cols-2" id="productWrapper">
-
+          <!-->
           <div class="col mb-1 d-none" id="parent">
-            <a class="text-reset" href="/api/products/{{this.id}}">
+            <a class="text-reset productLink" id="productLink">
               <div class="card">
-                <img src="https://www.bootdey.com/image/100x80/008B8B/000000" class="card-img-top" alt="...">
+                <img src="https://www.bootdey.com/image/100x80/008B8B/000000" class="card-img-top">
                 <div class="card-body">
                   <h5 class="card-title">{{this.title}}</h5>
                   <p class="card-text">{{this.description}}</p>
                 </div>
                 <div class="card-footer">
-                  {{!-- <small class="text-muted"><a href="/" class="btn btn-link text-muted"> <i class="bi bi-arrow-left me-1"></i> Continue Shopping </a></small> --}}
+                  {{!-- <a class="btn btn-info btn-rounded mr-1"><i class="bi bi-cart2"></i> </a> --}}
+                  <a class="btn btn-danger btn-rounded mr-1" id="deleteProduct"><i class="bi bi-trash"></i></a>
                 </div>
               </div>
             </a>
           </div>
+          <!-->
         </div>
       </div>
+
     </div>
   </div>
 </div>
