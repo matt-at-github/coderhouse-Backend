@@ -15,7 +15,9 @@ const cartsRouter = require("./routes/carts.router");
 const views = require('./routes/views.router');
 
 app.use(STATIC, express.static(`${__dirname}/public`));
+app.use('/favicon.ico', express.static(`${__dirname}/public/img/favicon.png`));
 
+// Handlebars
 app.engine('handlebars', handlebarsInstance.engine());
 app.set('view engine', 'handlebars');
 app.set('views', `${__dirname}/public/views`); // Por qué ./public/views no funciona?
@@ -25,6 +27,8 @@ app.use("/api/products", productsRouter);
 app.use("/api/carts", cartsRouter);
 
 // Multer
+//
+//
 
 // Server init
 const httpServer = app.listen(PORT, () => console.log(`Server running at http://localhost:${PORT}${STATIC}`));

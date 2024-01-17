@@ -1,19 +1,41 @@
-<h1> Hola Mundo </h1>
-{{!-- <script src="https://cdn.socket.io/socket.io-1.0.0.js"></script> --}}
-{{!-- <script 
-  src="https://cdn.socket.io/4.7.3/socket.io.min.js" 
-  integrity="sha384-+miq58Ltmjm+SSP5g8Ok6dpMO/6R4n8xe/x1Yj0Bdb9kiEz25LTnWv/GZQTRQamg" 
-  crossorigin="anonymous">
-</script> --}}
+{{!-- https://www.bootdey.com/snippets/view/shopping-cart-with-selected-products-order-summary-and-checkout-button --}}
+<div class="container">
+  <div class="row">
+    <div class="col-xl-8">
+      <div class="row row-cols-2">
+        {{#each products}}
+        <div class="col mb-1">
+          <a class="text-reset" href="/api/products/{{this.id}}">
+            <div class="card">
+              <img src="https://www.bootdey.com/image/100x80/008B8B/000000" class="card-img-top" alt="...">
+              <div class="card-body">
+                <h5 class="card-title">{{this.title}}</h5>
+                <p class="card-text">{{this.description}}</p>
+              </div>
+              <div class="card-footer">
+                {{!-- <small class="text-muted"><a href="/" class="btn btn-link text-muted"> <i class="mdi mdi-arrow-left me-1"></i> Continue Shopping </a></small> --}}
+              </div>
+            </div>
+          </a>
+        </div>
+        {{/each}}
+      </div>
+      <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-between align-content-between flex-wrap">
 
-{{!-- <script src="js/index.js"></script> --}}
+          <li class="page-item mr-auto">
+            <a class="btn btn-info disabled" href="#" tabindex="-1"><i class="mdi mdi-arrow-left me-1 float-left"></i>Anterior</a>
+          </li>
 
-<div style="background-color: cadetblue;">
-  <p>{{data}}</p>
-  
-  <ul>
-    {{#each products}}
-     <li> <a href="api/products/{{this.id}}">{{this.title}}</a></li>
-     {{/each}}
-  </ul>
+          <li class="page-item"> <a class="page-link text-white bg-info" href="#">1<span class="sr-only">(current)</span></a> </li>
+          <li class="page-item"><a class="page-link  text-dark" href="#">2</a></li>
+          <li class="page-item"><a class="page-link  text-dark" href="#">3</a></li>
+
+          <li class="page-item ml-auto">
+            <a class="btn btn-info" href="#"><i class="mdi mdi-arrow-right me-1 float-right"></i>Siguente</a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
 </div>

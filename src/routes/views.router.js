@@ -9,11 +9,10 @@ const productsDBPath = path.join(path.dirname(__dirname), '/db/products.json');
 const productManager = new ProductManager(productsDBPath);
 
 router.get("/", async (req, res) => {
-
-  const products = (await productManager.getProducts()).message;
-  res.render('home',
-    { data: 'Esto es una prueba', products }
-  );
+  const limit = parseInt(req.query.limit) || undefined;
+  console.log('limit', limit);
+  const products = (await productManager.getProducts()).message.slice(0, limit);
+  return res.render('home', { products });
 });
 
 module.exports = router;
