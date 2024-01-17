@@ -13,6 +13,7 @@ app.use(express.json());
 const productsRouter = require("./routes/products.router");
 const cartsRouter = require("./routes/carts.router");
 const views = require('./routes/views.router');
+const realtimeProducts = require('./routes/realtimeProducts.router');
 
 app.use(STATIC, express.static(`${__dirname}/public`));
 app.use('/favicon.ico', express.static(`${__dirname}/public/img/favicon.png`));
@@ -25,6 +26,7 @@ app.set('views', `${__dirname}/public/views`); // Por qué ./public/views no fun
 app.use('/', views);
 app.use("/api/products", productsRouter);
 app.use("/api/carts", cartsRouter);
+app.use('/realtimeProducts', realtimeProducts);
 
 // Multer
 //
@@ -34,14 +36,12 @@ app.use("/api/carts", cartsRouter);
 const httpServer = app.listen(PORT, () => console.log(`Server running at http://localhost:${PORT}${STATIC}`));
 
 // Socket.io
-const socket = require('socket.io');
-const io = socket(httpServer);
-io.on('connection', (socket) => {
-  console.log('Client connected');
-  socket.on('message', (data) => {
-    console.log(data);
-    io.sockets.emit('message', data);
-  });
+const socketIOManager = require('./controllers/SocketIO');
+const socket = new socketIOManager(httpServer);
 
-  socket.emit('greet', 'Welcome to OnlyShop');
-});
+const ProductManager = require('./controllers/ProductManager.js');
+
+const productsDBPath = ('./src/db/products.json');
+const productManager = new ProductManager(productsDBPath);
+
+socket.init(productManager);

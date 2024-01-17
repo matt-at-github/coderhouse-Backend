@@ -68,7 +68,9 @@ class ProductManager {
     await this.#populateProducts();
 
     const getUniqueID = () => {
-      return this.products.at(-1)?.id ?? 0 + 1;
+      const newID = Number(this.products.at(-1)?.id ?? 0) + 1;
+      console.log('getUniqueID', 'newID', newID);
+      return newID;
     };
 
     const validateFields = () => {
@@ -93,9 +95,9 @@ class ProductManager {
       return { success: false, message: `Fields [${invalidField.join(', ')}] empty. All fields are mandatory. Product was not added.` };
     }
 
-    if (this.#isCodeDuplicated()) {
+    if (this.#isCodeDuplicated(code)) {
       console.error(`Product code for '${title}' duplicated. Product was not added.`);
-      return { success: false, message: `Product code for '${title}' duplicated. Product was not added.` };
+      return { success: false, message: `Product code for '${title}' is duplicated. Product was not added.` };
     }
 
     const newProduct = {
@@ -150,7 +152,8 @@ class ProductManager {
   }
 
   #isCodeDuplicated(code) {
-    console.log(this.products);
+    console.log(code, this.products.map(m => m.code));
+    // console.log(this.products.filter(f => f.code === code));
     return this.products.some(f => f.code === code?.trim() ?? '');
   }
 
