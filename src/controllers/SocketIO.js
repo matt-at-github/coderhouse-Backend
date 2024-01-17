@@ -30,9 +30,11 @@ class SocketIOManager {
 
       this.io.sockets.emit('connectionResponse', await productManager.getProducts());
 
-      socket.on('deleteProduct', (data) => {
-        console.log(data);
+      socket.on('deleteProduct', async (data) => {
+        const deleted = await productManager.deleteProductByID(data);
+        this.io.sockets.emit('productDeleted', { success: deleted.success, title: 'Deleded', message: deleted.message, products: await productManager.getProducts() });
       });
+
     });
   }
 }

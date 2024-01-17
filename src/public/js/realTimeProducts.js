@@ -6,23 +6,21 @@ function createProductNode(product) {
   const wrapper = document.getElementById('productWrapper');
 
   const child = document.getElementById('parent').cloneNode(true);
-  // child.
-  child.getElementsByClassName('text-reset productLink')[1].href = `/api/products/${product.id}`;
+  child.getElementsByClassName('text-reset productLink')[0].href = `/api/products/${product.id}`;
   child.getElementsByClassName('card-title')[0].innerHTML = product.title;
   child.getElementsByClassName('card-text')[0].innerHTML = product.description;
 
-  const deleteButton = document.getElementById('deleteProduct');
-  deleteButton.addEventListener('click', () => {
-    console.log('deleteProduct', product.id);
+  child.querySelector("button").addEventListener('click', () => {
     socket.emit('deleteProduct', product.id);
   });
-  console.log(deleteButton);
 
   child.classList.remove('d-none');
   wrapper.appendChild(child);
 }
 
 socket.on('connectionResponse', (data) => {
+  const wrapper = document.getElementById('productWrapper');
+  wrapper.innerHTML = "";
   data.message.forEach(product => {
     createProductNode(product);
   });
@@ -54,6 +52,22 @@ socket.on('regiterNewProductResponse', (response) => {
     text: response.text
   });
   createProductNode(response.product);
+});
+
+socket.on('productDeleted', (response) => {
+  // eslint-disable-next-line no-undef
+  Swal.fire({
+    icon: (response.success === true ? "success" : "error"),
+    title: response.title,
+    text: response.text
+  });
+
+  const wrapper = document.getElementById('productWrapper');
+  wrapper.innerHTML = "";
+
+  response.products.message.forEach((product) => {
+    createProductNode(product);
+  });
 });
 
 // Auxiliary methods
