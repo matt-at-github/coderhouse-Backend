@@ -40,7 +40,6 @@ const socketIOManager = require('./controllers/SocketIO');
 const socket = new socketIOManager(httpServer);
 
 const ProductManager = require('./controllers/ProductManager.js');
-
 const productsDBPath = ('./src/db/products.json');
 const productManager = new ProductManager(productsDBPath);
 
