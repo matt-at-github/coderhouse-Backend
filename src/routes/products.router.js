@@ -3,6 +3,8 @@ const router = express.Router();
 
 const path = require("node:path");
 
+const modelProduct = require('./../models/products.model.js');
+
 const ProductManager = require('../controllers/ProductManager.js');
 
 const productsDBPath = path.join(path.dirname(__dirname), '/db/products.json');
@@ -26,20 +28,43 @@ router.get("/:pid", async (req, res) => {
 });
 
 router.get("/", async (req, res) => {
-  const limit = parseInt(req.query.limit) || undefined;
-  console.log('limit', limit);
-  const products = (await productManager.getProducts()).message.slice(0, limit);
-  // return res.status(200).send(products);
-  return res.render('home', { data: products });
+  try {
+    const limit = parseInt(req.query.limit) || undefined;
+    console.log('limit', limit);
+    const products = await modelProduct.find();
+    return res.send(products);
+  } catch (error) {
+    return res.status(500).send(error);
+  }
 });
+
+// router.get("/", async (req, res) => {
+//   const limit = parseInt(req.query.limit) || undefined;
+//   console.log('limit', limit);
+//   const products = (await productManager.getProducts()).message.slice(0, limit);
+//   // return res.status(200).send(products);
+//   return res.render('home', { data: products });
+// });
 
 router.post("/", async (req, res) => {
 
-  const { title, description, price, thumbnails, code, stock, status } = { ...req.body };
-  const addProduct = await productManager.addProduct(title, description, price, thumbnails, code, stock, status);
-  if (addProduct.success === false) { return res.status(400).send(addProduct.message); }
-  return res.status(201).send(addProduct.message);
+  try {
+    const newProduct = new modelProduct(req.body);
+    return res.status(201).send(newProduct);
+
+  } catch (error) {
+    res.status(500).send(`Error: ${error}`);
+    console.log(`Error: ${error}`);
+  }
 });
+
+// router.post("/", async (req, res) => {
+
+//   const { title, description, price, thumbnails, code, stock, status } = { ...req.body };
+//   const addProduct = await productManager.addProduct(title, description, price, thumbnails, code, stock, status);
+//   if (addProduct.success === false) { return res.status(400).send(addProduct.message); }
+//   return res.status(201).send(addProduct.message);
+// });
 
 router.put("/:pid", async (req, res) => {
 

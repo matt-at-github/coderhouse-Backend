@@ -32,6 +32,10 @@ app.use('/realtimeProducts', realtimeProducts);
 //
 //
 
+// Mongoose connection
+const mongooseConnection = require('./db/products.connection.js');
+mongooseConnection.connect;
+
 // Server init
 const httpServer = app.listen(PORT, () => console.log(`Server running at http://localhost:${PORT}${STATIC}`));
 
