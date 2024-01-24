@@ -1,0 +1,22 @@
+[
+  {
+    "nombre": "Firulais",
+    "especie": "Perro",
+    "edad": 5
+  },
+  {
+    "nombre": "Lola",
+    "especie": "Perro",
+    "edad": 9
+  },
+  {
+    "nombre": "Kida",
+    "especie": "Perro",
+    "edad": 4
+  },
+  {
+    "nombre": "Luna",
+    "especie": "Perro",
+    "edad": 8
+  }
+]
