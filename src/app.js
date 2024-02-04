@@ -1,5 +1,4 @@
 const PORT = 8080;
-const STATIC = "";
 
 const express = require('express');
 const app = express();
@@ -15,7 +14,7 @@ const cartsRouter = require("./routes/carts.router");
 const views = require('./routes/views.router');
 const realtimeProducts = require('./routes/realtimeProducts.router');
 
-app.use(STATIC, express.static(`${__dirname}/public`));
+app.use(express.static("./src/public"));
 app.use('/favicon.ico', express.static(`${__dirname}/public/img/favicon.png`));
 
 // Handlebars
@@ -37,7 +36,7 @@ const mongooseConnection = require('./db/products.connection.js');
 mongooseConnection.connect;
 
 // Server init
-const httpServer = app.listen(PORT, () => console.log(`Server running at http://localhost:${PORT}${STATIC}`));
+const httpServer = app.listen(PORT, () => console.log(`Server running at http://localhost:${PORT}`));
 
 // Socket.io
 const socketIOManager = require('./controllers/SocketIO');
