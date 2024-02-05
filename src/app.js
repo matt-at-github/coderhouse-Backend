@@ -17,7 +17,6 @@ const chatAPIRouter = require("./routes/api.chat.router.js");
 
 const home = require('./routes/home.router.js');
 
-console.log(__dirname);
 app.use(express.static(`${__dirname}/public`));
 app.use('/favicon.ico', express.static(`${__dirname}/public/img/favicon.png`));
 
