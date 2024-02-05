@@ -1,0 +1,29 @@
+
+<link rel="stylesheet" href="../css/chat.css">
+
+<div class="container  justify-content-center pt-5">
+  <div class="row d-flex justify-content-center">
+    <div class="col-md-6 col-lg-7 col-md-offset-3">
+      <div class="panel panel-default chat-widget">
+        <div class="panel-heading">
+          <h3 class="panel-title"><i class="fa fa-comments"></i> Chat con {{chat.to}}</h3>
+          <div class="panel-footer m-2 pb-2">
+            <div class="input-group mt-2">
+              <input type="text" id="idBox" placeholder="Identifícate con tu mail" class="form-control primary">
+            </div>
+          </div>
+        </div>
+        <div class="panel-body pt-2 mx-3">
+          <div class="messages mx-3" id="messagesBox" style="overflow-x: hidden; overflow-y: scroll; max-height:400px">
+          </div>
+          <div class="panel-footer m-2 pb-2">
+            <div class="input-group mt-2">
+              <input type="text" id="chatBox" placeholder="Press Enter" class="form-control primary">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/chat.js" defer></script>
