@@ -1,14 +1,14 @@
 {{!-- https://www.bootdey.com/snippets/view/shopping-cart-with-selected-products-order-summary-and-checkout-button --}}
 
 <div class="container">
-  <div class="row justify-content-md-center">
+  <div class="row d-flex justify-content-center">
     <div class="col-10">
 
       <div class="col-xl-8">
         <div class="row row-cols-2">
           {{#each products}}
           <div class="col mb-1">
-            <a class="text-reset" href="/api/products/{{this.id}}">
+            <a class="text-reset" href="/products/{{this.id}}">
               <div class="card">
                 <img src="https://www.bootdey.com/image/100x80/008B8B/000000" class="card-img-top" alt="...">
                 <div class="card-body">
@@ -16,7 +16,6 @@
                   <p class="card-text">{{this.description}}</p>
                 </div>
                 <div class="card-footer">
-                  {{!-- <small class="text-muted"><a href="/" class="btn btn-link text-muted"> <i class="bi bi-arrow-left me-1"></i> Continue Shopping </a></small> --}}
                 </div>
               </div>
             </a>

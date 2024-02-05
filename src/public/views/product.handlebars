@@ -3,25 +3,27 @@
 <div class="container mt-3">
   <div class="card p-3">
     <div class="card-body">
-      <h3 class="card-title">{{data.title}}</h3>
+      <h3 class="card-title">{{title}}</h3>
       <div class="row">
         <div class="col-lg-4">
           <img src="https://www.bootdey.com/image/400x400/008B8B/000000" class="img-fluid">
         </div>
         <div class="col-lg-5">
           <h6 class="box-title">Descripción del producto</h6>
-          <p>{{data.description}}</p>
+          <p>{{description}}</p>
         </div>
         <div class="col-lg-2">
-          <h2>$ {{data.price}} </h2>
+          <h2>$ {{price}} </h2>
         </div>
         <div class="col-lg-1">
-          <button class="btn btn-info btn-rounded mr-1">
+
+          <a onclick="addToCart({{this.id}})" class="btn btn-info btn-rounded mr-1">
             <i class="bi bi-cart2"></i>
-          </button>
-          <button class="btn btn-danger btn-rounded mr-1">
+          </a>
+          <a href="/products/{{this.id}}/delete" class="btn btn-danger btn-rounded mr-1">
             <i class="bi bi-trash"></i>
-          </button>
+            {{!-- <a href="/images/{{this.id}}/delete" class="btn"></a> --}}
+          </a>
         </div>
       </div>
     </div>
@@ -29,6 +31,25 @@
   <div class="row">
     <div class="col-sm-6">
       <a href="/" class="btn btn-link text-muted"> <i class="bi bi-arrow-left me-1"></i>Volver</a>
+
     </div>
   </div>
 </div>
+
+<script>
+  function addToCart() {   
+    fetch('/api/carts', {
+      method: 'POST',
+      body: {productsId: {{this.id}} },
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Handle the response data
+        console.log(data);
+    })
+    .catch(error => {
+        // Handle errors
+        console.error('Error:', error);
+    });
+  };
+</script>
