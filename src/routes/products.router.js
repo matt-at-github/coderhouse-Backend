@@ -1,14 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const path = require("node:path");
-
-const modelProduct = require('./../models/products.model.js');
-
-const ProductManager = require('../controllers/ProductManager.js');
-
-const productsDBPath = path.join(path.dirname(__dirname), '/db/products.json');
-const productManager = new ProductManager(productsDBPath);
+const Product = require('../DAO/models/products.model.js');
 
 function validateId(id) {
   const intID = parseInt(id);
@@ -17,75 +10,73 @@ function validateId(id) {
 
 router.get("/:pid", async (req, res) => {
 
-  const id = validateId(req.params.pid);
-  if (id === false) { return res.status(400).send('The ID is invalid'); }
+  const pid = validateId(req.params.pid);
+  if (pid === false) { return res.status(400).send('The ID is invalid'); }
 
-  const getProduct = await productManager.getProductById(id);
-  if (getProduct.success === false) { return res.status(400).send(getProduct.message); }
-  console.log(getProduct.message);
-  // return res.status(200).send(getProduct.message);
-  return res.render('product', { data: getProduct.message });
+  const product = await Product.findOne({ id: pid });
+  if (!product) { return res.status(400).send('No product found.'); }
+
+  return res.render('product', {
+    id: product.id,
+    title: product.title,
+    description: product.description,
+    price: product.price
+  });
 });
 
-router.get("/", async (req, res) => {
+router.get("/api/:pid", async (req, res) => {
+
+  const pid = validateId(req.params.pid);
+  if (pid === false) { return res.status(400).send('The ID is invalid'); }
+
+  const product = await Product.findOne({ id: pid });
+  if (!product) { return res.status(400).send('No product found.'); }
+
+  return res.send(product);
+});
+
+router.get("/api/", async (req, res) => {
   try {
     const limit = parseInt(req.query.limit) || undefined;
     console.log('limit', limit);
-    const products = await modelProduct.find();
+    const products = await Product.find();
     return res.send(products);
   } catch (error) {
     return res.status(500).send(error);
   }
 });
 
-// router.get("/", async (req, res) => {
-//   const limit = parseInt(req.query.limit) || undefined;
-//   console.log('limit', limit);
-//   const products = (await productManager.getProducts()).message.slice(0, limit);
-//   // return res.status(200).send(products);
-//   return res.render('home', { data: products });
-// });
-
-router.post("/", async (req, res) => {
-
-  try {
-    const newProduct = new modelProduct(req.body);
-    return res.status(201).send(newProduct);
-
-  } catch (error) {
-    res.status(500).send(`Error: ${error}`);
-    console.log(`Error: ${error}`);
-  }
-});
-
 // router.post("/", async (req, res) => {
 
-//   const { title, description, price, thumbnails, code, stock, status } = { ...req.body };
-//   const addProduct = await productManager.addProduct(title, description, price, thumbnails, code, stock, status);
-//   if (addProduct.success === false) { return res.status(400).send(addProduct.message); }
-//   return res.status(201).send(addProduct.message);
+//   try {
+//     const newProduct = new Product(req.body);
+//     return res.status(201).send(newProduct);
+
+//   } catch (error) {
+//     res.status(500).send(`Error: ${error}`);
+//     console.log(`Error: ${error}`);
+//   }
 // });
 
-router.put("/:pid", async (req, res) => {
+router.put("/api/:pid", async (req, res) => {
 
-  const id = validateId(req.params.pid);
-  if (id === false) { return res.status(400).send('The ID is invalid'); }
+  const pid = validateId(req.params.pid);
+  if (pid === false) { return res.status(400).send('The ID is invalid'); }
 
-  const { title, description, price, thumbnails, code, stock, status } = { ...req.body };
-  const updateProduct = await productManager.updateProductById(id, title, description, price, thumbnails, code, stock, status);
+  const updateProduct = await Product.findOneAndUpdate({ id: pid }, req.body);
   console.log(JSON.stringify(updateProduct));
-  if (updateProduct.success === false) { return res.status(400).send(updateProduct.message); }
-  return res.status(200).json(updateProduct.message);
+  if (!updateProduct) { return res.status(400).send('Problem updating, a field might be missing'); }
+  return res.status(200).json(updateProduct);
 });
 
-router.delete("/:pid", async (req, res) => {
+router.get("/api/:pid/delete", async (req, res) => {
 
-  const id = validateId(req.params.pid);
-  if (id === false) { return res.status(400).send('The ID is invalid'); }
+  const pid = validateId(req.params.pid);
+  if (pid === false) { return res.status(400).send('The ID is invalid'); }
 
-  const deleteProduct = await productManager.deleteProductByID(id);
-  if (deleteProduct.success === false) { return res.status(400).send(deleteProduct.message); }
-  return res.status(202).send(deleteProduct.message);
+  const deleteProduct = await Product.findOneAndDelete({ id: pid });
+  if (!deleteProduct) { return res.status(400).send(deleteProduct); }
+  return res.status(202).redirect('/');
 });
 
 module.exports = router;

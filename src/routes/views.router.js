@@ -1,17 +1,22 @@
 const express = require("express");
 const router = express.Router();
 
-const path = require("node:path");
-
-const ProductManager = require('../controllers/ProductManager.js');
-
-const productsDBPath = path.join(path.dirname(__dirname), '/db/products.json');
-const productManager = new ProductManager(productsDBPath);
+const productManager = require('../DAO/models/products.model.js');
 
 router.get("/", async (req, res) => {
+
   const limit = parseInt(req.query.limit) || undefined;
-  console.log('limit', limit);
-  const products = (await productManager.getProducts()).message.slice(0, limit);
+  const products = (await productManager.find()).slice(0, limit).map(m => {
+    return {
+      id: m.id,
+      title: m.title,
+      description: m.description,
+      price: m.price,
+      thumbnails: m.thumbnails,
+      code: m.code,
+      stock: m.stock
+    };
+  });
   return res.render('home', { products });
 });
 
