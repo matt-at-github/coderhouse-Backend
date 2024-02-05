@@ -33,7 +33,6 @@ socket.on("reply", (data) => {
 
   const messages = [];
   data.forEach(element => {
-    console.log(element.message);
     messages.push(`<div class="message message-right mx-3">
     <div class="message-text-wrapper">
       <div class="message-text">
@@ -44,4 +43,5 @@ socket.on("reply", (data) => {
   });
 
   messageBox.innerHTML = messages.join('');
+  messageBox.scrollTo(0, messageBox.scrollHeight);
 });
