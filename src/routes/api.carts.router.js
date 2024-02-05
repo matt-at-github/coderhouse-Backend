@@ -30,12 +30,20 @@ router.get("/:cid", async (req, res) => {
 router.post("/", async (req, res) => {
 
   const newCart = new cartController();
-  newCart.productos.push({ id: req.body.productsId, cantidad: 1 });
-
   const createCart = await newCart.save();
 
-  if (!createCart) { return res.status(400).send('Error at saving new cart.'); }
-  return res.status(200).send(createCart);
+  const cart = await cartController.findOne({ id: createCart.id });
+  const product = cart.productos.find(f => f.id === req.body.productsId);
+  if (product) {
+    product.cantidad += 1;
+  } else {
+    cart.productos.push({ id: req.body.productsId, cantidad: 1 });
+  }
+
+  const savedCart = await cart.save({ new: true });
+
+  if (!savedCart) { return res.status(400).send('Error at saving new cart.'); }
+  return res.status(200).send(savedCart);
 });
 
 router.post("/:cid/product/:pid", async (req, res) => {
@@ -47,7 +55,6 @@ router.post("/:cid/product/:pid", async (req, res) => {
   if (prodId === false) { return res.status(400).send('The product ID is invalid'); }
 
   const cart = await cartController.findOne({ id: cartId });
-  console.log(cart.productos);
   const product = cart.productos.find(f => f.id === prodId);
   if (product) {
     product.cantidad += 1;

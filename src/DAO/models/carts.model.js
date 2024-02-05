@@ -5,7 +5,8 @@ const collectionCarts = 'carts';
 const schemaCarts = new mongoose.Schema({
   id: {
     type: Number,
-    default: 0
+    default: 0,
+    unique: true
   },
   // productos: [{
   //   type: mongoose.Schema.Types.ObjectId,

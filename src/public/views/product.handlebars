@@ -16,7 +16,8 @@
           <h2>$ {{price}} </h2>
         </div>
         <div class="col-lg-1">
-          <a href="/cart/" class="btn btn-info btn-rounded mr-1">
+
+          <a onclick="addToCart({{this.id}})" class="btn btn-info btn-rounded mr-1">
             <i class="bi bi-cart2"></i>
           </a>
           <a href="/products/{{this.id}}/delete" class="btn btn-danger btn-rounded mr-1">
@@ -34,3 +35,21 @@
     </div>
   </div>
 </div>
+
+<script>
+  function addToCart() {   
+    fetch('/api/carts', {
+      method: 'POST',
+      body: {productsId: {{this.id}} },
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Handle the response data
+        console.log(data);
+    })
+    .catch(error => {
+        // Handle errors
+        console.error('Error:', error);
+    });
+  };
+</script>
