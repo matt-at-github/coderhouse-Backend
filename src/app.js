@@ -12,12 +12,13 @@ app.use(express.urlencoded({ extended: true }));
 const productsRouter = require("./routes/products.router");
 const productsAPIRouter = require("./routes/api.products.router");
 const cartsRouter = require("./routes/api.carts.router.js");
+const chatRouter = require("./routes/chat.router.js");
+const chatAPIRouter = require("./routes/api.chat.router.js");
 
-const views = require('./routes/views.router');
+const home = require('./routes/home.router.js');
 
 console.log(__dirname);
 app.use(express.static(`${__dirname}/public`));
-// app.use('/favicon.ico', express.static('./src/public/img/favicon.png'));
 app.use('/favicon.ico', express.static(`${__dirname}/public/img/favicon.png`));
 
 // Handlebars
@@ -25,10 +26,13 @@ app.engine('handlebars', handlebarsInstance.engine());
 app.set('view engine', 'handlebars');
 app.set('views', `${__dirname}/public/views`); // Por qué ./public/views no funciona?
 
-app.use('/', views);
+// Routes
+app.use('/', home);
 app.use("/products", productsRouter);
 app.use("/api/products", productsAPIRouter);
 app.use("/api/carts", cartsRouter);
+app.use('/chat', chatRouter);
+app.use('/api/chats', chatAPIRouter);
 
 // Multer
 //
@@ -44,3 +48,4 @@ const httpServer = app.listen(PORT, () => console.log(`Server running at http://
 // Socket.io
 const socketIOManager = require('./DAO/controllers/messages.controller.js');
 const socket = new socketIOManager(httpServer);
+socket.init();
