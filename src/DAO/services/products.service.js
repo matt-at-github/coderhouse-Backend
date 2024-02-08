@@ -8,8 +8,8 @@ async function getProducts(queryFilter = {}, queryLimit = 10, queryPage = 1, que
 
     const products = docs.map(m => {
       // eslint-disable-next-line no-unused-vars
-      const { _id, ...rest } = m.toObject();
-      return rest;
+      // const { _id, ...rest } = m.toObject();
+      return m.toObject();
     });
 
     return {

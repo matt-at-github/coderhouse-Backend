@@ -8,16 +8,20 @@ const schemaCarts = new mongoose.Schema({
     default: 0,
     unique: true
   },
-  // productos: [{
-  //   type: mongoose.Schema.Types.ObjectId,
-  //   ref: 'productos'
-  // }],
   productos: [
     {
-      id: { type: Number },
-      cantidad: { type: Number }
+      producto: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'products',
+        required: true
+      },
+      cantidad: {
+        type: Number,
+        required: true
+      }
     }
   ]
+  ,
 });
 
 const modelCarts = mongoose.model(collectionCarts, schemaCarts);
