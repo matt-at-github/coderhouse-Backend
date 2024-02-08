@@ -1,33 +1,45 @@
 const express = require('express');
 const router = express.Router();
 
-const ProductModel = require('../DAO/models/products.model.js');
+const validator = require('../shared/validator.js');
+const ProductService = require('../DAO/services/products.service.js');
 
 function validateId(id) {
   const intID = parseInt(id);
   return Number.isInteger(intID) ? parseInt(intID) : false;
 }
 
-router.get("/:pid", async (req, res) => {
+router.get("/", async (req, res) => {
 
   try {
-    const pid = validateId(req.params.pid);
-    if (pid === false) { return res.status(400).send('The ID is invalid'); }
 
-    const product = await ProductModel.findOne({ id: pid });
-    if (!product) { return res.status(400).send('No product found.'); }
+    if (!validator.isJsonString(req.query.filter) || !validator.isJsonString(req.query.sort)) {
+      throw 'Filter or Sort is not a valid JSON';
+    }
 
-    return res.send(product);
+    const filter = req.query.filter ? JSON.parse(req.query.filter) : undefined;
+    const sort = req.query.sort ? JSON.parse(req.query.sort) : undefined;
+    const limit = parseInt(req.query.limit) || 10;
+    const page = parseInt(req.query.page) || 1;
+
+    console.log('filter', filter);
+    const products = await ProductService.getProducts(filter, limit, page, sort);
+    return res.send(products);
   } catch (error) {
     return res.status(500).send(error);
   }
 });
 
-router.get("/", async (req, res) => {
+router.get("/:pid", async (req, res) => {
+
   try {
-    const limit = parseInt(req.query.limit) || undefined;
-    const products = (await ProductModel.find()).slice(0, limit);
-    return res.send(products);
+
+    const pid = validateId(req.params.pid);
+    if (pid === false) { return res.status(400).send('The ID is invalid'); }
+
+    const response = await ProductService.getProducts({ id: pid });
+
+    return res.send(response);
   } catch (error) {
     return res.status(500).send(error);
   }
@@ -37,12 +49,12 @@ router.post("/", async (req, res) => {
 
   try {
 
-    const products = (await ProductModel.find());
+    const products = (await ProductService.find());
     runBodyValidations(req.body, products);
 
     req.body['id'] = Number(products.at(-1)?.id ?? 0) + 1;
 
-    const newProduct = new ProductModel(req.body);
+    const newProduct = new ProductService(req.body);
     await newProduct.save();
     return res.status(201).send(newProduct);
 
@@ -58,7 +70,7 @@ router.put("/:pid", async (req, res) => {
     const pid = validateId(req.params.pid);
     if (pid === false) { return res.status(400).send('The ID is invalid'); }
 
-    const updateProduct = await ProductModel.findOneAndUpdate({ id: pid }, req.body, { new: true });
+    const updateProduct = await ProductService.findOneAndUpdate({ id: pid }, req.body, { new: true });
     if (!updateProduct) { return res.status(400).send('Problem updating, a field might be missing'); }
     return res.status(200).json({ 'updated': updateProduct });
   } catch (error) {
@@ -72,7 +84,7 @@ router.get("/:pid/delete", async (req, res) => {
   const pid = validateId(req.params.pid);
   if (pid === false) { return res.status(400).send('The ID is invalid'); }
 
-  const deleteProduct = await ProductModel.findOneAndDelete({ id: pid });
+  const deleteProduct = await ProductService.findOneAndDelete({ id: pid });
   if (!deleteProduct) { return res.status(400).send(deleteProduct); }
   return res.status(202).json({ 'deleted': deleteProduct });
 });

@@ -11,11 +11,11 @@ app.use(express.urlencoded({ extended: true }));
 // Routes 
 const productsRouter = require("./routes/products.router");
 const productsAPIRouter = require("./routes/api.products.router");
-const cartsRouter = require("./routes/api.carts.router.js");
+const cartsAPIRouter = require("./routes/api.carts.router.js");
 const chatRouter = require("./routes/chat.router.js");
 const chatAPIRouter = require("./routes/api.chat.router.js");
 
-const home = require('./routes/home.router.js');
+// const home = require('./routes/home.router.js');
 
 app.use(express.static(`${__dirname}/public`));
 app.use('/favicon.ico', express.static(`${__dirname}/public/img/favicon.png`));
@@ -25,13 +25,15 @@ app.engine('handlebars', handlebarsInstance.engine());
 app.set('view engine', 'handlebars');
 app.set('views', `${__dirname}/public/views`); // Por qué ./public/views no funciona?
 
-// Routes
-app.use('/', home);
-app.use("/products", productsRouter);
+// API Routes
 app.use("/api/products", productsAPIRouter);
-app.use("/api/carts", cartsRouter);
-app.use('/chat', chatRouter);
+app.use("/api/carts", cartsAPIRouter);
 app.use('/api/chats', chatAPIRouter);
+
+// Routes
+app.get('/', (req, res) => { return res.redirect('/products'); });
+app.use("/products", productsRouter);
+app.use('/chat', chatRouter);
 
 // Multer
 //

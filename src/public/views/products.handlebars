@@ -1,0 +1,30 @@
+{{!-- https://www.bootdey.com/snippets/view/shopping-cart-with-selected-products-order-summary-and-checkout-button --}}
+
+<div class="container">
+
+  <div class="row justify-content-center">
+    {{#each products}}
+    <div class="col-4">
+      <a class="text-reset" href="/products/{{this.id}}">
+        <div class="card">
+          <img src="https://www.bootdey.com/image/100x80/008B8B/000000" class="card-img-top" alt="...">
+          <div class="card-body">
+            <h5 class="card-title">{{this.title}}</h5>
+            <p class="card-text">{{this.description}}</p>
+          </div>
+          <div class="card-footer">
+          </div>
+        </div>
+      </a>
+    </div>
+    {{/each}}
+  </div>
+
+  <div class="row d-flex justify-content-between">
+    <a class="btn btn-info {{#unless hasPrevPage }}disabled{{/unless}}" onclick="addUrlParameter('page',{{prevPage}})"><i class="bi bi-arrow-left me-1 float-left"></i>Anterior</a>
+    <div class="justify-content-center border">
+      <a class="btn text-white bg-secondary disabled">{{page}}</a> de <a class="btn text-white bg-secondary disabled">{{totalPages}}</a>
+    </div>
+    <a class="btn btn-info {{#unless hasNextPage }}disabled{{/unless}}" onclick="addUrlParameter('page',{{nextPage}})"><i class="bi bi-arrow-right me-1 float-right"></i>Siguente</a>
+  </div>
+</div>
