@@ -62,11 +62,10 @@ router.post("/:cid/product/:pid", async (req, res) => {
     const cartId = validateId(req.params.cid);
     if (cartId === false) { return res.status(400).send('The cart ID is invalid'); }
 
-    const prodId = req.params.pid;
-
     const cart = await Cart.findOne({ id: cartId });
     if (!cart) { throw 'No cart found'; }
 
+    const prodId = req.params.pid;
     const productToAdd = await Product.findOne({ _id: prodId });
     if (!productToAdd) { throw 'No such product found'; }
 
@@ -88,8 +87,8 @@ router.post("/:cid/product/:pid", async (req, res) => {
   }
 });
 
-// PUT - Edit cart
-router.put('/:cid', async (req, res) => {
+// PUT - Edit cart's product quantity
+router.put('/:cid/products/:pid', async (req, res) => {
 
   try {
 
@@ -99,13 +98,13 @@ router.put('/:cid', async (req, res) => {
     const cart = await Cart.findOne({ id: cartId });
     if (!cart) { throw 'No cart found'; }
 
-    const productos = req.body;
-    for (const producto of productos) {
-      const productIndex = cart.productos.findIndex(f => f.producto.toString() === producto.producto.toString());
-      if (productIndex !== -1) {
-        productIndex.cantidad += 1;
-        cart.productos[productIndex].cantidad += producto.cantidad;
-      }
+    const prodId = req.params.pid;
+    const productToAdd = await Product.findOne({ _id: prodId });
+    if (!productToAdd) { throw 'No such product found'; }
+
+    const productIndex = cart.productos.findIndex(f => f.producto.toString() === prodId.toString());
+    if (productIndex !== -1) {
+      cart.productos[productIndex].cantidad += req.body.cantidad;
     }
 
     const newCart = await cart.save({ new: true });

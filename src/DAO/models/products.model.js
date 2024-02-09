@@ -15,7 +15,6 @@ const schemaProducts = Schema({
   code: { type: String, required: true, unique: true },
   stock: { type: Number, required: true },
   status: { type: Boolean, def: true }
-
 });
 
 schemaProducts.plugin(mongoosePaginate);
