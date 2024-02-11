@@ -1,0 +1,12 @@
+<h1>Hola pizzas</h1>
+<ul>
+  {{#each ordenes}}
+  <li>{{this.nombre}}</li>
+  <script> console.log({{ordenes}})</script>
+  {{/each}}
+</ul>
+
+{{#if hasPrefPage}} <a href="/?page={{prefPage}}">Anterior</a>{{/if}}
+{{#if hasNextPage}} <a href="/?page={{nextPage}}">Siguiente</a>{{/if}}
+
+<span>{{currentPage}}/{{totalPage}}</span>

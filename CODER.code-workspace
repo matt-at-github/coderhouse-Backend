@@ -3,13 +3,6 @@
     {
       "name": "CODER",
       "path": "."
-    },
-    {
-      "name": "Clase15-Integradora",
-      "path": "../Clase15-Integradora"
-    },
-    {
-      "path": "../Clase16-MongoAdv1"
     }
   ],
   "settings": {}
