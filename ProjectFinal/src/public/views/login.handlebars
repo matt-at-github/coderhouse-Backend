@@ -1,0 +1,39 @@
+<link rel="stylesheet" href="../css/createAccount.css">
+
+<div class="container mt-3 pt-5" style="max-width: 40%;">
+
+  <div class="row text-center p-4" style="background-color: #e1e1e1;">
+
+    <form class="col-12 form-login" role="form" method="POST" action="/api/session/login">
+
+      <div class="row justify-content-center text-center">
+        <div class="col-10 reg-icon">
+          <span class="fa fa-user fa-3x"> Iniciar Sesión</span>
+        </div>
+      </div>
+
+      <div class="row justify-content-center ">
+        <div class="col-10">
+          <input type="email" class="form-control" id="email" name="email" placeholder="Correo electrónico">
+        </div>
+      </div>
+
+      <div class="row justify-content-center ">
+        <div class="col-10">
+          <input type="password" class="form-control" id="password" name="password" placeholder="Password">
+        </div>
+      </div>
+
+      <div class="row justify-content-center pt-4">
+        <div class="col-10">
+          <button type="submit" class="btn btn-info">
+            <span class="glyphicon glyphicon-share-alt"></span>
+            Iniciar
+          </button>
+        </div>
+      </div>
+
+    </form>
+
+  </div>
+</div>
