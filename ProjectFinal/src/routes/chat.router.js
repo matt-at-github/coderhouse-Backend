@@ -6,7 +6,7 @@ const ChatModel = require('../models/chat.model.js');
 router.get("/", async (req, res) => {
 
   const chat = ChatModel.find({ id: req.params.email });
-  res.status(200).render('chat', { messages: chat.messages });
+  res.status(200).render('chat', { messages: chat.messages, session: req.session.login });
 });
 
 module.exports = router;

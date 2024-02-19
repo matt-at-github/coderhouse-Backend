@@ -27,12 +27,14 @@ router.get("/", async (req, res) => {
     nextPage: response.nextPage,
     hasPrevPage: response.hasPrevPage,
     prevPage: response.prevPage,
-    pagingCounter: response.pagingCounter
+    pagingCounter: response.pagingCounter,
+    session: req.session
   });
 });
 
 router.get("/:pid", async (req, res) => {
 
+  console.log(req.params);
   try {
     const pid = validateId(req.params.pid);
     if (pid === false) { return res.status(400).send('The ID is invalid'); }

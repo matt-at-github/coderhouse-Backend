@@ -12,14 +12,48 @@
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
       <li class="nav-item">
-        <a class="nav-link text-uppercase active" href="/">Home</a>
+        <a class="nav-link text-uppercase" href="/" name="home">Home</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link text-uppercase active" href="/chat">Chat <span class="badge badge-warning">New</span></a>
+        <a class="nav-link text-uppercase" href="/chat" name="chat">Chat</a>
       </li>
       {{!-- <li class="nav-item">
         <a class="nav-link text-uppercase active" href="/realtimeProducts">RealTime! <span class="badge badge-warning">New</span></a>
       </li> --}}
+      {{!-- <li class="nav-item">
+        <a class="nav-link text-uppercase" href="/users/login" name="login">Login <span class="badge badge-warning">Nuevo!</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link text-uppercase" href="/users/createAccount" name="createAccount">Registrate <span class="badge badge-warning">Nuevo!</span></a>
+      </li> --}}
     </ul>
+
+    <form class="form-inline">
+      <div class="btn-group dropleft float-left">
+        {{log session.login}}
+        {{#if session.login}}
+        <button type="button" class="btn  dropdown-toggle text-uppercase text-white" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          {{session.userName}}
+        </button>
+        {{else}}
+        <button type="button" class="btn  dropdown-toggle text-uppercase text-white" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Cuenta
+        </button>
+        {{/if}}
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          {{#if session.login}}
+          <a class="dropdown-item" href="#">Mi Carrito</a>
+          <a class="dropdown-item" href="#">Editar cuenta</a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="/api/session/logout">Cerrar sesión</a>
+          {{else}}
+          <a class="dropdown-item" href="/users/login">Inciar Sesión</a>
+          <a class="dropdown-item" href="/users/createAccount">Crear cuenta</a>
+          {{/if}}
+        </div>
+      </div>
+    </form>
+
   </div>
+
 </nav>
