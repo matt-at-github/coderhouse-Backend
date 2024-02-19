@@ -40,13 +40,13 @@ app.use('/chat', chatRouter);
 //
 
 // Mongoose connection
-const mongooseConnection = require('./DAO/db/db.connection.js');
+const mongooseConnection = require('./db/db.connection.js');
 mongooseConnection.connect;
 
 // Server init
 const httpServer = app.listen(PORT, () => console.log(`Server running at http://localhost:${PORT}`));
 
 // Socket.io
-const socketIOManager = require('./DAO/controllers/messages.controller.js');
+const socketIOManager = require('./controllers/messages.controller.js');
 const socket = new socketIOManager(httpServer);
 socket.init();

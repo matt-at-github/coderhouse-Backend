@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const ChatModel = require('../DAO/models/chat.model.js');
+const ChatModel = require('../models/chat.model.js');
 
 router.get("/:email", async (req, res) => {
 
