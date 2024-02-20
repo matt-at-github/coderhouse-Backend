@@ -35,7 +35,6 @@
     </div>
   </div>
 </div>
-{{log title}}
 <script>
   function addToCart() {   
     fetch('/api/carts', {
@@ -45,7 +44,7 @@
     .then(response => response.json())
     .then(data => {
         // Handle the response data
-        console.log(data);
+        // console.log(data);
     })
     .catch(error => {
         // Handle errors

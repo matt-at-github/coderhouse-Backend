@@ -7,8 +7,6 @@ async function getProducts(queryFilter = {}, queryLimit = 10, queryPage = 1, que
     const { docs, totalDocs, limit, page, totalPages, hasNextPage, nextPage, hasPrevPage, prevPage, pagingCounter } = await ProductModel.paginate(queryFilter, { limit: queryLimit, page: queryPage, sort: querySort });
 
     const products = docs.map(m => {
-      // eslint-disable-next-line no-unused-vars
-      // const { _id, ...rest } = m.toObject();
       return m.toObject();
     });
 
@@ -27,8 +25,9 @@ async function getProducts(queryFilter = {}, queryLimit = 10, queryPage = 1, que
     };
 
   } catch (error) {
-    throw console.log(`Product Service error -> ${error}`);
+    return console.log(`Product Service error -> ${error}`);
   }
 }
+
 ProductModel.getProducts = getProducts;
 module.exports = ProductModel;

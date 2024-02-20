@@ -27,4 +27,20 @@
     {{>header}}
     {{{body}}}
   </body>
+
+  <script type="text/javascript">
+
+  // Script to highlight NavBar current positon.
+    var views = {
+    '/':'home', 
+    '/chat':'chat',
+    '/users/login':'login',
+    '/users/createAccount':'createAccount',
+    }
+    var url = window.location.pathname; 
+    var e = document.getElementsByName(views[url])[0];
+    if (e){
+      e.classList.add('active')
+    }
+  </script>
 </html>

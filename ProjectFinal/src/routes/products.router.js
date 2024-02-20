@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const ProductService = require('../DAO/services/products.service.js');
+const ProductService = require('../services/products.service.js');
 
 function validateId(id) {
   const intID = parseInt(id);
@@ -9,6 +9,10 @@ function validateId(id) {
 }
 
 router.get("/", async (req, res) => {
+
+  console.log('product.router GET / 0', req.session); // TODO: remove
+
+  if (!req.session.login) { return res.redirect('/users/login'); }
 
   const limit = parseInt(req.query.limit) || 10;
   const page = parseInt(req.query.page) || 1;
@@ -27,12 +31,14 @@ router.get("/", async (req, res) => {
     nextPage: response.nextPage,
     hasPrevPage: response.hasPrevPage,
     prevPage: response.prevPage,
-    pagingCounter: response.pagingCounter
+    pagingCounter: response.pagingCounter,
+    session: req.session
   });
 });
 
 router.get("/:pid", async (req, res) => {
 
+  console.log(req.params);
   try {
     const pid = validateId(req.params.pid);
     if (pid === false) { return res.status(400).send('The ID is invalid'); }
