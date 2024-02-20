@@ -12,6 +12,11 @@ router.get("/login", (req, res) => {
 });
 
 // Account view
+router.get("/logout", (req, res) => {
+  res.status(200).render('logout');
+});
+
+// Account view
 router.get("/account", (req, res) => {
   res.status(200).send({ message: req.session });
 });

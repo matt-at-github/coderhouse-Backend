@@ -1,7 +1,3 @@
-
-{{log 'error' error}}
-{{log 'message' message}}
-
 <link rel="stylesheet" href="../css/createAccount.css">
 
 <div class="container mt-3 pt-5" style="max-width: 40%;">
@@ -12,7 +8,7 @@
 
       <div class="row justify-content-center text-center">
         <div class="col-10 reg-icon">
-          <span class="fa-2x"><icon class="fa fa-user fa-2x"></icon> Sesión cerrada</span>
+          <span class="fa-2x"><icon class="fa fa-user fa-2x"></icon> {{title}}</span>
         </div>
       </div>
       {{#if error}}

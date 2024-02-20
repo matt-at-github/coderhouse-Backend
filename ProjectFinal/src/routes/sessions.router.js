@@ -7,13 +7,14 @@ router.post("/login", async (req, res) => {
 
   try {
 
+    console.log('sessions.router POST login 0', req.session); // TODO: remove
+
     const login = await UserModel.login(req);
     if (!login.sucess) {
-      return res.status(login.code).render('logout'), { title: 'Iniciar sesión', message: login.description };
+      return res.status(login.code).render('logout', { error: true, title: 'Iniciar sesión', message: login.description });
     }
 
-    console.log('sessions.router POST login', req.session); // TODO: remove
-
+    console.log('sessions.router POST login 1', req.session); // TODO: remove
     res.status(login.code).redirect("/");
   } catch (error) {
     res.status(500).render('logout', { message: error });
@@ -22,10 +23,10 @@ router.post("/login", async (req, res) => {
 
 // Logout 
 router.get("/logout", (req, res) => {
-
   try {
+    console.log('sessions.router GET logout 0', req.session); // TODO: remove
     if (UserModel.logout(req)) {
-      // res.status(200).render('logout', { title: 'Cerrar sesión', message: 'Sesión cerrada.' });
+      console.log('sessions.router GET logout 1', req.session); // TODO: remove
       res.status(200).redirect('../../users/login');
     }
   } catch (error) {
