@@ -1,42 +1,36 @@
 const express = require("express");
 const router = express.Router();
-const UserModel = require("../../models/users.model.js");
+const UserModel = require('../../services/session.service.js');
 
 // Login
 router.post("/login", async (req, res) => {
 
-  const { email, password } = req.body;
-
   try {
 
-    const user = await UserModel.findOne({ email: email });
-    if (!user) {
-      throw { description: 'Usuario no encontrado.', code: 404 };
+    const login = await UserModel.login(req);
+    if (!login.sucess) {
+      return res.status(login.code).render('logout'), { title: 'Iniciar sesión', message: login.description };
     }
 
-    if (user.password !== password) {
-      throw { description: 'Contraseña incorrecta.', code: 401 };
-    }
+    console.log('api.sessions.router POST login', req.session); // TODO: remove
 
-    req.session.login = true;
-    req.session.userName = user.first_name;
-
-    console.log(req.session);
-
-    res.status(200).redirect("/");
+    res.status(login.code);
   } catch (error) {
-    res.status(error.code ?? 400).send(`Error en el login. ${error.description ?? error}`);
+    res.status(500).send({ message: error });
   }
 });
 
 // Logout
 router.get("/logout", (req, res) => {
 
-  if (req?.session?.login) {
-    req.session.destroy();
-    return res.status(200).render('logout');
+  try {
+    if (UserModel.logout(req)) {
+      res.status(200).send({ message: 'Session closed.' });
+    }
+  } catch (error) {
+    res.status(500).send({ message: 'Session termination problem.' });
   }
-  res.status(400).render('logout', { error: true, message: 'Ups, sesión no encontrada.' });
+
 });
 
 module.exports = router;

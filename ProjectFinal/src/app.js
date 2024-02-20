@@ -41,7 +41,8 @@ const chatRouter = require("./routes/chat.router.js");
 const chatAPIRouter = require("./routes/API/api.chat.router.js");
 const usersRouter = require('./routes/users.router.js');
 const usersAPIRouter = require('./routes/API/api.users.router.js');
-const sessionAPIRouter = require('./routes/API/api.sessions.router.js');
+// const sessionAPIRouter = require('./routes/API/api.sessions.router.js');
+const sessionRouter = require('./routes/sessions.router.js');
 
 // const home = require('./routes/home.router.js');
 
@@ -58,7 +59,7 @@ app.use("/api/products", productsAPIRouter);
 app.use("/api/carts", cartsAPIRouter);
 app.use('/api/chats', chatAPIRouter);
 app.use('/api/users', usersAPIRouter);
-app.use('/api/session', sessionAPIRouter);
+app.use('/api/session', sessionRouter);
 
 // Routes
 app.use("/products", productsRouter);

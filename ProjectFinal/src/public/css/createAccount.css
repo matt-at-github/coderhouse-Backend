@@ -11,3 +11,7 @@
   width: 100% !important;
   min-width: 620px !important;
 }
+
+.form-group .col- {
+  padding: 0pxs;
+}
