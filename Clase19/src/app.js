@@ -37,10 +37,15 @@ app.use(session({
   store: mongoStorage  // seteamos el método de gestión de la persistencia
 }));
 
+app.get("/", (req, res) => {
+
+  res.status(200).send({ message: req.session })
+})
+
 app.get("/login", (req, res) => {
 
   let user = req.query.user;
-  req.session.user = user;
+  req.session.user = user
   console.log(req.session)
   res.send(`Usuario '${user}' guardado.`)
 })
@@ -54,6 +59,15 @@ app.get("/user", async (req, res) => {
 
   res.send('No login registered');
 })
+
+app.get("/logout", (req, res) => {
+  if (req.session?.user) {
+    req.session.destroy();
+    res.status(200).send({ message: 'Sesión cerrada' })
+  }
+  res.status(400).send({ message: 'Ups, sesión no encontrada.' });
+})
+
 
 app.use("/api/users", userRouter);
 app.use("/api/sessions", sessionRouter);
