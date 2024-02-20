@@ -11,7 +11,7 @@ async function getProducts(queryFilter = {}, queryLimit = 10, queryPage = 1, que
     });
 
     return {
-      status: 'success',
+      status: products.length > 0 ? 'success' : 'failed',
       totalDocs,
       page,
       totalPages,

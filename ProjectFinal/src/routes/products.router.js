@@ -10,7 +10,7 @@ function validateId(id) {
 
 router.get("/", async (req, res) => {
 
-  console.log('product.router GET / 0', req.session); // TODO: remove
+  console.log('products.router GET / 0', req.session); // TODO: remove
 
   if (!req.session.login) { return res.redirect('/users/login'); }
 
@@ -38,23 +38,26 @@ router.get("/", async (req, res) => {
 
 router.get("/:pid", async (req, res) => {
 
-  console.log(req.params);
+  console.log('products.router GET /:pid 0', req.params); // TODO: remove
+
   try {
     const pid = validateId(req.params.pid);
     if (pid === false) { return res.status(400).send('The ID is invalid'); }
 
     const response = await ProductService.getProducts({ id: pid });
 
-    if (response.status === 'success') {
-
-      const product = response.payload[0];
-      return res.render('product', {
-        id: product.id,
-        title: product.title,
-        description: product.description,
-        price: product.price
-      });
+    if (response.status !== 'success') {
+      return res.status(404).send('Product not found.');
     }
+
+    const product = response.payload[0];
+    return res.render('product', {
+      id: product.id,
+      title: product.title,
+      description: product.description,
+      price: product.price
+    });
+
   } catch (error) {
     return res.status(500).send(error);
   }
