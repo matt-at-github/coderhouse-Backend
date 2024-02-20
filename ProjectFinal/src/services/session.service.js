@@ -5,18 +5,26 @@ async function login(req) {
   try {
     const { email, password } = req.body;
     console.log('session.service login 0', email, password); // TODO: remove
-    const user = await UserModel.findOne({ email: email });
-    if (!user) {
-      return { sucess: false, description: 'Usuario no encontrado.', code: 404 };
-    }
 
-    console.log('session.service login 1', user); // TODO: remove
-    if (user.password !== password) {
-      return { sucess: false, description: 'Contraseña incorrecta.', code: 401 };
+    let user = {};
+    if (email === 'adminCoder@coder.com' && password === 'adminCod3r123') {
+      user.first_name = email;
+      user.role = 'admin';
+    } else {
+
+      user = await UserModel.findOne({ email: email });
+      if (!user) {
+        return { sucess: false, description: 'Usuario no encontrado.', code: 404 };
+      }
+
+      console.log('session.service login 1', user); // TODO: remove
+      if (user.password !== password) {
+        return { sucess: false, description: 'Contraseña incorrecta.', code: 401 };
+      }
     }
 
     req.session.login = true;
-    req.session.userName = user.first_name;
+    req.session.userName = `${user.first_name} ${user.last_name}`;
     req.session.isAdmin = user.role === 'admin'; // TODO: Improve
 
     return { sucess: true, user, description: '', code: 202 };

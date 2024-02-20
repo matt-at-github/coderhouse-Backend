@@ -10,6 +10,10 @@ function validateId(id) {
 
 router.get("/", async (req, res) => {
 
+  console.log('product.router GET / 0', req.session); // TODO: remove
+
+  if (!req.session.login) { return res.redirect('/users/login'); }
+
   const limit = parseInt(req.query.limit) || 10;
   const page = parseInt(req.query.page) || 1;
   const filter = undefined;

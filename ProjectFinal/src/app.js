@@ -59,16 +59,15 @@ app.use("/api/products", productsAPIRouter);
 app.use("/api/carts", cartsAPIRouter);
 app.use('/api/chats', chatAPIRouter);
 app.use('/api/users', usersAPIRouter);
-app.use('/api/session', sessionRouter);
 
 // Routes
 app.use("/products", productsRouter);
 app.use('/chat', chatRouter);
-
+app.use('/session', sessionRouter);
 app.use('/users', usersRouter);
 
 // app.get('/', (req, res) => { return res.redirect('/products'); });
-app.use("/", productsRouter);
+app.use('/', productsRouter);
 
 // Multer
 //
@@ -85,7 +84,6 @@ socket.init();
 // Authentication middleware
 function auth(req, res, next) {
 
-  // console.log('Middleware auth:', req.session);
   if (req.session.login) {
     return next();
   }
