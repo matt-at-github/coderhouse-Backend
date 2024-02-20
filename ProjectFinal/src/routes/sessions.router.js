@@ -24,8 +24,9 @@ router.post("/login", async (req, res) => {
 router.get("/logout", (req, res) => {
 
   try {
-    if (UserModel.logout(req.session)) {
-      res.status(200).render('logout', { title: 'Cerrar sesión', message: 'Sesión cerrada.' });
+    if (UserModel.logout(req)) {
+      // res.status(200).render('logout', { title: 'Cerrar sesión', message: 'Sesión cerrada.' });
+      res.status(200).redirect('../../users/login');
     }
   } catch (error) {
     res.status(500).render('logout', { title: 'Cerrar sesión', message: 'Ocurrió un problema al cerrar la sesión.' });

@@ -1,4 +1,3 @@
-// const SessionModel = require('../models/sessions.model.js'); // Adjust the path accordingly
 const UserModel = require("../models/users.model.js");
 
 async function login(req) {
@@ -17,6 +16,7 @@ async function login(req) {
 
     req.session.login = true;
     req.session.userName = user.first_name;
+    req.session.isAdmin = user.role === 'admin'; // TODO: Improve
 
     return { sucess: true, user, description: '', code: 202 };
   } catch (error) {
@@ -24,10 +24,10 @@ async function login(req) {
   }
 }
 
-function logout(session, res) {
+function logout(req, res) {
 
-  if (session?.login) {
-    session.destroy();
+  if (req.session?.login) {
+    req.session.destroy();
     return true;
   }
   res.status(400).render('logout', { error: true, message: 'Ups, sesión no encontrada.' });

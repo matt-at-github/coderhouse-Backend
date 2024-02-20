@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const userSchema = mongoose.Schema({
+const UserSchema = mongoose.Schema({
   first_name: {
     type: String,
     required: true
@@ -22,9 +22,19 @@ const userSchema = mongoose.Schema({
   age: {
     type: Number,
     required: true
+  },
+  role: {
+    type: String,
+    default: 'user',
+    enum: ['user', 'admin'],
   }
 });
 
-const UserModel = mongoose.model("user", userSchema);
+UserSchema.methods.isAdmin = function () {
+  console.log(this.model("user").role);
+  return this.model("user").role === 'admin';
+};
+
+const UserModel = mongoose.model("user", UserSchema);
 
 module.exports = UserModel;
