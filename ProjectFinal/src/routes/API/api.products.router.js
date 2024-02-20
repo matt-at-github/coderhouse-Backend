@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
 
-const validator = require('../shared/validator.js');
-const ProductService = require('../DAO/services/products.service.js');
+const validator = require('../../shared/validator.js');
+const ProductService = require('../../services/products.service.js');
 
 function validateId(id) {
   const intID = parseInt(id);

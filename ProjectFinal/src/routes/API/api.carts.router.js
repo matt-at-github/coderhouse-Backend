@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
 
-const Cart = require('../DAO/models/carts.model.js');
-const Product = require('../DAO/services/products.service.js');
+const Cart = require('../../models/carts.model.js');
+const Product = require('../../services/products.service.js');
 
 function validateId(id) {
   const intID = parseInt(id);
