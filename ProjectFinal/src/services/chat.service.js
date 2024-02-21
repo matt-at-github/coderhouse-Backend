@@ -27,5 +27,5 @@ async function getMessages(queryFilter = {}, queryLimit = 10, queryPage = 1, que
   }
 }
 
-ChatModel.getMessages = getMessages;
+ChatModel.getMessages = getMessages; // TODO: Move to Controller
 module.exports = ChatModel;

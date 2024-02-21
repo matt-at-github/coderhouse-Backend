@@ -5,7 +5,7 @@ router.get("/", async (req, res) => {
 
   try {
     // Sokect.io it is used on this view.
-    res.status(200).render('chat');
+    res.status(200).render('chat', { session: req.session });
   } catch (error) {
     return res.status(500).send({ message: error.message || 'Internal Server Error' });
   }

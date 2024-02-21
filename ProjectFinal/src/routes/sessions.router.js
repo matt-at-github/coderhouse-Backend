@@ -1,6 +1,5 @@
 const express = require("express");
 const router = express.Router();
-// const UserModel = require('../services/session.service.js');
 
 const SessionController = require('../controllers/session.controller.js');
 const sessionController = new SessionController();

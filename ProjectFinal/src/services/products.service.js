@@ -27,5 +27,5 @@ async function getProducts(queryFilter = {}, queryLimit = 10, queryPage = 1, que
   }
 }
 
-ProductModel.getProducts = getProducts;
+ProductModel.getProducts = getProducts; // TODO: Move to Controller
 module.exports = ProductModel;

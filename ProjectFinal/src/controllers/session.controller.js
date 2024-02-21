@@ -9,6 +9,7 @@ class SessionController {
       let user = {};
       if (email === 'adminCoder@coder.com' && password === 'adminCod3r123') {
         user.first_name = email;
+        user.last_name = '';
         user.role = 'admin';
       } else {
 

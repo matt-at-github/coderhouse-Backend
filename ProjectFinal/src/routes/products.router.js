@@ -42,7 +42,8 @@ router.get("/:pid", async (req, res) => {
       id: product._id,
       title: product.title,
       description: product.description,
-      price: product.price
+      price: product.price,
+      session: req.session
     });
 
   } catch (error) {
