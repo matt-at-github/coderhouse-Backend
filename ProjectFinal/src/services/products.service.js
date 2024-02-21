@@ -1,4 +1,4 @@
-const ProductModel = require('../models/products.model.js'); // Adjust the path accordingly
+const ProductModel = require('../models/products.model.js');
 
 async function getProducts(queryFilter = {}, queryLimit = 10, queryPage = 1, querySort = { id: 1 }) {
 

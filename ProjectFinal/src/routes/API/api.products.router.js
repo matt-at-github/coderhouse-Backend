@@ -4,17 +4,12 @@ const router = express.Router();
 const validator = require('../../shared/validator.js');
 const ProductService = require('../../services/products.service.js');
 
-function validateId(id) {
-  const intID = parseInt(id);
-  return Number.isInteger(intID) ? parseInt(intID) : false;
-}
-
 router.get("/", async (req, res) => {
 
   try {
 
     if (!validator.isJsonString(req.query.filter) || !validator.isJsonString(req.query.sort)) {
-      throw 'Filter or Sort is not a valid JSON';
+      return res.status(400).send({ message: 'Filter or Sort is not a valid JSON' });
     }
 
     const filter = req.query.filter ? JSON.parse(req.query.filter) : undefined;
@@ -54,8 +49,6 @@ router.post("/", async (req, res) => {
       return res.status(validation.code).send(validation.message);
     }
 
-    // req.body['id'] = Number(products.at(-1)?.id ?? 0) + 1;
-
     const newProduct = new ProductService(req.body);
     await newProduct.save();
 
@@ -69,9 +62,7 @@ router.post("/", async (req, res) => {
 router.put("/:pid", async (req, res) => {
 
   try {
-    const pid = validateId(req.params.pid);
-    if (pid === false) { return res.status(400).send('The ID is not valid'); }
-
+    const pid = req.params.pid;
     const updateProduct = await ProductService.findByIdAndUpdate(pid, req.body, { new: true });
     if (!updateProduct) { return res.status(404).send('Product not found.'); }
 
@@ -83,9 +74,8 @@ router.put("/:pid", async (req, res) => {
 });
 
 router.get("/:pid/delete", async (req, res) => {
-
-  const pid = validateId(req.params.pid);
-  if (pid === false) { return res.status(400).send('The ID is invalid'); }
+  
+  const pid = req.params.pid;
 
   const deleteProduct = await ProductService.findOneAndDelete({ id: pid });
   if (!deleteProduct) { return res.status(400).send(deleteProduct); }
@@ -94,8 +84,7 @@ router.get("/:pid/delete", async (req, res) => {
 
 router.delete("/:pid", async (req, res) => {
 
-  const pid = validateId(req.params.pid);
-  if (pid === false) { return res.status(400).send('The ID is invalid'); }
+  const pid = req.params.pid;
 
   const deleteProduct = await ProductService.findOneAndDelete({ id: pid });
   if (!deleteProduct) { return res.status(400).send('Product not found.'); }

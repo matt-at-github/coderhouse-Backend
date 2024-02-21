@@ -40,7 +40,6 @@ function logout(req, res) {
     return true;
   }
   res.status(400).render('logout', { error: true, message: 'Ups, sesión no encontrada.' });
-  // return { sucess: false, description: 'Ups, sesión no encontrada.', code: 500 };
 }
 
 UserModel.login = login;
