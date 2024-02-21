@@ -38,8 +38,11 @@ class ProductController {
         return { code: validation.code, message: validation.message, success: false };
       }
 
-      const newProduct = await (new ProductService(req.body)).save();
-      return { code: 200, data: newProduct, success: true };
+      const result = await (new ProductService(req.body)).save();
+      if (!result) {
+        return { code: 400, message: result.message, success: false };
+      }
+      return { code: 200, data: result, success: true };
     } catch (error) {
       return { code: 500, message: error.message || 'Internal Server Error', success: false };
     }

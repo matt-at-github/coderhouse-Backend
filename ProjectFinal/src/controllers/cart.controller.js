@@ -1,5 +1,4 @@
 const CartModel = require('../models/carts.model.js');
-// const ProductService = require('../../services/products.service.js');
 
 class CartController {
 
@@ -39,8 +38,11 @@ class CartController {
         cart.products.push({ product: productToAdd, quantity: 1 });
       }
       console.log('api.carts.router POST cart.id', cart); // TODO: remove
-      const savedCart = await cart.save({ new: true });
-      return { code: 200, data: savedCart, success: true };
+      const result = await cart.save({ new: true });
+      if (!result) {
+        return { code: 400, message: result.message, success: false };
+      }
+      return { code: 200, data: result, success: true };
     } catch (error) {
       return { code: 500, message: error.message || 'Internal Server Error', success: false };
     }
