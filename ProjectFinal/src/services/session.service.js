@@ -4,8 +4,6 @@ async function login(req) {
 
   try {
     const { email, password } = req.body;
-    console.log('session.service login 0', email, password); // TODO: remove
-
     let user = {};
     if (email === 'adminCoder@coder.com' && password === 'adminCod3r123') {
       user.first_name = email;
@@ -17,7 +15,6 @@ async function login(req) {
         return { sucess: false, description: 'Usuario no encontrado.', code: 404 };
       }
 
-      console.log('session.service login 1', user); // TODO: remove
       if (user.password !== password) {
         return { sucess: false, description: 'Contraseña incorrecta.', code: 401 };
       }
@@ -29,7 +26,7 @@ async function login(req) {
 
     return { sucess: true, user, description: '', code: 202 };
   } catch (error) {
-    return console.log(`Session Service error -> ${error}`);
+    return console.error(`Session Service error -> ${error}`);
   }
 }
 

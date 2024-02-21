@@ -1,13 +1,11 @@
 const express = require('express');
 const router = express.Router();
 
-const ChatModel = require('../../models/chat.model.js');
 const ChatController = require('../../controllers/chat.controller.js');
 const chatController = new ChatController();
 
 // Get all messages 
 router.get("/", async (req, res) => {
-  console.log('api.chats.router GET'); // TODO: remove
   try {
     const result = await chatController.getAllMessages(req);
     handleResponse(res, result);
@@ -18,7 +16,6 @@ router.get("/", async (req, res) => {
 
 // Get Messages for a User
 router.get("/:email", async (req, res) => {
-  console.log('api.chats.router GET /:email'); // TODO: remove
   try {
     const result = await chatController.getChat(req);
     handleResponse(res, result);
@@ -27,8 +24,8 @@ router.get("/:email", async (req, res) => {
   }
 });
 
+// Creates new message for User
 router.post("/:email", async (req, res) => {
-  console.log('api.chats.router POST /:email'); // TODO: remove
   try {
     const result = await chatController.createMessage(req);
     handleResponse(res, result);

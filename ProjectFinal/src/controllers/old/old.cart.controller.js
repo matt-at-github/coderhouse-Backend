@@ -35,7 +35,6 @@ class CartManager {
     this.carts.push(newCart);
 
     await this.#writeToDb(this.carts);
-    console.log(`Cart '${newCart._id}' created successfully!`);
     return { success: true, message: newCart };
   }
 
@@ -57,7 +56,6 @@ class CartManager {
     this.carts.splice(this.carts.findIndex(f => f.id === cartId), 1, cart);
 
     await this.#writeToDb(this.carts);
-    console.log(`Product ID ${cartId} updated successfully.`);
     return { success: true, message: cart };
   }
 

@@ -28,7 +28,6 @@ router.get("/:cid", async (req, res) => {
 // Create new cart.
 router.post("/", async (req, res) => {
   try {
-    console.log('api.carts.router POST', req.body); // TODO: remove
     const result = await cartController.createCart(req);
     handleResponse(res, result);
   } catch (error) {

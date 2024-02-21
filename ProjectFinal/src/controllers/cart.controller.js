@@ -37,7 +37,6 @@ class CartController {
         const productToAdd = await this.ProductService.findOne({ _id: req.body.productsId });
         cart.products.push({ product: productToAdd, quantity: 1 });
       }
-      console.log('api.carts.router POST cart.id', cart); // TODO: remove
       const result = await cart.save({ new: true });
       if (!result) {
         return { code: 400, message: result.message, success: false };
@@ -128,7 +127,6 @@ class CartController {
 
   async removeItemFromCart(req) {
     try {
-      console.log('api.carts.router DELETE product', req.params); // TODO: remove
       const cartId = req.params.cid;
       const cart = await CartModel.findById(cartId);
       if (!cart) {
@@ -139,9 +137,7 @@ class CartController {
       if (!productToRemove) {
         return { code: 404, message: 'No such product found.', success: false };
       }
-      console.log('api.carts.router DELETE cart.products', cart.products); // TODO: remove
       const productIndex = cart.products.findIndex(f => f.product.toString() === productToRemove._id.toString());
-      console.log('api.carts.router DELETE product', productIndex); // TODO: remove
       if (productIndex !== -1) {
         if (cart.products[productIndex].quantity > 1) {
           cart.products[productIndex].quantity -= 1;

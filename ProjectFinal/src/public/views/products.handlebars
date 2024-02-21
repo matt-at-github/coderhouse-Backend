@@ -42,7 +42,6 @@
 </div>
 <script>
   function addToCart(id) {   
-    console.log('producto adherido', id)
     fetch('/api/carts', {
       method: 'POST',
       headers: {
@@ -53,7 +52,6 @@
     .then(response => response.json())
     .then(data => {
         // Handle the response data
-        // console.log(data);
     })
     .catch(error => {
         // Handle errors

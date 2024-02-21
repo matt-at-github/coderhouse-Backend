@@ -13,9 +13,7 @@ router.get("/:cid", async (req, res) => {
     if (!response.success) {
       return res.status(response.code).send({ message: response.message });
     }
-
-    console.log('cart.router GET /:pid 0', response.data.products.map(m => m.product._id)); // TODO: remove
-
+    
     return res.render('cart', {
       products: response.data.products.map(m => m.toObject()),
       totalDocs: response.data.totalDocs,

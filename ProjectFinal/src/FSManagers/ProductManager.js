@@ -40,7 +40,6 @@ class ProductManager {
     }
 
     await this.#writeToDb(this.products);
-    console.log(`Product ID ${id} updated successfully.`);
     return { success: true, message: productToUpdate };
   }
 
@@ -54,8 +53,6 @@ class ProductManager {
     const productDeleted = this.#replaceProduct(productToDelete);
     if (productDeleted) {
       await this.#writeToDb(this.products);
-
-      console.log(`Product ID ${id} deleted succesfully.`);
       return { success: true, message: `Product ID ${id} deleted succesfully.` };
     }
 
@@ -69,7 +66,6 @@ class ProductManager {
 
     const getUniqueID = () => {
       const newID = Number(this.products.at(-1)?.id ?? 0) + 1;
-      console.log('getUniqueID', 'newID', newID);
       return newID;
     };
 
@@ -113,7 +109,6 @@ class ProductManager {
     this.products.push(newProduct);
 
     await this.#writeToDb(this.products);
-    console.log(`Product '${title}' added successfully!`);
     return { success: true, message: newProduct };
   }
 
@@ -152,8 +147,6 @@ class ProductManager {
   }
 
   #isCodeDuplicated(code) {
-    console.log(code, this.products.map(m => m.code));
-    // console.log(this.products.filter(f => f.code === code));
     return this.products.some(f => f.code === code?.trim() ?? '');
   }
 

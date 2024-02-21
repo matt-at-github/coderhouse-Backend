@@ -6,7 +6,6 @@ const productController = new ProductController();
 
 // Get all products / Get Products by query
 router.get("/", async (req, res) => {
-  console.log('products.router GET'); // TODO: remove
 
   if (!req.session.login) { return res.redirect('/users/login'); }
 
@@ -32,7 +31,6 @@ router.get("/", async (req, res) => {
 
 // Get product by ID
 router.get("/:pid", async (req, res) => {
-  console.log('products.router GET /:pid'); // TODO: remove
   try {
     const response = await productController.getProductByID(req.params.pid);
     if (!response.success) {
