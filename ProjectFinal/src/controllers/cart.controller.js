@@ -2,7 +2,6 @@ const fs = require('fs').promises;
 
 class CartManager {
 
-  static id = 0;
   path;
   carts;
 
@@ -26,7 +25,6 @@ class CartManager {
     };
 
     const newCart = {
-      id: getUniqueID(),
       products: []
     };
 
@@ -37,7 +35,7 @@ class CartManager {
     this.carts.push(newCart);
 
     await this.#writeToDb(this.carts);
-    console.log(`Cart '${newCart.id}' created successfully!`);
+    console.log(`Cart '${newCart._id}' created successfully!`);
     return { success: true, message: newCart };
   }
 

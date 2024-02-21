@@ -32,11 +32,7 @@ router.get("/", async (req, res) => {
 router.get("/:pid", async (req, res) => {
 
   try {
-
-    const pid = validateId(req.params.pid);
-    if (pid === false) { return res.status(400).send('The ID is not valid.'); }
-
-    const response = await ProductService.getProducts({ id: pid });
+    const response = await ProductService.getProducts({ _id: req.params.pid });
     if (response.status !== 'success') {
       return res.status(404).send('Product not found.');
     }
@@ -58,7 +54,7 @@ router.post("/", async (req, res) => {
       return res.status(validation.code).send(validation.message);
     }
 
-    req.body['id'] = Number(products.at(-1)?.id ?? 0) + 1;
+    // req.body['id'] = Number(products.at(-1)?.id ?? 0) + 1;
 
     const newProduct = new ProductService(req.body);
     await newProduct.save();
@@ -76,7 +72,7 @@ router.put("/:pid", async (req, res) => {
     const pid = validateId(req.params.pid);
     if (pid === false) { return res.status(400).send('The ID is not valid'); }
 
-    const updateProduct = await ProductService.findOneAndUpdate({ id: pid }, req.body, { new: true });
+    const updateProduct = await ProductService.findByIdAndUpdate(pid, req.body, { new: true });
     if (!updateProduct) { return res.status(404).send('Product not found.'); }
 
     return res.status(200).json({ 'updated': updateProduct });

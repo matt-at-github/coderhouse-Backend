@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
 
-const Cart = require('../../models/carts.model.js');
-const Product = require('../../services/products.service.js');
+const CartModel = require('../../models/carts.model.js');
+const ProductService = require('../../services/products.service.js');
 
 function validateId(id) {
   const intID = parseInt(id);
@@ -12,7 +12,7 @@ function validateId(id) {
 // Get all carts
 router.get("/", async (req, res) => {
 
-  const cart = await Cart.find().populate('productos.producto');
+  const cart = await CartModel.find().populate('products.product');
   if (!cart) { return res.status(400).send('No cart found.'); }
 
   return res.status(200).send(cart);
@@ -22,11 +22,12 @@ router.get("/", async (req, res) => {
 router.get("/:cid", async (req, res) => {
 
   const populate = req.query.populate === 'true';
-  const cid = validateId(req.params.cid);
-  if (cid === false) { return res.status(400).send('The ID is invalid'); }
+  // const cid = validateId(req.params.cid);
+  const cid = req.params.cid;
+  // if (cid === false) { return res.status(400).send('The ID is invalid'); }
 
-  const query = Cart.findOne({ id: cid });
-  if (populate) { query.populate('productos.producto'); }
+  const query = CartModel.findOne({ id: cid });
+  if (populate) { query.populate('products.product'); }
   const cart = await query;
 
   if (!cart) { return res.status(400).send('No cart found.'); }
@@ -37,18 +38,23 @@ router.get("/:cid", async (req, res) => {
 // Create new cart.
 router.post("/", async (req, res) => {
 
-  const carts = (await Cart.find());
+  console.log('api.carts.router POST', req.body); // TODO: remove
 
-  const newCart = new Cart();
-  newCart.id = Number(carts.at(-1)?.id ?? 0) + 1;
+  /* TODO
+  IF user has not have a  Cart
+    Create new cart
+    Asign new Cart to user
 
-  const createCart = await newCart.save();
+  Add product to Cart
+  */
+  const cart = new CartModel({});
 
-  const cart = await Cart.findOne({ id: createCart.id });
+  if (req.body.productsId) {
+    const productToAdd = await ProductService.findOne({ _id: req.body.productsId });
+    cart.products.push({ product: productToAdd, quantity: 1 });
+  }
 
-  const productToAdd = await Product.findOne({ _id: req.body.productsId });
-  cart.productos.push({ producto: productToAdd, cantidad: 1 });
-
+  console.log('api.carts.router POST cart.id', cart); // TODO: remove
   const savedCart = await cart.save({ new: true });
 
   if (!savedCart) { return res.status(400).send('Error at saving new cart.'); }
@@ -59,22 +65,21 @@ router.post("/", async (req, res) => {
 router.post("/:cid/product/:pid", async (req, res) => {
 
   try {
-    const cartId = validateId(req.params.cid);
-    if (cartId === false) { return res.status(400).send('The cart ID is invalid'); }
+    const cartId = req.params.cid;
 
-    const cart = await Cart.findOne({ id: cartId });
+    const cart = await CartModel.findOne({ _id: cartId });
     if (!cart) { throw 'No cart found'; }
 
     const prodId = req.params.pid;
-    const productToAdd = await Product.findOne({ _id: prodId });
+    const productToAdd = await ProductService.findOne({ _id: prodId });
     if (!productToAdd) { throw 'No such product found'; }
 
-    const productIndex = cart.productos.findIndex(f => f.producto.toString() === productToAdd._id.toString());
+    const productIndex = cart.products.findIndex(f => f.product.toString() === productToAdd._id.toString());
     if (productIndex !== -1) {
-      productIndex.cantidad += 1;
-      cart.productos[productIndex].cantidad += 1;
+      productIndex.quantity += 1;
+      cart.products[productIndex].quantity += 1;
     } else {
-      cart.productos.push({ producto: productToAdd._id, cantidad: 1 });
+      cart.products.push({ product: productToAdd._id, quantity: 1 });
     }
 
     const newCart = await cart.save({ new: true });
@@ -93,22 +98,22 @@ router.put('/:cid/products/:pid', async (req, res) => {
   try {
 
     const cartId = validateId(req.params.cid);
-    if (cartId === false) { return res.status(400).send('The cart ID is invalid'); }
+    if (cartId === false) { return res.status(400).send('The cart ID is invalid.'); }
 
-    const cart = await Cart.findOne({ id: cartId });
-    if (!cart) { throw 'No cart found'; }
+    const cart = await CartModel.findOne({ id: cartId });
+    if (!cart) { return res.status(404).send({ message: 'No cart found.' }); }
 
     const prodId = req.params.pid;
-    const productToAdd = await Product.findOne({ _id: prodId });
-    if (!productToAdd) { throw 'No such product found'; }
+    const productToAdd = await ProductService.findOne({ _id: prodId });
+    if (!productToAdd) { return res.status(404).send({ message: 'No such product found.' }); }
 
-    const productIndex = cart.productos.findIndex(f => f.producto.toString() === prodId.toString());
+    const productIndex = cart.products.findIndex(f => f.product.toString() === prodId.toString());
     if (productIndex !== -1) {
-      cart.productos[productIndex].cantidad += req.body.cantidad;
+      cart.products[productIndex].quantity += req.body.quantity;
     }
 
     const newCart = await cart.save({ new: true });
-    if (!newCart) { return res.status(400).send(newCart); }
+    if (!newCart) { return res.status(400).send({ message: 'Unexpected error at saving cart.' }); }
 
     return res.status(200).send(newCart);
 
@@ -125,12 +130,12 @@ router.put('/:cid', async (req, res) => {
     const cartId = validateId(req.params.cid);
     if (cartId === false) { return res.status(400).send('The cart ID is invalid'); }
 
-    const cart = await Cart.findOne({ id: cartId });
-    if (!cart) { throw 'No cart found'; }
+    const cart = await CartModel.findOne({ id: cartId });
+    if (!cart) { return res.status(404).send({ message: 'No cart found.' }); }
 
-    cart.productos = req.body;
+    cart.products = req.body;
     const newCart = await cart.save({ new: true });
-    if (!newCart) { return res.status(400).send(newCart); }
+    if (!newCart) { return res.status(400).send({ message: 'Unexpected error at saving cart.' }); }
 
     return res.status(200).send(newCart);
 
@@ -138,17 +143,6 @@ router.put('/:cid', async (req, res) => {
     return res.status(500).send(error);
   }
 });
-
-// router.get("/:cid/delete", async (req, res) => {
-
-//   const cid = validateId(req.params.cid);
-//   if (cid === false) { return res.status(400).send('The ID is invalid'); }
-
-//   const cart = await Cart.findOneAndDelete({ id: cid });
-//   if (!cart) { return res.status(400).send('No cart found.'); }
-
-//   return res.status(200).send(cart);
-// });
 
 // DELETE - Clear cart
 router.delete("/:cid", async (req, res) => {
@@ -158,13 +152,13 @@ router.delete("/:cid", async (req, res) => {
     const cartId = validateId(req.params.cid);
     if (cartId === false) { return res.status(400).send('The cart ID is invalid'); }
 
-    const cart = await Cart.findOne({ id: cartId });
-    if (!cart) { throw 'No cart found'; }
+    const cart = await CartModel.findOne({ id: cartId });
+    if (!cart) { return res.status(404).send({ message: 'No cart found.' }); }
 
-    cart.productos = [];
+    cart.products = [];
 
     const newCart = await cart.save({ new: true });
-    if (!newCart) { return res.status(400).send(newCart); }
+    if (!newCart) { return res.status(400).send({ message: 'Unexpected error at saving cart.' }); }
 
     return res.status(200).send(newCart);
   } catch (error) {
@@ -180,17 +174,17 @@ router.delete("/:cid/product/:pid", async (req, res) => {
     const cartId = validateId(req.params.cid);
     if (cartId === false) { return res.status(400).send('The cart ID is invalid'); }
 
-    const cart = await Cart.findOne({ id: cartId });
-    if (!cart) { throw 'No cart found'; }
+    const cart = await CartModel.findOne({ id: cartId });
+    if (!cart) { return res.status(404).send({ message: 'No cart found.' }); }
 
-    const productToAdd = await Product.findOne({ _id: req.params.pid });
-    if (!productToAdd) { throw 'No such product found'; }
+    const productToAdd = await ProductService.findOne({ _id: req.params.pid });
+    if (!productToAdd) { return res.status(404).send({ message: 'No such product found.' }); }
 
-    const productIndex = cart.productos.findIndex(f => f.producto.toString() === productToAdd._id.toString());
+    const productIndex = cart.products.findIndex(f => f.product.toString() === productToAdd._id.toString());
 
     if (productIndex !== -1) {
-      cart.productos.splice(productIndex, 1);
-      // cart.productos[productIndex].cantidad -= 1;
+      cart.products.splice(productIndex, 1);
+      // cart.products[productIndex].quantity -= 1;
     }
 
     const newCart = await cart.save({ new: true });

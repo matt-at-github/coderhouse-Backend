@@ -38,21 +38,17 @@ router.get("/", async (req, res) => {
 
 router.get("/:pid", async (req, res) => {
 
-  console.log('products.router GET /:pid 0', req.params); // TODO: remove
-
   try {
-    const pid = validateId(req.params.pid);
-    if (pid === false) { return res.status(400).send('The ID is invalid'); }
+    const response = await ProductService.getProducts({ _id: req.params.pid });
 
-    const response = await ProductService.getProducts({ id: pid });
-
+    console.log('products.router GET /:pid 2', response); // TODO: remove
     if (response.status !== 'success') {
       return res.status(404).send('Product not found.');
     }
 
     const product = response.payload[0];
     return res.render('product', {
-      id: product.id,
+      id: product._id,
       title: product.title,
       description: product.description,
       price: product.price

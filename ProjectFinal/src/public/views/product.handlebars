@@ -17,7 +17,7 @@
         </div>
         <div class="col-lg-1">
 
-          <a onclick="addToCart({{this.id}})" class="btn btn-info btn-rounded mr-1">
+          <a onclick="addToCart('{{id}}')" class="btn btn-info btn-rounded mr-1">
             <i class="bi bi-cart2"></i>
           </a>
           {{!-- TODO: Refactor to use DELET endpoint --}}
@@ -37,16 +37,21 @@
   </div>
 </div>
 <script>
-  function addToCart() {   
+  function addToCart(id) {   
+    console.log('producto adherido',)
     fetch('/api/carts', {
       method: 'POST',
-      body: {productsId: {{this.id}} },
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body:  JSON.stringify({productsId: id}),
     })
-    .then(response => response.json())
-    .then(data => {
-        // Handle the response data
-        // console.log(data);
-    })
+    .then(response => response.json()
+      .then(data => {
+          // Handle the response data
+          console.log(data);
+      })
+    )
     .catch(error => {
         // Handle errors
         console.error('Error:', error);

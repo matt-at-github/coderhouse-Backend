@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 
+const collectionUsers = 'users';
+
 const UserSchema = mongoose.Schema({
   first_name: {
     type: String,
@@ -30,11 +32,6 @@ const UserSchema = mongoose.Schema({
   }
 });
 
-UserSchema.methods.isAdmin = function () {
-  console.log(this.model("user").role);
-  return this.model("user").role === 'admin';
-};
-
-const UserModel = mongoose.model("user", UserSchema);
+const UserModel = mongoose.model(collectionUsers, UserSchema);
 
 module.exports = UserModel;
