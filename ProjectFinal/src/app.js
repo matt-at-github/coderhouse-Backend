@@ -36,6 +36,7 @@ app.use(auth); // My custom authentication middleware.
 // Routes 
 const productsRouter = require("./routes/products.router");
 const productsAPIRouter = require("./routes/API/api.products.router.js");
+const cartsRouter = require("./routes/carts.router.js");
 const cartsAPIRouter = require("./routes/API/api.carts.router.js");
 const chatRouter = require("./routes/chat.router.js");
 const chatAPIRouter = require("./routes/API/api.chat.router.js");
@@ -65,6 +66,7 @@ app.use("/products", productsRouter);
 app.use('/chat', chatRouter);
 app.use('/session', sessionRouter);
 app.use('/users', usersRouter);
+app.use("/carts", cartsRouter);
 
 // app.get('/', (req, res) => { return res.redirect('/products'); });
 app.use('/', productsRouter);

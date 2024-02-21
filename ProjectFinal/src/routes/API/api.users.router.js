@@ -26,7 +26,7 @@ router.post("/createAccount", async (req, res) => {
     res.status(login.code).redirect('/');
   } catch (error) {
     console.log(error);
-    res.status(400).send({ error: "Error al crear el usuario", description: error });
+    res.status(500).send({ error: "Error al crear el usuario", description: error });
   }
 });
 

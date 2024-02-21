@@ -4,11 +4,6 @@ const router = express.Router();
 const CartModel = require('../../models/carts.model.js');
 const ProductService = require('../../services/products.service.js');
 
-function validateId(id) {
-  const intID = parseInt(id);
-  return Number.isInteger(intID) ? parseInt(intID) : false;
-}
-
 // Get all carts
 router.get("/", async (req, res) => {
 
@@ -22,11 +17,8 @@ router.get("/", async (req, res) => {
 router.get("/:cid", async (req, res) => {
 
   const populate = req.query.populate === 'true';
-  // const cid = validateId(req.params.cid);
   const cid = req.params.cid;
-  // if (cid === false) { return res.status(400).send('The ID is invalid'); }
-
-  const query = CartModel.findOne({ id: cid });
+  const query = CartModel.findById(cid);
   if (populate) { query.populate('products.product'); }
   const cart = await query;
 
@@ -97,8 +89,9 @@ router.put('/:cid/products/:pid', async (req, res) => {
 
   try {
 
-    const cartId = validateId(req.params.cid);
-    if (cartId === false) { return res.status(400).send('The cart ID is invalid.'); }
+    const cartId = req.params.cid;
+    // const cartId = validateId(req.params.cid);
+    // if (cartId === false) { return res.status(400).send('The cart ID is invalid.'); }
 
     const cart = await CartModel.findOne({ id: cartId });
     if (!cart) { return res.status(404).send({ message: 'No cart found.' }); }
@@ -127,8 +120,9 @@ router.put('/:cid', async (req, res) => {
 
   try {
 
-    const cartId = validateId(req.params.cid);
-    if (cartId === false) { return res.status(400).send('The cart ID is invalid'); }
+    const cartId = req.params.cid;
+    // const cartId = validateId(req.params.cid);
+    // if (cartId === false) { return res.status(400).send('The cart ID is invalid'); }
 
     const cart = await CartModel.findOne({ id: cartId });
     if (!cart) { return res.status(404).send({ message: 'No cart found.' }); }
@@ -149,8 +143,9 @@ router.delete("/:cid", async (req, res) => {
 
   try {
 
-    const cartId = validateId(req.params.cid);
-    if (cartId === false) { return res.status(400).send('The cart ID is invalid'); }
+    const cartId = req.params.cid;
+    // const cartId = validateId(req.params.cid);
+    // if (cartId === false) { return res.status(400).send('The cart ID is invalid'); }
 
     const cart = await CartModel.findOne({ id: cartId });
     if (!cart) { return res.status(404).send({ message: 'No cart found.' }); }
@@ -171,24 +166,37 @@ router.delete("/:cid/product/:pid", async (req, res) => {
 
   try {
 
-    const cartId = validateId(req.params.cid);
-    if (cartId === false) { return res.status(400).send('The cart ID is invalid'); }
+    console.log('api.carts.router DELETE product', req.params); // TODO: remove
 
-    const cart = await CartModel.findOne({ id: cartId });
+    const cartId = req.params.cid;
+    // const cartId = validateId(req.params.cid);
+    // if (cartId === false) { return res.status(400).send('The cart ID is invalid'); }
+
+    const cart = await CartModel.findById(cartId);
     if (!cart) { return res.status(404).send({ message: 'No cart found.' }); }
 
-    const productToAdd = await ProductService.findOne({ _id: req.params.pid });
-    if (!productToAdd) { return res.status(404).send({ message: 'No such product found.' }); }
+    const pid = req.params.pid;
+    const productToRemove = await ProductService.findById(pid);
+    if (!productToRemove) { return res.status(404).send({ message: 'No such product found.' }); }
 
-    const productIndex = cart.products.findIndex(f => f.product.toString() === productToAdd._id.toString());
+    console.log('api.carts.router DELETE cart.products', cart.products); // TODO: remove
+
+    const productIndex = cart.products.findIndex(f => f.product.toString() === productToRemove._id.toString());
+
+    console.log('api.carts.router DELETE product', productIndex); // TODO: remove
 
     if (productIndex !== -1) {
-      cart.products.splice(productIndex, 1);
       // cart.products[productIndex].quantity -= 1;
+      if (cart.products[productIndex].quantity > 1) {
+        cart.products[productIndex].quantity -= 1;
+      } else {
+        cart.products.splice(productIndex, 1);
+      }
+    } else {
+      return res.status(404).send({ message: 'Product not found' });
     }
 
     const newCart = await cart.save({ new: true });
-
     if (!newCart) { return res.status(400).send(newCart); }
 
     return res.status(200).send(newCart);

@@ -1,0 +1,86 @@
+{{!-- https://www.bootdey.com/snippets/view/shopping-cart-with-selected-products-order-summary-and-checkout-button --}}
+
+<div class="container">
+
+  {{#if session.login}}
+  <div class="row">
+    <h2>El carrito de {{session.userName}}!
+      {{#if session.isAdmin}}
+      <span style="font-size: 18px;"> Eres Administrador!</span>
+      {{/if}}
+    </h2>
+  </div>
+  {{/if}}
+
+  <div class="row justify-content-center">
+    {{#each products}}
+    <div class="col-4">
+      <a class="text-reset" href="/products/{{this._id}}">
+        <div class="card">
+          <img src="https://www.bootdey.com/image/100x80/008B8B/000000" class="card-img-top" alt="...">
+          <div class="card-body">
+            <h5 class="card-title">{{this.title}}</h5>
+            <p class="card-text">{{this.description}}</p>
+          </div>
+          <div class="card-footer">
+            {{!-- <a onclick="addToCart('{{this._id}}')" class="btn btn-info btn-rounded mr-1">
+              <i class="bi bi-cart2"></i>
+            </a> --}}
+
+            <a onclick="removeFromCart('{{this._id}}')" class="btn btn-danger btn-rounded mr-1">
+              <i class="bi bi-trash"></i>
+            </a>
+
+          </div>
+        </div>
+      </a>
+    </div>
+    {{/each}}
+  </div>
+
+  <div class="row d-flex justify-content-between">
+    <a class="btn btn-info {{#unless hasPrevPage }}disabled{{/unless}}" onclick="addUrlParameter('page',{{prevPage}})"><i class="bi bi-arrow-left me-1 float-left"></i>Anterior</a>
+    <div class="justify-content-center border">
+      <a class="btn text-white bg-secondary disabled">{{page}}</a> de <a class="btn text-white bg-secondary disabled">{{totalPages}}</a>
+    </div>
+    <a class="btn btn-info {{#unless hasNextPage }}disabled{{/unless}}" onclick="addUrlParameter('page',{{nextPage}})"><i class="bi bi-arrow-right me-1 float-right"></i>Siguente</a>
+  </div>
+</div>
+<script>
+  function removeFromCart(id) {   
+    cartId = document.URL.split('/').reverse()[0]
+    console.log('Removing product from cart', cartId, 'productID', id)
+    fetch(`/api/carts/${cartId}/product/${id}`, { // Add cart ID to edit this cart.
+      method: 'DELETE',
+    })
+    .then(response => response.json())
+    .then(data => { 
+        // Handle the response data
+        // console.log(data);
+    })
+    .catch(error => {
+        // Handle errors
+        console.error('Error:', error);
+    });
+  };
+
+  function addToCart(id) {   
+    console.log('producto adherido', id)
+    fetch('/api/carts', { // Add cart ID to edit this cart.
+      method: 'POST',
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body:  JSON.stringify({productsId: id}),
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Handle the response data
+        // console.log(data);
+    })
+    .catch(error => {
+        // Handle errors
+        console.error('Error:', error);
+    });
+  };
+</script>

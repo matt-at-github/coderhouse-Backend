@@ -3,11 +3,6 @@ const router = express.Router();
 
 const ProductService = require('../services/products.service.js');
 
-function validateId(id) {
-  const intID = parseInt(id);
-  return Number.isInteger(intID) ? parseInt(intID) : false;
-}
-
 router.get("/", async (req, res) => {
 
   console.log('products.router GET / 0', req.session); // TODO: remove
