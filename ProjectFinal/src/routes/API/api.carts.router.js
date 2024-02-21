@@ -88,6 +88,7 @@ router.delete("/:cid/product/:pid", async (req, res) => {
 
 module.exports = router;
 
+// Auxiliary methods
 // Helper function for response.
 const handleResponse = (res, result) => {
   if (result.success) {
