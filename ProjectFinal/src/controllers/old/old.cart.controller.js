@@ -20,10 +20,6 @@ class CartManager {
 
     await this.#populateCarts();
 
-    const getUniqueID = () => {
-      return this.carts.at(-1)?.id ?? 0 + 1;
-    };
-
     const newCart = {
       products: []
     };
