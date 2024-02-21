@@ -1,5 +1,6 @@
-// const ProductModel = require('../models/products.model.js');
 const ProductService = require('../services/products.service.js');
+
+const mongoose = require('mongoose');
 
 class ProductController {
 
@@ -23,8 +24,17 @@ class ProductController {
 
   async getProductByID(id) {
     try {
-      const products = await ProductService.findOne({ _id: id });
-      return { code: 200, data: products, success: true };
+
+      if (!mongoose.Types.ObjectId.isValid(id)) {
+        console.log('invalid id type');
+        return { code: 400, message: 'Invalid ID', success: false };
+      }
+
+      const product = await ProductService.findOne({ _id: id });
+      if (!product) {
+        return { code: 400, data: product.message, success: false };
+      }
+      return { code: 200, data: product, success: true };
     } catch (error) {
       return { code: 500, message: error.message || 'Internal Server Error', success: false };
     }

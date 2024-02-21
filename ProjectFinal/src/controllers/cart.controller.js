@@ -1,4 +1,5 @@
 const CartModel = require('../models/carts.model.js');
+const mongoose = require('mongoose');
 
 class CartController {
 
@@ -21,6 +22,12 @@ class CartController {
     try {
       const populate = req.query.populate === 'true';
       const cid = req.params.cid;
+
+      if (!mongoose.Types.ObjectId.isValid(cid)) {
+        console.log('invalid id type');
+        return { code: 400, message: 'Invalid ID', success: false };
+      }
+
       const query = CartModel.findById(cid);
       if (populate) { query.populate('products.product'); }
       const cart = await query;

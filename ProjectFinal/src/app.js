@@ -68,8 +68,13 @@ app.use('/session', sessionRouter);
 app.use('/users', usersRouter);
 app.use("/carts", cartsRouter);
 
-// app.get('/', (req, res) => { return res.redirect('/products'); });
-app.use('/', productsRouter);
+// Default route
+app.get('/', (req, res) => { return res.redirect('/products'); });
+
+// 404 Route
+app.get('*', function (req, res) {
+  res.status(404).send('This page does not exists.');
+});
 
 // Multer
 //
