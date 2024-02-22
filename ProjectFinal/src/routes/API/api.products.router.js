@@ -7,6 +7,7 @@ const productController = new ProductController();
 // Get all products / Get Products by query
 router.get("/", async (req, res) => {
   try {
+    console.log('api.products.router GET', req.query);
     const result = await productController.getProducts(req);
     handleResponse(res, result);
   } catch (error) {
