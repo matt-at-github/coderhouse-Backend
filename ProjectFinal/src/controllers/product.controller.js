@@ -1,7 +1,5 @@
 const ProductService = require('../services/products.service.js');
 
-const mongoose = require('mongoose');
-
 class ProductController {
 
   async getProducts(req) {
@@ -24,11 +22,6 @@ class ProductController {
 
   async getProductByID(id) {
     try {
-
-      if (!mongoose.Types.ObjectId.isValid(id)) {
-        console.log('invalid id type');
-        return { code: 400, message: 'Invalid ID', success: false };
-      }
 
       const product = await ProductService.findOne({ _id: id });
       if (!product) {

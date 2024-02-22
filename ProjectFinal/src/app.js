@@ -13,7 +13,7 @@ const database = require('./connectionSettings.json');
 
 const mongoStorage = MongoStore.create({
   mongoUrl: database.database_connection_url,
-  ttl: 60 * 10,
+  ttl: 86400, // 24 horas
 });
 
 // Mongo connection
@@ -27,11 +27,10 @@ app.use(session({
   secret: SECRET_KEY,
   resave: true,
   saveUninitialized: true,
-  store: mongoStorage,
-  // cookie: { httpOnly: false }
+  store: mongoStorage
 }));
 
-app.use(auth); // My custom authentication middleware.
+app.use(authorization); // My custom authentication middleware.
 
 // Routes 
 const productsRouter = require("./routes/products.router");
@@ -42,10 +41,7 @@ const chatRouter = require("./routes/chat.router.js");
 const chatAPIRouter = require("./routes/API/api.chat.router.js");
 const usersRouter = require('./routes/users.router.js');
 const usersAPIRouter = require('./routes/API/api.users.router.js');
-// const sessionAPIRouter = require('./routes/API/api.sessions.router.js');
 const sessionRouter = require('./routes/sessions.router.js');
-
-// const home = require('./routes/home.router.js');
 
 app.use(express.static(`${__dirname}/public`));
 app.use('/favicon.ico', express.static(`${__dirname}/public/img/favicon.png`));
@@ -68,12 +64,12 @@ app.use('/session', sessionRouter);
 app.use('/users', usersRouter);
 app.use("/carts", cartsRouter);
 
-// Default route
+// Home route -> products
 app.get('/', (req, res) => { return res.redirect('/products'); });
 
 // 404 Route
 app.get('*', function (req, res) {
-  res.status(404).send('This page does not exists.');
+  res.status(404).render('logout', { message: 'Esta página no existe.' });
 });
 
 // Multer
@@ -89,11 +85,9 @@ const socket = new socketIOManager(httpServer);
 socket.init();
 
 // Authentication middleware
-function auth(req, res, next) {
-
+function authorization(req, res, next) {
   if (req.session.login) {
     return next();
   }
-  // return res.status(401).send('Unauthorized');
   return next();
 }
