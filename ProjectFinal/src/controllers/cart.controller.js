@@ -1,102 +1,159 @@
-const fs = require('fs').promises;
+const CartModel = require('../models/carts.model.js');
 
-class CartManager {
+class CartController {
 
-  static id = 0;
-  path;
-  carts;
+  ProductService;
 
-  constructor(path) {
-    this.path = path;
-    this.carts = [];
+  constructor(ps = undefined) {
+    this.ProductService = ps;
   }
 
-  async getCartById(id) {
-    const cart = await this.#getCartById(id);
-    if (!cart) { return { success: false, message: `Cart of ID ${id} does not exists.` }; }
-    return { success: true, message: cart };
-  }
-
-  async createNewCart(productsId) {
-
-    await this.#populateCarts();
-
-    const getUniqueID = () => {
-      return this.carts.at(-1)?.id ?? 0 + 1;
-    };
-
-    const newCart = {
-      id: getUniqueID(),
-      products: []
-    };
-
-    productsId.forEach(e => {
-      newCart.products.push({ id: e, quantity: 1 });
-    });
-
-    this.carts.push(newCart);
-
-    await this.#writeToDb(this.carts);
-    console.log(`Cart '${newCart.id}' created successfully!`);
-    return { success: true, message: newCart };
-  }
-
-  async addItemToCartById(cartId, productID) {
-
-    const cart = await this.#getCartById(cartId);
-    if (!cart) {
-      console.error(`Cart ID ${cartId} not found. Update cancelled.`);
-      return { success: false, message: `Cart ID ${cartId} not found. Update cancelled.` };
-    }
-
-    const product = cart.products.find(f => f.id === productID);
-    if (product) {
-      product.quantity += 1;
-    } else {
-      cart.products.push({ id: productID, quantity: 1 });
-    }
-
-    this.carts.splice(this.carts.findIndex(f => f.id === cartId), 1, cart);
-
-    await this.#writeToDb(this.carts);
-    console.log(`Product ID ${cartId} updated successfully.`);
-    return { success: true, message: cart };
-  }
-
-  async #populateCarts() {
-    this.carts = await this.#readFromDb();
-  }
-
-  async #getCartById(id) {
-    this.carts = await this.#readFromDb();
-    CartManager.id = (this.carts.map(m => m.id)
-      .sort((x, y) => y - x)
-      .at(0) || 0) + 1;
-    return this.carts.find(f => f.id === id);
-  }
-
-  async #writeToDb(content) {
+  async getCarts() {
     try {
-      const fileStatus = await fs.stat(this.path);
-      if (fileStatus) {
-        await fs.writeFile(this.path, JSON.stringify(content, null, 2));
-      }
+      const carts = await CartModel.find().populate('products.product');
+      return { code: 200, data: carts, success: true };
     } catch (error) {
-      console.error(`Error at Database writting: ${error}.`);
+      return { code: 500, message: error.message || 'Internal Server Error', success: false };
     }
   }
 
-  async #readFromDb() {
+  async getCart(req) {
     try {
-      const fileStatus = await fs.stat(this.path);
-      if (fileStatus) {
-        return JSON.parse(await fs.readFile(this.path, "utf-8"));
-      }
-      return [{}];
+      const populate = req.query.populate === 'true';
+      const cid = req.params.cid;
+
+      const query = CartModel.findById(cid);
+      if (populate) { query.populate('products.product'); }
+      const cart = await query;
+      return { code: 200, data: cart, success: true };
     } catch (error) {
-      console.error(`Error at Database reading: ${error}.`);
+      return { code: 500, message: error.message || 'Internal Server Error', success: false };
+    }
+  }
+
+  async createCart(req) {
+    try {
+      const cart = new CartModel({});
+      if (req.body.productsId) {
+        const productToAdd = await this.ProductService.findOne({ _id: req.body.productsId });
+        cart.products.push({ product: productToAdd, quantity: 1 });
+      }
+      const result = await cart.save({ new: true });
+      if (!result) {
+        return { code: 400, message: result.message, success: false };
+      }
+      return { code: 200, data: result, success: true };
+    } catch (error) {
+      return { code: 500, message: error.message || 'Internal Server Error', success: false };
+    }
+  }
+
+  async addItemToCart(req) {
+    try {
+      const cartId = req.params.cid;
+      const cart = await CartModel.findOne({ _id: cartId });
+      if (!cart) {
+        return { code: 404, message: 'No cart found.', success: false };
+      }
+      const prodId = req.params.pid;
+      const productToAdd = await this.ProductService.findOne({ _id: prodId });
+      if (!productToAdd) {
+        return { code: 404, message: 'No such product found.', success: false };
+      }
+      const existingProductIndex = cart.products.findIndex(f => f.product.toString() === prodId.toString());
+      if (existingProductIndex !== -1) {
+        cart.products[existingProductIndex].quantity += 1;
+      } else {
+        cart.products.push({ product: productToAdd._id, quantity: 1 });
+      }
+      const updatedCart = await cart.save({ new: true });
+      return { code: 200, data: updatedCart, success: true };
+    } catch (error) {
+      return { code: 500, message: error.message || 'Internal Server Error', success: false };
+    }
+  }
+
+  async editProductQuantity(req) {
+    try {
+      const cartId = req.params.cid;
+      const cart = await CartModel.findOne({ _id: cartId });
+      if (!cart) {
+        return { code: 404, message: 'No cart found.', success: false };
+      }
+      const prodId = req.params.pid;
+      const productToAdd = await this.ProductService.findOne({ _id: prodId });
+      if (!productToAdd) {
+        return { code: 404, message: 'No such product found.', success: false };
+      }
+      const productIndex = cart.products.findIndex(f => f.product.toString() === prodId.toString());
+      if (productIndex !== -1) {
+        cart.products[productIndex].quantity += req.body.quantity;
+      }
+      const updatedCart = await cart.save({ new: true });
+      return { code: 200, data: updatedCart, success: true };
+    } catch (error) {
+      return { code: 500, message: error.message || 'Internal Server Error', success: false };
+    }
+  }
+
+  async editCart(req) {
+    try {
+      const cartId = req.params.cid;
+      const cart = await CartModel.findOne({ _id: cartId });
+      if (!cart) {
+        return { code: 404, message: 'No cart found.', success: false };
+      }
+      cart.products = req.body;
+      const updatedCart = await cart.save({ new: true });
+      return { code: 200, data: updatedCart, success: true };
+    } catch (error) {
+      return { code: 500, message: error.message || 'Internal Server Error', success: false };
+    }
+  }
+
+  async clearCart(req) {
+    try {
+      const cartId = req.params.cid;
+      const cart = await CartModel.findOne({ _id: cartId });
+      if (!cart) {
+        return { code: 404, message: 'No cart found.', success: false };
+      }
+      cart.products = [];
+      const clearedCart = await cart.save({ new: true });
+      return { code: 200, data: clearedCart, success: true };
+    } catch (error) {
+      return { code: 500, message: error.message || 'Internal Server Error', success: false };
+    }
+  }
+
+  async removeItemFromCart(req) {
+    try {
+      const cartId = req.params.cid;
+      const cart = await CartModel.findById(cartId);
+      if (!cart) {
+        return { code: 404, message: 'No cart found.', success: false };
+      }
+      const pid = req.params.pid;
+      const productToRemove = await this.ProductService.findById(pid);
+      if (!productToRemove) {
+        return { code: 404, message: 'No such product found.', success: false };
+      }
+      const productIndex = cart.products.findIndex(f => f.product.toString() === productToRemove._id.toString());
+      if (productIndex !== -1) {
+        if (cart.products[productIndex].quantity > 1) {
+          cart.products[productIndex].quantity -= 1;
+        } else {
+          cart.products.splice(productIndex, 1);
+        }
+      } else {
+        return { code: 404, message: 'Product not found', success: false };
+      }
+      const updatedCart = await cart.save({ new: true });
+      return { code: 200, data: updatedCart, success: true };
+    } catch (error) {
+      return { code: 500, message: error.message || 'Internal Server Error', success: false };
     }
   }
 }
 
-module.exports = CartManager;
+module.exports = CartController;

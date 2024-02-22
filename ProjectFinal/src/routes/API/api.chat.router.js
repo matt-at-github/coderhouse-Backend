@@ -1,40 +1,47 @@
 const express = require('express');
 const router = express.Router();
 
-const ChatModel = require('../../models/chat.model.js');
+const ChatController = require('../../controllers/chat.controller.js');
+const chatController = new ChatController();
 
-router.get("/:email", async (req, res) => {
-
-  try {
-    const chat = await ChatModel.find({ user: req.params.email });
-    return res.send(chat);
-  } catch (error) {
-    return res.status(500).send(error);
-  }
-});
-
+// Get all messages 
 router.get("/", async (req, res) => {
   try {
-    const limit = parseInt(req.query.limit) || undefined;
-    const products = (await ChatModel.find()).slice(0, limit);
-    return res.send(products);
+    const result = await chatController.getAllMessages(req);
+    handleResponse(res, result);
   } catch (error) {
     return res.status(500).send(error);
   }
 });
 
-router.post("/:email", async (req, res) => {
-
+// Get Messages for a User
+router.get("/:email", async (req, res) => {
   try {
-
-    const newMessage = new ChatModel({ user: req.params.email, message: req.body.message });
-    await newMessage.save();
-    return res.status(201).send(newMessage);
-
+    const result = await chatController.getChat(req);
+    handleResponse(res, result);
   } catch (error) {
-    res.status(500).send(`Error: ${error}`);
-    console.error(`Error: ${error}`);
+    return res.status(500).send({ message: error.message || 'Internal Server Error' });
+  }
+});
+
+// Creates new message for User
+router.post("/:email", async (req, res) => {
+  try {
+    const result = await chatController.createMessage(req);
+    handleResponse(res, result);
+  } catch (error) {
+    return res.status(500).send({ message: error.message || 'Internal Server Error' });
   }
 });
 
 module.exports = router;
+
+// Auxiliary methods
+// Helper function for response.
+const handleResponse = (res, result) => {
+  if (result.success) {
+    res.status(result.code).send(result.data);
+  } else {
+    res.status(result.code).send({ message: result.message });
+  }
+};

@@ -4,26 +4,32 @@
 
   {{#if session.login}}
   <div class="row">
-    <h2>Bienvenido {{session.userName}}!
+    <h2>El carrito de {{session.userName}}!
       {{#if session.isAdmin}}
       <span style="font-size: 18px;"> Eres Administrador!</span>
       {{/if}}
     </h2>
   </div>
   {{/if}}
+
   <div class="row justify-content-center">
+
     {{#each products}}
     <div class="col-4">
-      <a class="text-reset" href="/products/{{this._id}}">
+      <a class="text-reset" href="/products/{{this.product._id}}">
         <div class="card">
           <img src="https://www.bootdey.com/image/100x80/008B8B/000000" class="card-img-top" alt="...">
           <div class="card-body">
-            <h5 class="card-title">{{this.title}}</h5>
-            <p class="card-text">{{this.description}}</p>
+            <h5 class="card-title">{{this.product.title}}</h5>
+            <p class="card-text">{{this.product.description}}</p>
           </div>
           <div class="card-footer">
-            <a onclick="addToCart('{{this._id}}')" class="btn btn-info btn-rounded mr-1">
-              <i class="bi bi-cart2"></i>
+            <span>Tenés <strong>{{this.quantity}}</strong> unidades</span>
+            <a onclick="substractFromCart('{{this.product._id}}')" class="btn btn-danger btn-rounded mr-1 float-right">
+              <i class="bi bi-dash"></i>
+            </a>
+            <a onclick="addToCart('{{this.product._id}}')" class="btn btn-info btn-rounded mr-1 float-right">
+              <i class="bi bi-plus"></i>
             </a>
           </div>
         </div>
@@ -41,17 +47,33 @@
   </div>
 </div>
 <script>
+
+  // TODO: Instead of reloading the full page, just update the amount once the update callback is run.
+  function substractFromCart(id) {   
+    cartId = document.URL.split('/').reverse()[0]
+    fetch(`/api/carts/${cartId}/product/${id}`, {
+      method: 'DELETE',
+    })
+    .then(response => response.json())
+    .then(data => { 
+        // Handle the response data
+        location.reload()
+    })
+    .catch(error => {
+        // Handle errors
+        console.error('Error:', error);
+    });
+  };
+
   function addToCart(id) {   
-    fetch('/api/carts', {
-      method: 'POST',
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body:  JSON.stringify({productsId: id}),
+    cartId = document.URL.split('/').reverse()[0]
+    fetch(`/api/carts/${cartId}/product/${id}`, {
+      method: 'POST'
     })
     .then(response => response.json())
     .then(data => {
         // Handle the response data
+        location.reload()
     })
     .catch(error => {
         // Handle errors

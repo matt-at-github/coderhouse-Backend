@@ -2,7 +2,6 @@ const fs = require('fs').promises;
 
 class CartManager {
 
-  static id = 0;
   path;
   carts;
 
@@ -21,12 +20,7 @@ class CartManager {
 
     await this.#populateCarts();
 
-    const getUniqueID = () => {
-      return this.carts.at(-1)?.id ?? 0 + 1;
-    };
-
     const newCart = {
-      id: getUniqueID(),
       products: []
     };
 
@@ -37,7 +31,6 @@ class CartManager {
     this.carts.push(newCart);
 
     await this.#writeToDb(this.carts);
-  
     return { success: true, message: newCart };
   }
 

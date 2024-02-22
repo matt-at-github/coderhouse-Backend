@@ -1,184 +1,111 @@
-const fs = require('fs').promises;
+const ProductService = require('../services/products.service.js');
 
-class ProductManager {
+class ProductController {
 
-  static id = 0;
-  products;
-  path;
+  async getProducts(req) {
 
-  constructor(path) {
-    this.path = path;
-    this.products = [];
-  }
-
-  async updateProductById(id, title, description, price, thumbnails, code, stock, status) {
-
-    const productToUpdate = await this.#getProductById(id);
-    if (!productToUpdate) {
-      console.error(`Product ID ${id} not found. Update cancelled.`);
-      return { success: false, message: `Product ID ${id} not found. Update cancelled.` };
-    }
-
-    if (code && this.#isCodeDuplicated(code)) {
-      console.error(`Product code for product ID '${id}' duplicated. Product was not updated.`);
-      return { success: false, message: `Product code for product ID '${id}' duplicated. Product was not updated.` };
-    }
-
-    Object.assign(productToUpdate, {
-      title: title || productToUpdate.title,
-      description: description || productToUpdate.description,
-      price: price || productToUpdate.price,
-      thumbnails: thumbnails || productToUpdate.thumbnails,
-      code: code || productToUpdate.code,
-      stock: stock || productToUpdate.stock,
-      status: status || productToUpdate.status
-    });
-
-    if (!this.#replaceProduct(productToUpdate, productToUpdate)) {
-      console.error(`Product ID ${id} not updated, ID not found.`);
-      return { success: false, message: `Product ID ${id} not updated, ID not found.` };
-    }
-
-    await this.#writeToDb(this.products);
-    console.log(`Product ID ${id} updated successfully.`);
-    return { success: true, message: productToUpdate };
-  }
-
-  async deleteProductByID(id) {
-    const productToDelete = await this.#getProductById(id);
-    if (!productToDelete) {
-      console.error(`Product ID ${id} not found. Delete not done!`);
-      return { success: false, message: `Product ID ${id} not found. Delete not done!` };
-    }
-
-    const productDeleted = this.#replaceProduct(productToDelete);
-    if (productDeleted) {
-      await this.#writeToDb(this.products);
-
-      console.log(`Product ID ${id} deleted succesfully.`);
-      return { success: true, message: `Product ID ${id} deleted succesfully.` };
-    }
-
-    console.error(`Product ID ${id} was not deleted, ID not found.`);
-    return { success: false, message: `Product ID ${id} was not deleted, ID not found.` };
-  }
-
-  async addProduct(title, description, price, thumbnails, code, stock, status = true) {
-
-    await this.#populateProducts();
-
-    const getUniqueID = () => {
-      const newID = Number(this.products.at(-1)?.id ?? 0) + 1;
-      console.log('getUniqueID', 'newID', newID);
-      return newID;
-    };
-
-    const validateFields = () => {
-
-      const emptyEntries = [];
-
-      Object.entries({ title, description, price, thumbnails, code, stock, status })
-        .forEach(([key, value]) => {
-          if (key !== 'thumbnails') {
-            if (value === null || value === undefined || value.toString()?.trim() === '') {
-              emptyEntries.push(key);
-            }
-          }
-        });
-      return (emptyEntries);
-    };
-
-    const invalidField = validateFields();
-    if (invalidField.length > 0) {
-      console.error(`Fields [${invalidField.join(', ')}] empty. All fields are mandatory. Product was not added.`);
-
-      return { success: false, message: `Fields [${invalidField.join(', ')}] empty. All fields are mandatory. Product was not added.` };
-    }
-
-    if (this.#isCodeDuplicated(code)) {
-      console.error(`Product code for '${title}' duplicated. Product was not added.`);
-      return { success: false, message: `Product code for '${title}' is duplicated. Product was not added.` };
-    }
-
-    const newProduct = {
-      id: getUniqueID(),
-      title,
-      description,
-      price,
-      thumbnails,
-      code,
-      stock,
-      status
-    };
-    this.products.push(newProduct);
-
-    await this.#writeToDb(this.products);
-    console.log(`Product '${title}' added successfully!`);
-    return { success: true, message: newProduct };
-  }
-
-  async getProducts() {
-    await this.#populateProducts();
-    return { success: true, message: this.products };
-  }
-
-  async getProductById(id) {
-    const product = await this.#getProductById(id);
-    if (!product) { return { success: false, message: `Product of ID ${id} does not exists.` }; }
-    return { success: true, message: product };
-  }
-
-  async #populateProducts() {
-    this.products = await this.#readFromDb();
-  }
-
-  async #getProductById(id) {
-    this.products = await this.#readFromDb();
-    ProductManager.id = (this.products.map(m => m.id)
-      .sort((x, y) => y - x)
-      .at(0) || 0) + 1;
-    return this.products.find(f => f.id === id);
-  }
-
-  #replaceProduct(replacee, replacement) {
-    const productToReplaceIndex = this.products.indexOf(replacee);
-    if (productToReplaceIndex === -1) { return false; }
-    if (!replacement) {
-      this.products = this.products.filter(f => f.id != replacee.id);
-    } else {
-      this.products.splice(productToReplaceIndex, 1, replacement);
-    }
-    return true;
-  }
-
-  #isCodeDuplicated(code) {
-    console.log(code, this.products.map(m => m.code));
-    // console.log(this.products.filter(f => f.code === code));
-    return this.products.some(f => f.code === code?.trim() ?? '');
-  }
-
-  async #writeToDb(content) {
     try {
-      const fileStatus = await fs.stat(this.path);
-      if (fileStatus) {
-        await fs.writeFile(this.path, JSON.stringify(content, null, 2));
+      const filter = req.query.filter ? JSON.parse(req.query.filter) : undefined;
+      const sort = req.query.sort ? JSON.parse(req.query.sort) : undefined;
+      const limit = parseInt(req.query.limit) || 10;
+      const page = parseInt(req.query.page) || 1;
+
+      const products = await ProductService.getProducts(filter, limit, page, sort);
+      if (!products.success) {
+        return { code: 400, message: products.message, success: false };
       }
+      return { code: 200, data: products, success: true };
     } catch (error) {
-      console.error(`Error at Database writting: ${error}.`);
+      return { code: 500, message: error.message || 'Internal Server Error', success: false };
     }
   }
 
-  async #readFromDb() {
+  async getProductByID(id) {
     try {
-      const fileStatus = await fs.stat(this.path);
-      if (fileStatus) {
-        return JSON.parse(await fs.readFile(this.path, "utf-8"));
+
+      const product = await ProductService.findOne({ _id: id });
+      if (!product) {
+        return { code: 400, data: product.message, success: false };
       }
-      return [{}];
+      return { code: 200, data: product, success: true };
     } catch (error) {
-      console.error(`Error at Database reading: ${error}.`);
+      return { code: 500, message: error.message || 'Internal Server Error', success: false };
+    }
+  }
+
+  async createProduct(req) {
+    try {
+      const products = await ProductService.find();
+      const validation = runBodyValidations(req.body, products);
+      if (!validation.success) {
+        return { code: validation.code, message: validation.message, success: false };
+      }
+
+      const result = await (new ProductService(req.body)).save();
+      if (!result) {
+        return { code: 400, message: result.message, success: false };
+      }
+      return { code: 200, data: result, success: true };
+    } catch (error) {
+      return { code: 500, message: error.message || 'Internal Server Error', success: false };
+    }
+  }
+
+  async editProduct(req) {
+    try {
+      const pid = req.params.pid;
+      const updateProduct = await ProductService.findByIdAndUpdate(pid, req.body, { new: true });
+      if (!updateProduct) {
+        return { code: 404, message: 'Product not found.', success: false };
+      }
+
+      return { code: 200, data: updateProduct, success: true };
+    } catch (error) {
+      return { code: 500, message: error.message || 'Internal Server Error', success: false };
+    }
+  }
+
+  async deleteProduct(req) {
+    try {
+      const pid = req.params.pid;
+      const deleteProduct = await ProductService.findByIdAndDelete(pid);
+      if (!deleteProduct) {
+        return { code: 404, message: 'Product not found.', success: false };
+      }
+      return { code: 200, data: deleteProduct, success: true };
+    } catch (error) {
+      return { code: 500, message: error.message || 'Internal Server Error', success: false };
     }
   }
 }
 
-module.exports = ProductManager;
+module.exports = ProductController;
+
+function runBodyValidations(toValidate, products) {
+
+  const validateFields = (toValidate) => {
+    const { title, description, price, thumbnails, code, stock, status = true } = { ...toValidate };
+    const emptyEntries = [];
+    Object.entries({ title, description, price, thumbnails, code, stock, status })
+      .forEach(([key, value]) => {
+        if (key !== 'thumbnails') {
+          if (value === null || value === undefined || value.toString()?.trim() === '') {
+            emptyEntries.push(key);
+          }
+        }
+      });
+    return (emptyEntries);
+  };
+
+  const invalidField = validateFields(toValidate);
+  if (invalidField.length > 0) {
+    return { success: false, message: `Fields [${invalidField.join(', ')}] empty. All fields are mandatory. Product was not added.`, code: 400 };
+  }
+
+  if (products.some(f => f.code === toValidate.code?.trim() ?? '')) {
+    return { success: false, message: `Product code for '${toValidate.title}' is duplicated. Product was not added.`, code: 400 };
+  }
+
+  return { success: true };
+}
+

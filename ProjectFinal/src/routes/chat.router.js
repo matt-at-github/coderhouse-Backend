@@ -1,12 +1,14 @@
 const express = require('express');
 const router = express.Router();
 
-const ChatModel = require('../models/chat.model.js');
-
 router.get("/", async (req, res) => {
 
-  const chat = ChatModel.find({ id: req.params.email });
-  res.status(200).render('chat', { messages: chat.messages, session: req.session.login });
+  try {
+    // Sokect.io it is used on this view.
+    res.status(200).render('chat', { session: req.session });
+  } catch (error) {
+    return res.status(500).send({ message: error.message || 'Internal Server Error' });
+  }
 });
 
 module.exports = router;
