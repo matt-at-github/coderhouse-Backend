@@ -9,22 +9,27 @@ const userController = new UserController();
 
 // Crear cuenta
 router.get('/createAccount', (req, res) => {
-  res.status(200).render('createAccount');
+  console.log('GET createAccount', req.session);
+  if (req.session.login) { return res.status(200).redirect('/products'); }
+  return res.status(200).render('createAccount');
 });
 
 // Create new Account
 router.post('/createAccount', async (req, res) => {
   try {
     const response = await userController.createUser(req);
+    console.log('response', response);
     if (!response.success) {
       return res.status(response.code).render('logout', { title: 'Crear cuenta', message: response.message });
     }
 
     const result = await sessionController.login(req);
+    console.log('result', result);
     if (!result.sucess) {
       return res.status(response.code).send({ message: response.message });
     }
-    return res.status(result.code).redirect('/');
+    console.log('redirecting...');
+    return res.status(result.code).redirect('/products');
   } catch (error) {
     res.status(500).send({ error: "Error al crear el usuario", message: error });
   }
