@@ -9,7 +9,16 @@ class SessionController {
     this.passport = passport;
   }
 
-  async login(req, user = undefined) {
+  async login(req, user) {
+
+    req.session.login = true;
+    req.session.userName = `${user.first_name} ${user.last_name}`;
+    req.session.isAdmin = user.role === 'admin'; // TODO: Improve
+
+    return { success: true, user, description: '', code: 200 };
+  }
+  
+  async authenticate(req, user = undefined) {
 
     try {
 

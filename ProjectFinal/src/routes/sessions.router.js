@@ -33,10 +33,10 @@ router.post('/login',
     if (!req.user) {
       return res.status(400).send({ status: 'error', message: 'Credenciales invalidas' });
     }
-    const result = await sessionController.login(req);
-    if (!result.success) {
-      return res.status(result.code).send({ message: result.message });
-    }
+
+    const result = await sessionController.authenticate(req, req.user);
+    sessionController.login(req, req.user); sessionController.login(req, req.user);
+
     return res.status(result.code).redirect('/');
   }
 );
@@ -57,11 +57,13 @@ router.get('/githubcallback',
       return res.status(400).send({ status: 'error', message: 'Credenciales invalidas' });
     }
 
-    const result = await sessionController.login(req, req.user);
-    console.log('session result', result);
+    const result = await sessionController.authenticate(req, req.user);
     if (!result.success) {
       return res.status(result.code).send({ message: result.message });
     }
+
+    sessionController.login(req, req.user);
+
     return res.status(result.code).redirect('/');
   }
 );

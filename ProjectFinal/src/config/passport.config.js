@@ -35,7 +35,9 @@ const initializePassport = () => {
       async (email, password, done) => {
         try {
 
-          const result = await sessionController.login({ body: { email: email, password: password }, session: { login: false } });
+          const req = { body: { email: email, password: password }, session: { login: false } };
+          console.log('passport', req);
+          const result = await sessionController.authenticate(req);
           if (!result.success) { return done(result.message, false); }
 
           return done(null, result.user);
@@ -75,9 +77,6 @@ const initializePassport = () => {
           return done(newUserResult.message, false);
         }
       }
-
-      // login (session)
-
       return done(null, newUserResult.user);
     } catch (error) {
       return done(error);

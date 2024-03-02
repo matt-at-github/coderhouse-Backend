@@ -1,10 +1,10 @@
 <link rel="stylesheet" href="../css/createAccount.css">
-
+<script src="../js/createAccount.js"></script>
 <div class="container mt-3 pt-5" style="max-width: 40%;">
 
   <div class="row text-center p-4" style="background-color: #e1e1e1;">
 
-    <form class="col-12 form-login" role="form" method="POST" action="/sessions/login">
+    <form class="col-12 form-login" role="form" method="POST" action="/sessions/login" onsubmit="spinner('register', true)">
 
       <div class="row justify-content-center text-center">
         <div class="col-10 reg-icon">
@@ -14,19 +14,19 @@
 
       <div class="row justify-content-center ">
         <div class="col-10">
-          <input type="email" class="form-control" id="email" name="email" placeholder="Correo electrónico">
+          <input type="email" class="form-control" id="email" name="email" placeholder="Correo electrónico" required>
         </div>
       </div>
 
       <div class="row justify-content-center ">
         <div class="col-10">
-          <input type="password" class="form-control" id="password" name="password" placeholder="Password">
+          <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
         </div>
       </div>
 
       <div class="row justify-content-center pt-4">
         <div class="col-4">
-          <button type="submit" class="btn btn-info">
+          <button type="submit" class="btn btn-info" id="localLogin">
             <span class="glyphicon glyphicon-share-alt"></span>
             Iniciar sesión
           </button>
@@ -34,7 +34,7 @@
 
       </form>
       <div class="col-4">
-        <a type="submit" class="btn btn-secondary" href="/sessions/github">
+        <a type="submit" class="btn btn-secondary" href="/sessions/github" id="githubLogin" onclick="spinner('githubLogin',false)">
           <span class="glyphicon glyphicon-share-alt"></span>
           GitHub
         </a>
