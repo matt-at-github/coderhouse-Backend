@@ -165,7 +165,7 @@ class ProductManager {
     try {
       const fileStatus = await fs.stat(this.path);
       if (fileStatus) {
-        return JSON.parse(await fs.readFile(this.path, "utf-8"));
+        return JSON.parse(await fs.readFile(this.path, 'utf-8'));
       }
       return [{}];
     } catch (error) {

@@ -11,21 +11,21 @@ class SocketIOManager {
 
   init() {
 
-    this.io.on("connection", async (socket) => {
+    this.io.on('connection', async (socket) => {
       
       socket.on('pullMessages', async (data) => {
         const messages = await ChatModel.find({ user: data.user });
-        socket.emit("reply", messages);
+        socket.emit('reply', messages);
       });
 
-      await socket.on("message", async (data) => {
+      await socket.on('message', async (data) => {
 
         const newMessage = new ChatModel({ user: data.user, message: data.message });
         await newMessage.save();
-        this.io.sockets.emit("message", data);
+        this.io.sockets.emit('message', data);
 
         const messages = await ChatModel.find({ user: data.user });
-        socket.emit("reply", messages);
+        socket.emit('reply', messages);
       });
     });
   }

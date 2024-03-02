@@ -5,7 +5,7 @@ const ProductController = require('../controllers/product.controller.js');
 const productController = new ProductController();
 
 // Get all products / Get Products by query
-router.get("/", async (req, res) => {
+router.get('/', async (req, res) => {
 
   try {
     if (!req.session.login) { return res.redirect('/sessions/login'); }
@@ -35,7 +35,7 @@ router.get("/", async (req, res) => {
 });
 
 // Get product by ID
-router.get("/:pid", async (req, res) => {
+router.get('/:pid', async (req, res) => {
   try {
     const response = await productController.getProductByID(req.params.pid);
     if (!response.success) {

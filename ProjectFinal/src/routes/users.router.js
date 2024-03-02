@@ -1,9 +1,7 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
 
-const passport = require("passport");
-const { createHash } = require("../utils/hashBcrypt.js");
-const generateToken = require("../utils/jwt.js");
+const passport = require('passport');
 
 const SessionController = require('../controllers/session.controller.js');
 const sessionController = new SessionController(passport);
@@ -31,21 +29,20 @@ router.post('/createAccount', async (req, res) => {
     }
     return res.status(result.code).redirect('/');
   } catch (error) {
-    res.status(500).send({ error: "Error al crear el usuario", message: error });
+    res.status(500).send({ error: 'Error al crear el usuario', message: error });
   }
 });
 
 // PASSPORT Create new Account:
-router.post("/passport/createAccount",
-  passport.authenticate("register", { failureRedirect: "/failedRegister" }),
-  passport.authenticate("login", { failureRedirect: "/failedLogin" }),
+router.post('/passport/createAccount',
+  passport.authenticate('register', { failureRedirect: '/failedRegister' }),
+  passport.authenticate('login', { failureRedirect: '/failedLogin' }),
   async (req, res) => {
 
     if (!req.user) {
-      return res.status(400).send({ status: "error", message: "Credenciales invalidas" });
+      return res.status(400).send({ status: 'error', message: 'Credenciales invalidas' });
     }
     const result = await sessionController.login(req);
-    console.log('session result', result);
     if (!result.success) {
       return res.status(result.code).send({ message: result.message });
     }
@@ -54,12 +51,12 @@ router.post("/passport/createAccount",
 );
 
 // Account view
-router.get("/logout", (req, res) => {
+router.get('/logout', (req, res) => {
   res.status(200).render('logout');
 });
 
 // Account view
-router.get("/account", (req, res) => {
+router.get('/account', (req, res) => {
   res.status(200).send({ message: req.session });
 });
 

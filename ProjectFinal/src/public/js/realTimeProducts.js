@@ -10,7 +10,7 @@ function createProductNode(product) {
   child.getElementsByClassName('card-title')[0].innerHTML = product.title;
   child.getElementsByClassName('card-text')[0].innerHTML = product.description;
 
-  child.querySelector("button").addEventListener('click', () => {
+  child.querySelector('button').addEventListener('click', () => {
     socket.emit('deleteProduct', product.id);
   });
 
@@ -20,26 +20,26 @@ function createProductNode(product) {
 
 socket.on('connectionResponse', (data) => {
   const wrapper = document.getElementById('productWrapper');
-  wrapper.innerHTML = "";
+  wrapper.innerHTML = '';
   data.message.forEach(product => {
     createProductNode(product);
   });
 });
 
 const abortUpdate = document.getElementById('abortUpdate');
-abortUpdate.addEventListener("click", () => { console.log('update aborted'); });
+abortUpdate.addEventListener('click', () => { console.log('update aborted'); });
 
-const regiterNewProduct = document.getElementById("registerProduct");
-regiterNewProduct.addEventListener("click", () => {
+const regiterNewProduct = document.getElementById('registerProduct');
+regiterNewProduct.addEventListener('click', () => {
   const newProduct = getFieldsValues();
   if (newProduct) {
     socket.emit('regiterNewProduct', newProduct);
   } else {
     // eslint-disable-next-line no-undef
     Swal.fire({
-      icon: "error",
-      title: "Error de validación",
-      text: "Algun campo esta vacío."
+      icon: 'error',
+      title: 'Error de validación',
+      text: 'Algun campo esta vacío.'
     });
   }
 });
@@ -47,7 +47,7 @@ regiterNewProduct.addEventListener("click", () => {
 socket.on('regiterNewProductResponse', (response) => {
   // eslint-disable-next-line no-undef
   Swal.fire({
-    icon: (response.success === true ? "success" : "error"),
+    icon: (response.success === true ? 'success' : 'error'),
     title: response.title,
     text: response.text
   });
@@ -57,13 +57,13 @@ socket.on('regiterNewProductResponse', (response) => {
 socket.on('productDeleted', (response) => {
   // eslint-disable-next-line no-undef
   Swal.fire({
-    icon: (response.success === true ? "success" : "error"),
+    icon: (response.success === true ? 'success' : 'error'),
     title: response.title,
     text: response.text
   });
 
   const wrapper = document.getElementById('productWrapper');
-  wrapper.innerHTML = "";
+  wrapper.innerHTML = '';
 
   response.products.message.forEach((product) => {
     createProductNode(product);
@@ -73,13 +73,13 @@ socket.on('productDeleted', (response) => {
 // Auxiliary methods
 function getFieldsValues() {
   const product = {
-    code: document.getElementById("code").value,
-    title: document.getElementById("title").value,
-    description: document.getElementById("description").value,
-    price: document.getElementById("price").value,
+    code: document.getElementById('code').value,
+    title: document.getElementById('title').value,
+    description: document.getElementById('description').value,
+    price: document.getElementById('price').value,
     thumbnails: [],
-    stock: document.getElementById("stock").value,
+    stock: document.getElementById('stock').value,
     status: true,
   };
-  return Object.values(product).includes("") ? false : product;
+  return Object.values(product).includes('') ? false : product;
 }

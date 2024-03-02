@@ -5,7 +5,7 @@ const ProductController = require('../../controllers/product.controller.js');
 const productController = new ProductController();
 
 // Get all products / Get Products by query
-router.get("/", async (req, res) => {
+router.get('/', async (req, res) => {
   try {
     console.log('api.products.router GET', req.query);
     const result = await productController.getProducts(req);
@@ -16,7 +16,7 @@ router.get("/", async (req, res) => {
 });
 
 // Get product by ID
-router.get("/:pid", async (req, res) => {
+router.get('/:pid', async (req, res) => {
   try {
     const response = await productController.getProductByID(req.params.pid);
     handleResponse(res, response);
@@ -26,7 +26,7 @@ router.get("/:pid", async (req, res) => {
 });
 
 // Create new product
-router.post("/", async (req, res) => {
+router.post('/', async (req, res) => {
   try {
     const response = await productController.createProduct(req);
     handleResponse(res, response);
@@ -36,7 +36,7 @@ router.post("/", async (req, res) => {
 });
 
 // Edit product
-router.put("/:pid", async (req, res) => {
+router.put('/:pid', async (req, res) => {
   try {
     const response = await productController.editProduct(req);
     handleResponse(res, response);
@@ -46,7 +46,7 @@ router.put("/:pid", async (req, res) => {
 });
 
 // Delete product
-router.delete("/:pid", async (req, res) => {
+router.delete('/:pid', async (req, res) => {
   try {
     const response = await productController.deleteProduct(req);
     handleResponse(res, response);

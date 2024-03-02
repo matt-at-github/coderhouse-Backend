@@ -5,7 +5,7 @@ const CartController = require('../controllers/cart.controller.js');
 const cartController = new CartController();
 
 // Get cart by ID
-router.get("/:cid", async (req, res) => {
+router.get('/:cid', async (req, res) => {
 
   try {
     req.query.populate = 'true';

@@ -1,11 +1,11 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
 
 const SessionController = require('../../controllers/session.controller.js');
 const sessionController = new SessionController();
 
 // Login
-router.post("/login", async (req, res) => {
+router.post('/login', async (req, res) => {
   try {
     const result = await sessionController.login(req);
     handleResponse(res, result);
@@ -15,7 +15,7 @@ router.post("/login", async (req, res) => {
 });
 
 // Logout
-router.get("/logout", (req, res) => {
+router.get('/logout', (req, res) => {
   try {
     const result = sessionController.logout(req);
     handleResponse(res, result);

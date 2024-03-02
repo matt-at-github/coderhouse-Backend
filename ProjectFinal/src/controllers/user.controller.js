@@ -1,5 +1,5 @@
 const UserModel = require('../models/users.model.js');
-const { createHash } = require("../utils/hashBcrypt.js");
+const { createHash } = require('../utils/hashBcrypt.js');
 class UserController extends UserModel {
 
   async createUser(req) {

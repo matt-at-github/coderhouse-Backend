@@ -1,6 +1,6 @@
-const passport = require("passport");
-const strategyLocal = require("passport-local");
-const strategyGitHub = require("passport-github2");
+const passport = require('passport');
+const strategyLocal = require('passport-local');
+const strategyGitHub = require('passport-github2');
 
 // const UserModel = require("../models/users.model.js");
 const UserController = require('../controllers/user.controller.js');
@@ -14,8 +14,8 @@ const LocalStrategy = strategyLocal.Strategy;
 const initializePassport = () => {
 
   // Passport Local Strategy
-  passport.use("register",
-    new LocalStrategy({ passReqToCallback: true, usernameField: "email" },
+  passport.use('register',
+    new LocalStrategy({ passReqToCallback: true, usernameField: 'email' },
       async (req, username, password, done) => {
 
         try {
@@ -30,8 +30,8 @@ const initializePassport = () => {
       })
   );
 
-  passport.use("login",
-    new LocalStrategy({ usernameField: "email" },
+  passport.use('login',
+    new LocalStrategy({ usernameField: 'email' },
       async (email, password, done) => {
         try {
 
@@ -61,7 +61,7 @@ const initializePassport = () => {
   });
 
   // Passport GitHub Strategy 
-  passport.use("github", new strategyGitHub({
+  passport.use('github', new strategyGitHub({
     clientID: 'Iv1.7e41068a2165f5cd',
     clientSecret: '70ba7055f7fcb2402260043e195b1ec06870169c',
     callbackURL: 'http://localhost:8080/sessions/githubcallback'

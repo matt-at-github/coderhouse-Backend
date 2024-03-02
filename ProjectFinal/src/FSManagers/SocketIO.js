@@ -21,9 +21,9 @@ class SocketIOManager {
           const newProduct = await productManager.addProduct(title, description, price, thumbnails, code, stock, status);
           console.log('newProduct', newProduct);
           if (newProduct.success) {
-            this.io.sockets.emit('regiterNewProductResponse', { success: newProduct.success, title: "Successful creation", text: "New product created!.", product: newProduct.message });
+            this.io.sockets.emit('regiterNewProductResponse', { success: newProduct.success, title: 'Successful creation', text: 'New product created!.', product: newProduct.message });
           } else {
-            this.io.sockets.emit('regiterNewProductResponse', { success: newProduct.success, title: "Failed creation", text: newProduct.message });
+            this.io.sockets.emit('regiterNewProductResponse', { success: newProduct.success, title: 'Failed creation', text: newProduct.message });
           }
         }
       });

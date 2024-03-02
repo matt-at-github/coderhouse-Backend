@@ -1,13 +1,13 @@
 const PORT = 8080;
-const SECRET_KEY = "*KeySuperSecreta!";
+const SECRET_KEY = '*KeySuperSecreta!';
 
 const express = require('express');
 const app = express();
 const handlebarsInstance = require('express-handlebars');
 
-const session = require("express-session");
-const MongoStore = require("connect-mongo");
-const cookieParser = require("cookie-parser");
+const session = require('express-session');
+const MongoStore = require('connect-mongo');
+const cookieParser = require('cookie-parser');
 
 const appSettings = require('./appSettings.json');
 
@@ -20,8 +20,8 @@ const mongoStorage = MongoStore.create({
 require('./db/db.connection.js');
 
 //Passport: 
-const passport = require("passport");
-const initializePassport = require("./config/passport.config.js");
+const passport = require('passport');
+const initializePassport = require('./config/passport.config.js');
 initializePassport();
 
 // Middelware
@@ -40,12 +40,12 @@ app.use(passport.session());
 app.use(authorization); // My custom authentication middleware.
 
 // Routes 
-const productsRouter = require("./routes/products.router");
-const productsAPIRouter = require("./routes/API/api.products.router.js");
-const cartsRouter = require("./routes/carts.router.js");
-const cartsAPIRouter = require("./routes/API/api.carts.router.js");
-const chatRouter = require("./routes/chat.router.js");
-const chatAPIRouter = require("./routes/API/api.chat.router.js");
+const productsRouter = require('./routes/products.router');
+const productsAPIRouter = require('./routes/API/api.products.router.js');
+const cartsRouter = require('./routes/carts.router.js');
+const cartsAPIRouter = require('./routes/API/api.carts.router.js');
+const chatRouter = require('./routes/chat.router.js');
+const chatAPIRouter = require('./routes/API/api.chat.router.js');
 const usersRouter = require('./routes/users.router.js');
 const usersAPIRouter = require('./routes/API/api.users.router.js');
 const sessionRouter = require('./routes/sessions.router.js');
@@ -59,17 +59,17 @@ app.set('view engine', 'handlebars');
 app.set('views', `${__dirname}/public/views`); // Por qué ./public/views no funciona?
 
 // API Routes
-app.use("/api/products", productsAPIRouter);
-app.use("/api/carts", cartsAPIRouter);
+app.use('/api/products', productsAPIRouter);
+app.use('/api/carts', cartsAPIRouter);
 app.use('/api/chats', chatAPIRouter);
 app.use('/api/users', usersAPIRouter);
 
 // Routes
-app.use("/products", productsRouter);
+app.use('/products', productsRouter);
 app.use('/chats', chatRouter);
 app.use('/sessions', sessionRouter);
 app.use('/users', usersRouter);
-app.use("/carts", cartsRouter);
+app.use('/carts', cartsRouter);
 
 // Home route -> products
 app.get('/', (req, res) => { return res.redirect('/products'); });

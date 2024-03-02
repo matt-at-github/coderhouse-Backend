@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-router.get("/", async (req, res) => {
+router.get('/', async (req, res) => {
 
   try {
     // Sokect.io it is used on this view.

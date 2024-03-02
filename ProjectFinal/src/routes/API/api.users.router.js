@@ -1,10 +1,10 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
 
 const UserController = require('../../controllers/user.controller.js');
 const userController = new UserController();
 
-router.post("/createAccount", async (req, res) => {
+router.post('/createAccount', async (req, res) => {
 
   try {
     const result = await userController.createUser(req);
@@ -13,7 +13,7 @@ router.post("/createAccount", async (req, res) => {
     }
     handleResponse(res, result);
   } catch (error) {
-    res.status(500).send({ error: "Error al crear el usuario", message: error });
+    res.status(500).send({ error: 'Error al crear el usuario', message: error });
   }
 });
 

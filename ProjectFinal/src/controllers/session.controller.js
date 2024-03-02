@@ -1,5 +1,5 @@
 const UserModel = require('../models/users.model');
-const { isValidPassword } = require("../utils/hashBcrypt.js");
+const { isValidPassword } = require('../utils/hashBcrypt.js');
 
 class SessionController {
 

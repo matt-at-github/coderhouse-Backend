@@ -6,7 +6,7 @@ const CartController = require('../../controllers/cart.controller.js');
 const cartController = new CartController(ProductService);
 
 // Get all carts
-router.get("/", async (req, res) => {
+router.get('/', async (req, res) => {
   try {
     const result = await cartController.getCarts();
     handleResponse(res, result);
@@ -16,7 +16,7 @@ router.get("/", async (req, res) => {
 });
 
 // Get cart by ID
-router.get("/:cid", async (req, res) => {
+router.get('/:cid', async (req, res) => {
   try {
     const result = await cartController.getCart(req);
     handleResponse(res, result);
@@ -26,7 +26,7 @@ router.get("/:cid", async (req, res) => {
 });
 
 // Create new cart.
-router.post("/", async (req, res) => {
+router.post('/', async (req, res) => {
   try {
     const result = await cartController.createCart(req);
     handleResponse(res, result);
@@ -36,7 +36,7 @@ router.post("/", async (req, res) => {
 });
 
 // Add item to cart
-router.post("/:cid/product/:pid", async (req, res) => {
+router.post('/:cid/product/:pid', async (req, res) => {
   try {
     const result = await cartController.addItemToCart(req);
     handleResponse(res, result);
@@ -66,7 +66,7 @@ router.put('/:cid', async (req, res) => {
 });
 
 // DELETE - Clear cart
-router.delete("/:cid", async (req, res) => {
+router.delete('/:cid', async (req, res) => {
   try {
     const result = await cartController.clearCart(req);
     handleResponse(res, result);
@@ -76,7 +76,7 @@ router.delete("/:cid", async (req, res) => {
 });
 
 // DELETE - Remove item from cart
-router.delete("/:cid/product/:pid", async (req, res) => {
+router.delete('/:cid/product/:pid', async (req, res) => {
   try {
     const result = await cartController.removeItemFromCart(req);
     handleResponse(res, result);

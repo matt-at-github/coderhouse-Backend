@@ -17,13 +17,13 @@
         "max": 1
       }
     ],
-    "semi": "error"
-  },
-  "@typescript-eslint/quotes": [
-    "error",
-    "single",
-    {
-      "allowTemplateLiterals": true
-    }
-  ]
+    "semi": "error",
+    "quotes": [
+      2,
+      "single",
+      {
+        "avoidEscape": true
+      }
+    ]
+  }
 }

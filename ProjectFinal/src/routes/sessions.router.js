@@ -1,18 +1,18 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
 
-const passport = require("passport");
+const passport = require('passport');
 
 const SessionController = require('../controllers/session.controller.js');
 const sessionController = new SessionController(passport);
 
 // Login view
-router.get("/login", (req, res) => {
+router.get('/login', (req, res) => {
   res.status(200).render('login');
 });
 
 // Logout 
-router.get("/logout", (req, res) => {
+router.get('/logout', (req, res) => {
   try {
     const result = sessionController.logout(req);
     if (!result.success) {
@@ -26,12 +26,12 @@ router.get("/logout", (req, res) => {
 
 //// PASSPORT
 // Login with Local
-router.post("/login",
-  passport.authenticate("login", { failureRedirect: "/sessions/failedLogin" }),
+router.post('/login',
+  passport.authenticate('login', { failureRedirect: '/sessions/failedLogin' }),
   async (req, res) => {
 
     if (!req.user) {
-      return res.status(400).send({ status: "error", message: "Credenciales invalidas" });
+      return res.status(400).send({ status: 'error', message: 'Credenciales invalidas' });
     }
     const result = await sessionController.login(req);
     if (!result.success) {
@@ -42,18 +42,19 @@ router.post("/login",
 );
 
 // Login with GitHub
-router.get("/github",
-  passport.authenticate("github", { scope: ["user:email"] }),
+router.get('/github',
+  passport.authenticate('github', { scope: ['user:email'] }),
+  // eslint-disable-next-line no-unused-vars
   async (req, res) => { }
 );
 
 // GitHub callback
-router.get("/githubcallback",
-  passport.authenticate("github", { failureRedirect: "/sessions/failedLogin" }),
+router.get('/githubcallback',
+  passport.authenticate('github', { failureRedirect: '/sessions/failedLogin' }),
   async (req, res) => {
 
     if (!req.user) {
-      return res.status(400).send({ status: "error", message: "Credenciales invalidas" });
+      return res.status(400).send({ status: 'error', message: 'Credenciales invalidas' });
     }
 
     const result = await sessionController.login(req, req.user);
@@ -66,7 +67,7 @@ router.get("/githubcallback",
 );
 
 // Failed login result
-router.get("/failedLogin", async (req, res) => {
+router.get('/failedLogin', async (req, res) => {
   return res.status(400).render('logout', { error: true, message: 'Ups, error de estrategía de inicio de sesión.' });
 });
 
