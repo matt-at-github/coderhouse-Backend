@@ -1,24 +1,39 @@
 const UserModel = require('../models/users.model');
+const { isValidPassword } = require("../utils/hashBcrypt.js");
 
 class SessionController {
 
-  async login(req) {
+  passport;
+
+  constructor(passport) {
+    this.passport = passport;
+  }
+
+  async login(req, user = undefined) {
+
     try {
 
-      const { email, password } = req.body;
-      let user = {};
-      if (email === 'adminCoder@coder.com' && password === 'adminCod3r123') {
-        user.first_name = email;
-        user.last_name = '';
-        user.role = 'admin';
-      } else {
+      if (!user) {
+        const { email, password } = req.body;
+        user = new UserModel();
+        if (email === 'adminCoder@coder.com') {
 
-        user = await UserModel.findOne({ email: email });
-        if (!user) {
-          return { success: false, description: 'Usuario no encontrado.', code: 404 };
-        }
-        if (user.password !== password) {
-          return { success: false, description: 'Contraseña incorrecta.', code: 401 };
+          if (password === 'adminCod3r123') {
+            user.first_name = email;
+            user.last_name = '';
+            user.role = 'admin';
+          } else {
+            return { success: false, message: 'Contraseña incorrecta.', code: 401 };
+          }
+        } else {
+
+          user = await UserModel.findOne({ email: email });
+          if (!user) {
+            return { success: false, message: 'Usuario no encontrado.', code: 404 };
+          }
+          if (!isValidPassword(password, user)) {
+            return { success: false, message: 'Contraseña incorrecta.', code: 401 };
+          }
         }
       }
 

@@ -8,7 +8,7 @@ const productController = new ProductController();
 router.get("/", async (req, res) => {
 
   try {
-    if (!req.session.login) { return res.redirect('/users/login'); }
+    if (!req.session.login) { return res.redirect('/sessions/login'); }
 
     const response = (await productController.getProducts(req)).data;
     if (!response.success) {

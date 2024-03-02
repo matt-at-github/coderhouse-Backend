@@ -9,15 +9,20 @@ const session = require("express-session");
 const MongoStore = require("connect-mongo");
 const cookieParser = require("cookie-parser");
 
-const database = require('./connectionSettings.json');
+const appSettings = require('./appSettings.json');
 
 const mongoStorage = MongoStore.create({
-  mongoUrl: database.database_connection_url,
+  mongoUrl: appSettings.database_connection_url,
   ttl: 86400, // 24 horas
 });
 
 // Mongo connection
 require('./db/db.connection.js');
+
+//Passport: 
+const passport = require("passport");
+const initializePassport = require("./config/passport.config.js");
+initializePassport();
 
 // Middelware
 app.use(express.json());
@@ -29,6 +34,8 @@ app.use(session({
   saveUninitialized: true,
   store: mongoStorage
 }));
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use(authorization); // My custom authentication middleware.
 
@@ -59,8 +66,8 @@ app.use('/api/users', usersAPIRouter);
 
 // Routes
 app.use("/products", productsRouter);
-app.use('/chat', chatRouter);
-app.use('/session', sessionRouter);
+app.use('/chats', chatRouter);
+app.use('/sessions', sessionRouter);
 app.use('/users', usersRouter);
 app.use("/carts", cartsRouter);
 

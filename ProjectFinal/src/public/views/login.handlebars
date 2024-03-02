@@ -4,7 +4,7 @@
 
   <div class="row text-center p-4" style="background-color: #e1e1e1;">
 
-    <form class="col-12 form-login" role="form" method="POST" action="/session/login">
+    <form class="col-12 form-login" role="form" method="POST" action="/sessions/login">
 
       <div class="row justify-content-center text-center">
         <div class="col-10 reg-icon">
@@ -32,22 +32,21 @@
           </button>
         </div>
 
-        <div class="col-4">
-          <button type="submit" class="btn btn-secondary">
-            <span class="glyphicon glyphicon-share-alt"></span>
-            GitHub
-          </button>
-        </div>
-
-        <div class="col-4">
-          <a href="/users/createAccount" class="btn btn-outline-primary">
-            <span class="glyphicon glyphicon-share-alt"></span>
-            Crear cuenta
-          </a>
-        </div>
+      </form>
+      <div class="col-4">
+        <a type="submit" class="btn btn-secondary" href="/sessions/github">
+          <span class="glyphicon glyphicon-share-alt"></span>
+          GitHub
+        </a>
       </div>
 
-    </form>
+      <div class="col-4">
+        <a href="/users/createAccount" class="btn btn-outline-primary">
+          <span class="glyphicon glyphicon-share-alt"></span>
+          Crear cuenta
+        </a>
+      </div>
+    </div>
 
   </div>
 </div>
