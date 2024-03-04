@@ -2,7 +2,6 @@ const passport = require('passport');
 const strategyLocal = require('passport-local');
 const strategyGitHub = require('passport-github2');
 
-// const UserModel = require("../models/users.model.js");
 const UserController = require('../controllers/user.controller.js');
 const userController = new UserController();
 
@@ -48,14 +47,18 @@ const initializePassport = () => {
   );
 
   passport.serializeUser((user, done) => {
-    done(null, user._id);
+    done(null, user);
   });
 
-  passport.deserializeUser(async (id, done) => {
+  passport.deserializeUser(async (user, done) => {
+    
     try {
-      let user = await userController.findUserById({ _id: id });
-      if (!user.success) { return done('Desirializing error.', false); }
-      return done(null, user);
+
+      if (user.role === 'admin') { return done(null, user); }
+
+      let result = await userController.findUserById({ _id: user._id });
+      if (!result.success) { return done(result.message, false); }
+      return done(null, result.user);
     }
     catch (error) {
       return done(error);
