@@ -17,12 +17,12 @@ const UserSchema = mongoose.Schema({
     index: true,
     unique: true
   },
-  password: {
-    type: String,
-    required: false
-  },
   age: {
     type: Number,
+    required: false
+  },
+  password: {
+    type: String,
     required: false
   },
   cart: {

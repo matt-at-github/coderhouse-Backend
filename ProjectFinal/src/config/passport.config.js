@@ -1,6 +1,7 @@
 const passport = require('passport');
 const strategyLocal = require('passport-local');
 const strategyGitHub = require('passport-github2');
+const jwt = require('passport-jwt');
 
 const UserController = require('../controllers/user.controller.js');
 const userController = new UserController();
@@ -9,8 +10,22 @@ const SessionController = require('../controllers/session.controller.js');
 const sessionController = new SessionController(passport);
 
 const LocalStrategy = strategyLocal.Strategy;
+const JWTStrategy = jwt.Strategy;
+const ExtractJwt = jwt.ExtractJwt;
 
 const initializePassport = () => {
+
+  passport.use('jwt', new JWTStrategy({
+    jwtFromRequest: ExtractJwt.fromExtractors([cookieExtractor]),
+    secretOrKey: 'coderhouse',
+    //Misma palabra secreta queen la App.js
+  }, async (jwt_payload, done) => {
+    try {
+      return done(null, jwt_payload);
+    } catch (error) {
+      return done(error);
+    }
+  }));
 
   // Passport Local Strategy
   passport.use('register',
@@ -51,7 +66,7 @@ const initializePassport = () => {
   });
 
   passport.deserializeUser(async (user, done) => {
-    
+
     try {
 
       if (user.role === 'admin') { return done(null, user); }
@@ -86,6 +101,15 @@ const initializePassport = () => {
     }
 
   }));
+};
+
+const cookieExtractor = (req) => {
+  let token = null;
+  if (req && req.cookies) {
+    token = req.cookies['coderCookieToken'];
+    //Si hay cookie, tomamos la que yo necesito. 
+  }
+  return token;
 };
 
 module.exports = initializePassport;

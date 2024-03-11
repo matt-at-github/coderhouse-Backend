@@ -1,10 +1,19 @@
 const express = require('express');
 const router = express.Router();
 
+const jwt = require('jsonwebtoken');
+const { passportCall, authorization } = require('./utils/util.js');
+
 const passport = require('passport');
 
 const SessionController = require('../controllers/session.controller.js');
 const sessionController = new SessionController(passport);
+
+router.get('/current',
+  passportCall('jwt'),
+  authorization('user'), (req, res) => {
+    res.status(200).render('logout', { title: 'Sesión Actual', message: JSON.stringify(req.user, null, 2), error: false });
+  });
 
 // Login view
 router.get('/login', (req, res) => {
@@ -35,7 +44,11 @@ router.post('/login',
     }
 
     const result = await sessionController.authenticate(req, req.user);
-    sessionController.login(req, req.user); sessionController.login(req, req.user);
+    sessionController.login(req, req.user);
+
+    let { usuario, pass } = req.body;
+    let token = jwt.sign({ usuario, pass, role: 'user' }, 'coderhouse', { expiresIn: '24h' });
+    res.cookie('coderCookieToken', token, { maxAge: 60 * 60 * 1000, httpOnly: true });
 
     return res.status(result.code).redirect('/');
   }
