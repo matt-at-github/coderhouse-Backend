@@ -1,0 +1,20 @@
+{
+  "name": "howtos",
+  "version": "1.0.0",
+  "main": "implement-a-satck.js",
+  "scripts": {
+    "dev": "nodemon npx ts-node implement-a-satck.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.2"
+  },
+  "dependencies": {
+    "@types/node": "^20.11.25",
+    "nodemon": "^3.1.0"
+  }
+}
