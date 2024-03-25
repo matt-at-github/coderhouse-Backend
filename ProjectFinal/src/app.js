@@ -39,7 +39,7 @@ app.use(authorization); // My custom authentication middleware.
 
 // Routes 
 const productsRouter = require('./routes/products.router');
-const productsAPIRouter = require('./routes/API/api.products.router.js');
+// const productsAPIRouter = require('./routes/API/api.products.router.js');
 const cartsRouter = require('./routes/carts.router.js');
 const cartsAPIRouter = require('./routes/API/api.carts.router.js');
 const chatRouter = require('./routes/chat.router.js');
@@ -57,7 +57,7 @@ app.set('view engine', 'handlebars');
 app.set('views', `${__dirname}/public/views`); // Por qué ./public/views no funciona?
 
 // API Routes
-app.use('/api/products', productsAPIRouter);
+// app.use('/api/products', productsAPIRouter);
 app.use('/api/carts', cartsAPIRouter);
 app.use('/api/chats', chatAPIRouter);
 app.use('/api/users', usersAPIRouter);

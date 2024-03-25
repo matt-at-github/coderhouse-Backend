@@ -1,10 +1,13 @@
 const ProductService = require('../services/products.service.js');
+const { responseDialog } = require('../utils/response.js');
 
 class ProductController {
 
-  async getProducts(req) {
-
+  async getProducts(req, res) {
     try {
+
+      if (!req.session.login) { return res.redirect('/sessions/login'); }
+
       const filter = req.query.filter ? JSON.parse(req.query.filter) : undefined;
       const sort = req.query.sort ? JSON.parse(req.query.sort) : undefined;
       const limit = parseInt(req.query.limit) || 10;
@@ -12,24 +15,47 @@ class ProductController {
 
       const products = await ProductService.getProducts(filter, limit, page, sort);
       if (!products.success) {
-        return { code: 400, message: products.message, success: false };
+        return responseDialog(res, 400, products.message);
       }
-      return { code: 200, data: products, success: true };
+
+      return res.render('products', {
+        products: products.payload,
+        totalDocs: products.totalDocs,
+        page: products.page,
+        totalPages: products.totalPages,
+        limit: products.limit,
+        hasNextPage: products.hasNextPage,
+        nextPage: products.nextPage,
+        hasPrevPage: products.hasPrevPage,
+        prevPage: products.prevPage,
+        pagingCounter: products.pagingCounter,
+        session: req.session
+      });
+
     } catch (error) {
-      return { code: 500, message: error.message || 'Internal Server Error', success: false };
+      return responseDialog(res, 500, 'Product Controller error', error);
     }
   }
 
-  async getProductByID(id) {
+  async getProductByID(req, res) {
     try {
 
-      const product = await ProductService.findOne({ _id: id });
+      const product = await ProductService.findOne({ _id: req.params.pid });
       if (!product) {
-        return { code: 400, data: product.message, success: false };
+        return responseDialog(res, 400, product.message);
       }
-      return { code: 200, data: product, success: true };
+
+      // return { code: 200, data: product, success: true };
+      return res.render('product', {
+        id: product._id,
+        title: product.title,
+        description: product.description,
+        price: product.price,
+        session: req.session
+      });
+
     } catch (error) {
-      return { code: 500, message: error.message || 'Internal Server Error', success: false };
+      return responseDialog(res, 500, 'Product Controller error', error);
     }
   }
 
