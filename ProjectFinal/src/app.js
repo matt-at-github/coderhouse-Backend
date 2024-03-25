@@ -1,5 +1,4 @@
-const PORT = 8080;
-const SECRET_KEY = '*KeySuperSecreta!';
+const { mongoConnection, cookie_parser, port } = require('./config/config.js');
 
 const express = require('express');
 const app = express();
@@ -8,12 +7,11 @@ const handlebarsInstance = require('express-handlebars');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const cookieParser = require('cookie-parser');
-
-const appSettings = require('./appSettings.json');
+const cors = require('cors');
 
 const mongoStorage = MongoStore.create({
-  mongoUrl: appSettings.database_connection_url,
-  ttl: 86400, // 24 horas
+  mongoUrl: mongoConnection.url,
+  ttl: mongoConnection.timeToLive,
 });
 
 // Mongo connection
@@ -26,17 +24,17 @@ initializePassport();
 
 // Middelware
 app.use(express.json());
-app.use(cookieParser(SECRET_KEY));
+app.use(cookieParser(cookie_parser.secret_key));
 app.use(express.urlencoded({ extended: true }));
 app.use(session({
-  secret: SECRET_KEY,
+  secret: cookie_parser.secret_key,
   resave: true,
   saveUninitialized: true,
   store: mongoStorage
 }));
 app.use(passport.initialize());
 app.use(passport.session());
-
+app.use(cors());
 app.use(authorization); // My custom authentication middleware.
 
 // Routes 
@@ -84,7 +82,7 @@ app.get('*', function (req, res) {
 //
 
 // Server init
-const httpServer = app.listen(PORT, () => console.log(`Server running at http://localhost:${PORT}`));
+const httpServer = app.listen(port, () => console.log(`Server running at http://localhost:${port}`));
 
 // Socket.io
 const socketIOManager = require('./controllers/messages.controller.js');

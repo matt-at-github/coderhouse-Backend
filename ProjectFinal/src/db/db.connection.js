@@ -1,10 +1,21 @@
-// const password = 'Cn9o0TqM4pQak0kx';
-// const databaseName = 'OnlyShop';
-// const uri = `mongodb+srv://matiasnicolasmoresi:${password}@cluster0.5jasxmm.mongodb.net/${databaseName}?retryWrites=true&w=majority`;
-const appSettings = require('./../appSettings.json');
-
+const { mongoConnection } = require('../config/config.js');
 const mongoose = require('mongoose');
 
-mongoose.connect(appSettings.database_connection_url)
-  .then(() => console.log('Conexión exitosa a MongoDB'))
-  .catch((error) => console.error(`Error: ${error}`));
+class Database {
+  static #instance;
+
+  constructor() {
+    mongoose.connect(mongoConnection.url)
+      .then(() => console.log('Conexión exitosa a MongoDB'))
+      .catch((error) => console.error(`Error: ${error}`));
+  }
+
+  static getInstance() {
+    if (!this.#instance) {
+      this.#instance = new Database();
+    }
+    return this.#instance;
+  }
+}
+
+module.exports = Database.getInstance();
