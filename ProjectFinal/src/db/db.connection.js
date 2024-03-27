@@ -1,4 +1,4 @@
-const { mongoConnection } = require('../config/config.js');
+const { mongoConnectionConfig: mongoConnection } = require('../config/config.js');
 const mongoose = require('mongoose');
 
 class Database {

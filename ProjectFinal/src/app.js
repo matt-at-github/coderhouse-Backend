@@ -1,4 +1,4 @@
-const { mongoConnection, cookie_parser, port } = require('./config/config.js');
+const { mongoConnectionConfig: mongoConnection, cookieParserConfig: cookie_parser, port } = require('./config/config.js');
 
 const express = require('express');
 const app = express();

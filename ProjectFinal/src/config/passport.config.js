@@ -3,6 +3,8 @@ const strategyLocal = require('passport-local');
 const strategyGitHub = require('passport-github2');
 const jwt = require('passport-jwt');
 
+const { jwtConfig, passportConfig } = require('../config/config.js');
+
 const UserController = require('../controllers/user.controller.js');
 const userController = new UserController();
 
@@ -17,8 +19,8 @@ const initializePassport = () => {
 
   passport.use('jwt', new JWTStrategy({
     jwtFromRequest: ExtractJwt.fromExtractors([cookieExtractor]),
-    secretOrKey: 'coderhouse',
-    //Misma palabra secreta queen la App.js
+    secretOrKey: jwtConfig.secretOrKey,
+    //Misma palabra secreta que en la App.js
   }, async (jwt_payload, done) => {
     try {
       return done(null, jwt_payload);
@@ -82,8 +84,8 @@ const initializePassport = () => {
 
   // Passport GitHub Strategy 
   passport.use('github', new strategyGitHub({
-    clientID: 'Iv1.7e41068a2165f5cd',
-    clientSecret: '70ba7055f7fcb2402260043e195b1ec06870169c',
+    clientID: passportConfig.github.clientId,
+    clientSecret: passportConfig.github.clientSecret,
     callbackURL: 'http://localhost:8080/sessions/githubcallback'
   }, async (accessToken, refreshToken, profile, done) => {
 
