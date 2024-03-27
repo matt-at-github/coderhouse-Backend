@@ -1,5 +1,4 @@
 const ProductModel = require('../../models/products.model.js');
-// const ProductService = require('../../services/products.service.js');
 
 class ProductsMongoDBDAO {
 
