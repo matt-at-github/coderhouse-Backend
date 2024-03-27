@@ -1,30 +1,32 @@
 const CartModel = require('../models/carts.model.js');
+const CartMongoDBDAO = require('../DAO/carts/carts.mongodDb.dao.js');
+
+const cartDAO = new CartMongoDBDAO;
 
 class CartController {
 
-  ProductService;
+  productDao;
 
   constructor(ps = undefined) {
-    this.ProductService = ps;
+    this.productDao = ps;
   }
 
   async getCarts() {
     try {
-      const carts = await CartModel.find().populate('products.product');
+      const carts = await cartDAO.getCarts();
       return { code: 200, data: carts, success: true };
     } catch (error) {
       return { code: 500, message: error.message || 'Internal Server Error', success: false };
     }
   }
 
-  async getCart(req) {
+  async getCartByID(req, res) {
     try {
-      const populate = req.query.populate === 'true';
-      const cid = req.params.cid;
 
-      const query = CartModel.findById(cid);
-      if (populate) { query.populate('products.product'); }
-      const cart = await query;
+      const cart = cartDAO.getCart(req);
+      if (!cart) {
+        return { code: 404, message: 'No cart found', success: false };
+      }
       return { code: 200, data: cart, success: true };
     } catch (error) {
       return { code: 500, message: error.message || 'Internal Server Error', success: false };
@@ -33,12 +35,8 @@ class CartController {
 
   async createCart(req) {
     try {
-      const cart = new CartModel({});
-      if (req.body.productsId) {
-        const productToAdd = await this.ProductService.findOne({ _id: req.body.productsId });
-        cart.products.push({ product: productToAdd, quantity: 1 });
-      }
-      const result = await cart.save({ new: true });
+
+      const result = await cartDAO.createCart(req);
       if (!result) {
         return { code: 400, message: result.message, success: false };
       }
@@ -50,23 +48,26 @@ class CartController {
 
   async addItemToCart(req) {
     try {
-      const cartId = req.params.cid;
-      const cart = await CartModel.findOne({ _id: cartId });
+
+      const cart = await cartDAO.getCart(req);
       if (!cart) {
         return { code: 404, message: 'No cart found.', success: false };
       }
-      const prodId = req.params.pid;
-      const productToAdd = await this.ProductService.findOne({ _id: prodId });
+
+      const productToAdd = await this.productDao.getProductByID(req);
       if (!productToAdd) {
         return { code: 404, message: 'No such product found.', success: false };
       }
+
+      const prodId = req.params.pid;
       const existingProductIndex = cart.products.findIndex(f => f.product.toString() === prodId.toString());
       if (existingProductIndex !== -1) {
         cart.products[existingProductIndex].quantity += 1;
       } else {
         cart.products.push({ product: productToAdd._id, quantity: 1 });
       }
-      const updatedCart = await cart.save({ new: true });
+
+      const updatedCart = await cartDAO.updateCart(cart);
       return { code: 200, data: updatedCart, success: true };
     } catch (error) {
       return { code: 500, message: error.message || 'Internal Server Error', success: false };
@@ -75,21 +76,23 @@ class CartController {
 
   async editProductQuantity(req) {
     try {
-      const cartId = req.params.cid;
-      const cart = await CartModel.findOne({ _id: cartId });
+
+      const cart = await cartDAO.getCart(req);
       if (!cart) {
         return { code: 404, message: 'No cart found.', success: false };
       }
-      const prodId = req.params.pid;
-      const productToAdd = await this.ProductService.findOne({ _id: prodId });
+
+      const productToAdd = await this.productDao.getProductByID(req);
       if (!productToAdd) {
         return { code: 404, message: 'No such product found.', success: false };
       }
+
+      const prodId = req.params.pid;
       const productIndex = cart.products.findIndex(f => f.product.toString() === prodId.toString());
       if (productIndex !== -1) {
         cart.products[productIndex].quantity += req.body.quantity;
       }
-      const updatedCart = await cart.save({ new: true });
+      const updatedCart = await cartDAO.updateCart(cart);
       return { code: 200, data: updatedCart, success: true };
     } catch (error) {
       return { code: 500, message: error.message || 'Internal Server Error', success: false };
@@ -134,7 +137,7 @@ class CartController {
         return { code: 404, message: 'No cart found.', success: false };
       }
       const pid = req.params.pid;
-      const productToRemove = await this.ProductService.findById(pid);
+      const productToRemove = await this.productDao.findById(pid);
       if (!productToRemove) {
         return { code: 404, message: 'No such product found.', success: false };
       }

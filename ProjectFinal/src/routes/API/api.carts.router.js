@@ -1,9 +1,11 @@
 const express = require('express');
 const router = express.Router();
 
-const ProductService = require('../../services/products.service.js');
+const ProductsMongoDBDAO = require('../../DAO/products/products.mongoDb.dao.js');
+const productDAO = new ProductsMongoDBDAO();
+
 const CartController = require('../../controllers/cart.controller.js');
-const cartController = new CartController(ProductService);
+const cartController = new CartController(productDAO);
 
 // Get all carts
 router.get('/', async (req, res) => {
@@ -18,7 +20,7 @@ router.get('/', async (req, res) => {
 // Get cart by ID
 router.get('/:cid', async (req, res) => {
   try {
-    const result = await cartController.getCart(req);
+    const result = await cartController.getCartByID(req);
     handleResponse(res, result);
   } catch (error) {
     res.status(500).send(error.message || 'Internal Server Error');

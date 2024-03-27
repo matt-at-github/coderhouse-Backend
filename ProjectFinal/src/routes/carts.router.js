@@ -1,19 +1,24 @@
 const express = require('express');
 const router = express.Router();
 
+const ProductsMongoDBDAO = require('../DAO/products/products.mongoDb.dao.js');
+const productDAO = new ProductsMongoDBDAO();
+
 const CartController = require('../controllers/cart.controller.js');
-const cartController = new CartController();
+const cartController = new CartController(productDAO);
 
 // Get cart by ID
+// router.get('/:cid', cartController.getCartByID); // TODO
+
 router.get('/:cid', async (req, res) => {
 
   try {
     req.query.populate = 'true';
-    const response = await cartController.getCart(req);
+    const response = await cartController.getCartByID(req);
     if (!response.success) {
       return res.status(response.code).send({ message: response.message });
     }
-    
+
     return res.render('cart', {
       products: response.data.products.map(m => m.toObject()),
       totalDocs: response.data.totalDocs,

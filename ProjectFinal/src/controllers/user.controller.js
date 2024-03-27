@@ -1,27 +1,22 @@
-const UserModel = require('../models/users.model.js');
 const { createHash } = require('../utils/hashBcrypt.js');
-class UserController extends UserModel {
+
+const UserMongoDBDAO = require('../DAO/users/users.mongoDb.dao.js');
+const userDAO = new UserMongoDBDAO;
+
+class UserController {
 
   async createUser(req) {
 
     try {
-      let { first_name, last_name, email, password, age } = req.body;
-      age = Number(age);
 
-      const exists = await UserModel.findOne({ email });
+      const exists = userDAO.getUserByEmail(req);
       if (exists) {
         return { code: 400, message: 'El email está siendo usado', success: false };
       }
 
-      let user = {
-        first_name,
-        last_name,
-        email,
-        age,
-        password: createHash(password)
-      };
+      req.password = createHash(req.body.password);
 
-      const response = await UserModel.create(user);
+      const response = await userDAO.createUser(req);
       if (!response) {
         return { code: 400, message: response.message, success: false };
       }
@@ -36,29 +31,29 @@ class UserController extends UserModel {
     try {
       const githubData = profile._json;
       if (githubData.email) {
-        const exists = await UserModel.findOne({ email: githubData.email });
+        const exists = await userDAO.getUserByEmail({ email: githubData.email });
         if (exists) {
           return { code: 400, message: 'El email está siendo usado', success: false };
         }
       }
 
       if (profile.username) {
-        const exists = await UserModel.findOne({ email: profile.username });
+        const exists = await userDAO.getUserByEmail({ email: profile.username });
         if (exists) {
           return { code: 400, message: 'El email está siendo usado', success: false, user: exists };
         }
       }
 
-      const user = new UserModel();
+      const body = {};
 
       const fullName = githubData.name?.split(' ');
-      user.first_name = fullName[0] ?? '';
-      user.last_name = fullName[1] ?? '';
-      user.email = githubData.email ?? profile.username ?? '';
-      user.age = Number(githubData.age ?? 0);
-      user.password = githubData.password ?? '';
+      body.first_name = fullName[0] ?? '';
+      body.last_name = fullName[1] ?? '';
+      body.email = githubData.email ?? profile.username ?? '';
+      body.age = Number(githubData.age ?? 0);
+      body.password = githubData.password ?? '';
 
-      const response = await UserModel.create(user);
+      const response = await userDAO.createUser({ req: body }); //await UserModel.create(user);
       if (!response) {
         return { code: 400, message: response.message, success: false };
       }
@@ -69,9 +64,9 @@ class UserController extends UserModel {
 
   }
 
-  async findUserById(id) {
+  async findUserById(req) {
     try {
-      const user = await UserModel.findById(id);
+      const user = await userDAO.getUserByID(req); //await UserModel.findById(id);
       if (!user) { return { code: 400, message: 'Usuario no encontrado', success: false }; }
       return { code: 200, user, success: true };
     } catch (error) {

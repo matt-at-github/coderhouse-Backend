@@ -1,7 +1,7 @@
 const { responseDialog } = require('../utils/response.js');
 
 const ProductsMongoDBDAO = require('../DAO/products/products.mongoDb.dao.js');
-const ProductDAO = new ProductsMongoDBDAO();
+const productDAO = new ProductsMongoDBDAO();
 
 class ProductController {
 
@@ -10,7 +10,7 @@ class ProductController {
     try {
       if (!req.session.login) { return res.redirect('/sessions/login'); }
 
-      const products = await ProductDAO.getProducts(req);
+      const products = await productDAO.getProducts(req);
       if (!products.success) {
         return responseDialog(res, 400, products.message);
       }
@@ -37,7 +37,7 @@ class ProductController {
   async getProductByID(req, res) {
     try {
 
-      const product = await ProductDAO.getProductByID(req);
+      const product = await productDAO.getProductByID(req);
       if (!product) {
         return responseDialog(res, 400, product.message);
       }
@@ -63,7 +63,7 @@ class ProductController {
         return { code: validation.code, message: validation.message, success: false };
       }
 
-      const result = await ProductDAO.createProduct(req);
+      const result = await productDAO.createProduct(req);
       if (!result) {
         return { code: 400, message: result.message, success: false };
       }
@@ -90,7 +90,7 @@ class ProductController {
   async deleteProduct(req) {
     try {
 
-      const deleteProduct = await ProductDAO.deleteProduct(req);
+      const deleteProduct = await productDAO.deleteProduct(req);
       if (!deleteProduct) {
         return { code: 404, message: 'Product not found.', success: false };
       }
