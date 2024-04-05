@@ -1,4 +1,5 @@
 const UserModel = require('../../models/users.model.js');
+const { createHash } = require('../../utils/hashBcrypt.js');
 
 class UserMongoDBDAO {
 
@@ -33,7 +34,7 @@ class UserMongoDBDAO {
         last_name,
         email,
         age,
-        password
+        password: createHash(password)
       };
 
       const result = await UserModel.create(user);
