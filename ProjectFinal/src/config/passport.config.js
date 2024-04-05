@@ -72,7 +72,7 @@ const initializePassport = () => {
     try {
 
       if (user.role === 'admin') { return done(null, user); }
-
+      console.log('passport.config', 'deserializeUser', user._id);
       let result = await userController.findUserById({ _id: user._id });
       if (!result.success) { return done(result.message, false); }
       return done(null, result.user);
