@@ -14,10 +14,12 @@ class SessionController {
     req.session.login = true;
     req.session.userName = `${user.first_name} ${user.last_name}`;
     req.session.isAdmin = user.role === 'admin'; // TODO: Improve
+    req.session.cartId = user.cart.toString();
 
+    console.log('session.controller.js', 'login', 'req.session.cartId', req.session.cartId);
     return { success: true, user, description: '', code: 200 };
   }
-  
+
   async authenticate(req, user = undefined) {
 
     try {
@@ -49,7 +51,11 @@ class SessionController {
       req.session.login = true;
       req.session.userName = `${user.first_name} ${user.last_name}`;
       req.session.isAdmin = user.role === 'admin'; // TODO: Improve
+      req.session.cartId = user.cart.toString();
 
+      console.log('session.controller.js', 'authenticate', 'user', user);
+      console.log('session.controller.js', 'authenticate', 'req.session.cartId', req.session.cartId);
+      console.log('session.controller.js', 'authenticate', 'user.cart.toString()', user.cart.toString());
       return { success: true, user, description: '', code: 200 };
     } catch (error) {
       return console.error(`Session Service error -> ${error}`);

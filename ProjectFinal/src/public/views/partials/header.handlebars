@@ -31,8 +31,8 @@
         {{/if}}
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
           {{#if session.login}}
-          <a class="dropdown-item" href="#">Mi Carrito</a>
-          <a class="dropdown-item" href="#">Editar cuenta</a>
+          <a class="dropdown-item" href="/carts/{{session.cartId}}">Mi Carrito</a>
+          <a class="dropdown-item" href="/users/account">Editar cuenta</a>
           <div class="dropdown-divider"></div>
           <a class="dropdown-item" href="/sessions/logout">Cerrar sesión</a>
           {{else}}
