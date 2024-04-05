@@ -64,9 +64,9 @@ class UserController {
 
   }
 
-  async findUserById(req) {
+  async findUserById(id) {
     try {
-      const user = await userDAO.getUserByID(req); //await UserModel.findById(id);
+      const user = await userDAO.getUserByID(id); //await UserModel.findById(id);
       if (!user) { return { code: 400, message: 'Usuario no encontrado', success: false }; }
       return { code: 200, user, success: true };
     } catch (error) {

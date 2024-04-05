@@ -2,21 +2,23 @@ const UserModel = require('../../models/users.model.js');
 
 class UserMongoDBDAO {
 
-  async getUserByID(req) {
+  async getUserByID(id) {
     try {
-      const user = await UserModel.findOne({ email: req.body.email });
+      const user = await UserModel.findById(id);
+      console.log('users.mongodb.dao', 'getUserByID', id);
       return user;
     } catch (error) {
-      throw new Error('Error at getting user', error);
+      throw new Error(`Error at getting user. ${error}`);
     }
   }
 
   async getUserByEmail(req) {
     try {
-      const user = await UserModel.findById(req.params.id);
+      const user = await UserModel.findOne({ email: req.body.email });
+      console.log('users.mongodb.dao', 'getUserByEmail', req.body.email);
       return user;
     } catch (error) {
-      throw new Error('Error at getting user', error);
+      throw new Error(`Error at getting user. ${error}`);
     }
   }
 
