@@ -1,9 +1,14 @@
 const UserMongoDBDAO = require('../DAO/users/users.mongoDb.dao.js');
 const userDAO = new UserMongoDBDAO;
 
+const passport = require('passport');
+
+const SessionController = require('../controllers/session.controller.js');
+const sessionController = new SessionController(passport);
+
 class UserController {
 
-  async createUser(req) {
+  async createUser(req, res) {
 
     try {
 
@@ -17,7 +22,16 @@ class UserController {
       if (!response) {
         return { code: 400, message: response.message, success: false };
       }
-      return { code: 200, user: response, success: true };
+
+      const result = await sessionController.authenticate(req);
+      if (!result.success) {
+        return res.status(result.code).send({ message: result.message });
+      }
+
+      sessionController.login(req, req.user);
+
+      return res.status(result.code).redirect('/');
+
     } catch (error) {
       return { code: 500, message: error.message || 'Internal Server Error', success: false };
     }
