@@ -1,40 +1,30 @@
 const express = require('express');
 const router = express.Router();
-
-const ProductsMongoDBDAO = require('../DAO/products/products.mongoDb.dao.js');
-const productDAO = new ProductsMongoDBDAO();
-
 const CartController = require('../controllers/cart.controller.js');
-const cartController = new CartController(productDAO);
+const cartController = new CartController();
+
+// Get all carts
+router.get('/', cartController.getAllCarts);
 
 // Get cart by ID
-// router.get('/:cid', cartController.getCartByID); // TODO
+router.get('/:cid', cartController.getCartByID);
 
-router.get('/:cid', async (req, res) => {
+// Create new cart
+router.post('/', cartController.createCart);
 
-  try {
-    req.query.populate = 'true';
-    const response = await cartController.getCartByID(req);
-    if (!response.success) {
-      return res.status(response.code).send({ message: response.message });
-    }
+// Add item to cart
+router.post('/:cid/product/:pid', cartController.addItemToCart);
 
-    return res.render('cart', {
-      products: response.data.products.map(m => m.toObject()),
-      totalDocs: response.data.totalDocs,
-      page: response.data.page,
-      totalPages: response.data.totalPages,
-      limit: response.data.limit,
-      hasNextPage: response.data.hasNextPage,
-      nextPage: response.data.nextPage,
-      hasPrevPage: response.data.hasPrevPage,
-      prevPage: response.data.prevPage,
-      pagingCounter: response.data.pagingCounter,
-      session: req.session
-    });
-  } catch (error) {
-    return res.status(500).send({ message: error.message || 'Internal Server Error' });
-  }
-});
+// Edit cart's product quantity
+router.put('/:cid/products/:pid', cartController.editProductQuantity);
+
+// Edit cart
+router.put('/:cid', cartController.editCart);
+
+// Clear cart
+router.delete('/:cid', cartController.clearCart);
+
+// Remove item from cart
+router.delete('/:cid/product/:pid', cartController.removeItemFromCart);
 
 module.exports = router;

@@ -41,12 +41,13 @@ app.use(authorization); // My custom authentication middleware.
 const productsRouter = require('./routes/products.router');
 // const productsAPIRouter = require('./routes/API/api.products.router.js');
 const cartsRouter = require('./routes/carts.router.js');
-const cartsAPIRouter = require('./routes/API/api.carts.router.js');
-const chatRouter = require('./routes/chat.router.js');
+// const cartsAPIRouter = require('./routes/API/api.carts.router.js');
+// const chatRouter = require('./routes/chat.router.js');
 const chatAPIRouter = require('./routes/API/api.chat.router.js');
 const usersRouter = require('./routes/users.router.js');
 const usersAPIRouter = require('./routes/API/api.users.router.js');
 const sessionRouter = require('./routes/sessions.router.js');
+const viewsRouter = require('./routes/views.router.js');
 
 app.use(express.static(`${__dirname}/public`));
 app.use('/favicon.ico', express.static(`${__dirname}/public/img/favicon.png`));
@@ -56,15 +57,17 @@ app.engine('handlebars', handlebarsInstance.engine());
 app.set('view engine', 'handlebars');
 app.set('views', `${__dirname}/public/views`); // Por qué ./public/views no funciona?
 
+app.use('/', viewsRouter);
+
 // API Routes
 // app.use('/api/products', productsAPIRouter);
-app.use('/api/carts', cartsAPIRouter);
-app.use('/api/chats', chatAPIRouter);
-app.use('/api/users', usersAPIRouter);
+// app.use('/carts', cartsAPIRouter);
+// app.use('/api/chats', chatAPIRouter);
+// app.use('/api/users', usersAPIRouter);
 
 // Routes
 app.use('/products', productsRouter);
-app.use('/chats', chatRouter);
+// app.use('/chats', chatRouter);
 app.use('/sessions', sessionRouter);
 app.use('/users', usersRouter);
 app.use('/carts', cartsRouter);

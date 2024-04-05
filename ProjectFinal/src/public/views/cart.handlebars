@@ -51,7 +51,7 @@
   // TODO: Instead of reloading the full page, just update the amount once the update callback is run.
   function substractFromCart(id) {   
     cartId = document.URL.split('/').reverse()[0]
-    fetch(`/api/carts/${cartId}/product/${id}`, {
+    fetch(`/carts/${cartId}/product/${id}`, {
       method: 'DELETE',
     })
     .then(response => response.json())
@@ -67,7 +67,7 @@
 
   function addToCart(id) {   
     cartId = document.URL.split('/').reverse()[0]
-    fetch(`/api/carts/${cartId}/product/${id}`, {
+    fetch(`/carts/${cartId}/product/${id}`, {
       method: 'POST'
     })
     .then(response => response.json())

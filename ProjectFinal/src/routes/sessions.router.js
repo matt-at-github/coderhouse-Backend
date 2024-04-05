@@ -13,12 +13,8 @@ router.get('/current',
   passportCall('jwt'),
   authorization('user'), (req, res) => {
     res.status(200).render('logout', { title: 'Sesión Actual', message: JSON.stringify(req.user, null, 2), error: false });
-  });
-
-// Login view
-router.get('/login', (req, res) => {
-  res.status(200).render('login');
-});
+  }
+);
 
 // Logout 
 router.get('/logout', (req, res) => {
@@ -80,10 +76,5 @@ router.get('/githubcallback',
     return res.status(result.code).redirect('/');
   }
 );
-
-// Failed login result
-router.get('/failedLogin', async (req, res) => {
-  return res.status(400).render('logout', { error: true, message: 'Ups, error de estrategía de inicio de sesión.' });
-});
 
 module.exports = router;

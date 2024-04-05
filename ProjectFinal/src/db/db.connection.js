@@ -11,6 +11,7 @@ class Database {
   }
 
   static getInstance() {
+    console.log('Initiating mongo collection');
     if (!this.#instance) {
       this.#instance = new Database();
     }
