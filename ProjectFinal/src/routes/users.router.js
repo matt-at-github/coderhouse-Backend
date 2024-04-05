@@ -9,12 +9,6 @@ const sessionController = new SessionController(passport);
 const UserController = require('../controllers/user.controller.js');
 const userController = new UserController();
 
-// Crear cuenta
-router.get('/createAccount', (req, res) => {
-  if (req.session.login) { return res.status(200).redirect('/'); } // TODO: Cambiar a Profile Settings
-  return res.status(200).render('createAccount');
-});
-
 // Create new Account
 router.post('/createAccount', async (req, res) => {
   try {
@@ -57,15 +51,5 @@ router.post('/passport/createAccount',
     return res.status(200).redirect('/');
   }
 );
-
-// Account view
-router.get('/logout', (req, res) => {
-  res.status(200).render('logout');
-});
-
-// Account view
-router.get('/account', (req, res) => {
-  res.status(200).send({ message: req.session });
-});
 
 module.exports = router;
