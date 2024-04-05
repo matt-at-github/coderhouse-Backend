@@ -1,5 +1,3 @@
-const { createHash } = require('../utils/hashBcrypt.js');
-
 const UserMongoDBDAO = require('../DAO/users/users.mongoDb.dao.js');
 const userDAO = new UserMongoDBDAO;
 
@@ -14,8 +12,6 @@ class UserController {
       if (exists) {
         return { code: 400, message: 'El email está siendo usado', success: false };
       }
-
-      req.password = createHash(req.body.password);
 
       const response = await userDAO.createUser(req);
       if (!response) {

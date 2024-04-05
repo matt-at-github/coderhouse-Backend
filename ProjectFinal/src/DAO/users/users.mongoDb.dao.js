@@ -1,4 +1,6 @@
 const UserModel = require('../../models/users.model.js');
+const CartModel = require('../../models/carts.model.js');
+
 const { createHash } = require('../../utils/hashBcrypt.js');
 
 class UserMongoDBDAO {
@@ -29,12 +31,16 @@ class UserMongoDBDAO {
       let { first_name, last_name, email, password, age } = req.body;
       age = Number(age);
 
+      const cart = new CartModel();
+      cart.save();
+
       let user = {
         first_name,
         last_name,
         email,
         age,
-        password: createHash(password)
+        password: createHash(password),
+        cart
       };
 
       const result = await UserModel.create(user);
