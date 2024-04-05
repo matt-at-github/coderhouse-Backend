@@ -9,7 +9,8 @@ class UserController {
 
     try {
 
-      const exists = userDAO.getUserByEmail(req);
+      const exists = await userDAO.getUserByEmail(req);
+      console.log('user.controller.js', 'exists', exists);
       if (exists) {
         return { code: 400, message: 'El email está siendo usado', success: false };
       }
