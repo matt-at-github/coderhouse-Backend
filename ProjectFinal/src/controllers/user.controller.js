@@ -12,7 +12,7 @@ class UserController {
 
     try {
 
-      const exists = await userDAO.getUserByEmail(req);
+      const exists = await userDAO.getUserByEmail(req.body.email);
       console.log('user.controller.js', 'exists', exists);
       if (exists) {
         return { code: 400, message: 'El email está siendo usado', success: false };
@@ -23,7 +23,7 @@ class UserController {
         return { code: 400, message: response.message, success: false };
       }
 
-      const result = await sessionController.authenticate(req);
+      const result = await sessionController.authenticate(req, res);
       if (!result.success) {
         return res.status(result.code).send({ message: result.message });
       }
@@ -42,14 +42,14 @@ class UserController {
     try {
       const githubData = profile._json;
       if (githubData.email) {
-        const exists = await userDAO.getUserByEmail({ email: githubData.email });
+        const exists = await userDAO.getUserByEmail(githubData.email);
         if (exists) {
           return { code: 400, message: 'El email está siendo usado', success: false };
         }
       }
 
       if (profile.username) {
-        const exists = await userDAO.getUserByEmail({ email: profile.username });
+        const exists = await userDAO.getUserByEmail(profile.username);
         if (exists) {
           return { code: 400, message: 'El email está siendo usado', success: false, user: exists };
         }
@@ -64,7 +64,10 @@ class UserController {
       body.age = Number(githubData.age ?? 0);
       body.password = githubData.password ?? '';
 
-      const response = await userDAO.createUser({ req: body }); //await UserModel.create(user);
+      const req = { body };
+
+      console.log('user.controller', 'body', req);
+      const response = await userDAO.createUser(req); //await UserModel.create(user);
       if (!response) {
         return { code: 400, message: response.message, success: false };
       }

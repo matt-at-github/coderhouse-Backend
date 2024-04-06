@@ -10,7 +10,7 @@ dotenv.config({
 const projectConfiguration = {
   mongo: { timeToLive: 86400 },
   cookie_parser: {},
-  jwt: { tokenLife: '24h' },
+  jwt: { tokenLife: '24h', tokenName: 'OnlyShopToken' },
   bcrypt: {}
 };
 
@@ -24,7 +24,9 @@ const configObject = {
     secret_key: process.env.COOKIE_PARSER_SECRET_KEY
   },
   jwtConfig: {
-    secretOrKey: process.env.JWT_SECRET_OR_KEY
+    secretOrKey: process.env.JWT_SECRET_OR_KEY,
+    tokenName: projectConfiguration.jwt.tokenName,
+    tokenLife: projectConfiguration.jwt.tokenLife
   },
   passportConfig: {
     github: {

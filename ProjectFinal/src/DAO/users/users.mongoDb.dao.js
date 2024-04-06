@@ -15,10 +15,11 @@ class UserMongoDBDAO {
     }
   }
 
-  async getUserByEmail(req) {
+  async getUserByEmail(email) {
     try {
-      const user = await UserModel.findOne({ email: req.body.email });
-      console.log('users.mongodb.dao', 'getUserByEmail', req.body.email);
+      console.log('users.mongodb.dao', 'getUserByEmail', email);
+      const user = await UserModel.findOne({ email: email });
+      console.log('users.mongodb.dao', 'getUserByEmail', email);
       return user;
     } catch (error) {
       throw new Error(`Error at getting user. ${error}`);
@@ -28,11 +29,13 @@ class UserMongoDBDAO {
   async createUser(req) {
     try {
 
+      console.log('user.mongoDB.dao', 'createUser', 'req', req.body);
+      console.log('user.mongoDB.dao', 'createUser', 'req.body.first_name', req.body.first_name);
       let { first_name, last_name, email, password, age } = req.body;
       age = Number(age);
 
       const cart = new CartModel();
-      cart.save();
+      await cart.save();
 
       let user = {
         first_name,
@@ -46,7 +49,7 @@ class UserMongoDBDAO {
       const result = await UserModel.create(user);
       return result;
     } catch (error) {
-      throw new Error('Error at creating cart', error);
+      throw new Error(`Error at creating cart. ${error}`);
     }
   }
 }

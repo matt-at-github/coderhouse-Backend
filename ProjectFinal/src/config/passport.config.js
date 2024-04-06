@@ -1,5 +1,4 @@
 const passport = require('passport');
-const strategyLocal = require('passport-local');
 const strategyGitHub = require('passport-github2');
 const jwt = require('passport-jwt');
 
@@ -8,10 +7,6 @@ const { jwtConfig, passportConfig } = require('../config/config.js');
 const UserController = require('../controllers/user.controller.js');
 const userController = new UserController();
 
-const SessionController = require('../controllers/session.controller.js');
-const sessionController = new SessionController(passport);
-
-const LocalStrategy = strategyLocal.Strategy;
 const JWTStrategy = jwt.Strategy;
 const ExtractJwt = jwt.ExtractJwt;
 
@@ -20,48 +15,17 @@ const initializePassport = () => {
   passport.use('jwt', new JWTStrategy({
     jwtFromRequest: ExtractJwt.fromExtractors([cookieExtractor]),
     secretOrKey: jwtConfig.secretOrKey,
-    //Misma palabra secreta que en la App.js
   }, async (jwt_payload, done) => {
     try {
-      return done(null, jwt_payload);
+      const user = await userController.findUserById(jwt_payload.user._id);
+      if (!user) {
+        return done(null, false);
+      }
+      return done(null, user);
     } catch (error) {
       return done(error);
     }
   }));
-
-  // Passport Local Strategy
-  passport.use('register',
-    new LocalStrategy({ passReqToCallback: true, usernameField: 'email' },
-      async (req, username, password, done) => {
-
-        try {
-          req.body.password = password;
-          const result = await userController.createUser(req);
-          if (!result.success) return done(result.message, false);
-
-          return done(null, result.user);
-        } catch (error) {
-          return done(error);
-        }
-      })
-  );
-
-  passport.use('login',
-    new LocalStrategy({ usernameField: 'email' },
-      async (email, password, done) => {
-        try {
-
-          const req = { body: { email: email, password: password }, session: { login: false } };
-          console.log('passport', req);
-          const result = await sessionController.authenticate(req);
-          if (!result.success) { return done(result.message, false); }
-
-          return done(null, result.user);
-        } catch (error) {
-          return done(error);
-        }
-      })
-  );
 
   passport.serializeUser((user, done) => {
     done(null, user);
