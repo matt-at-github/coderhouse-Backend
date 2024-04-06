@@ -1,5 +1,7 @@
 const UserModel = require('../models/users.model');
 const { isValidPassword } = require('../utils/hashBcrypt.js');
+const { jwtConfig } = require('../config/config.js');
+const jwt = require('jsonwebtoken');
 
 class SessionController {
 
@@ -20,10 +22,10 @@ class SessionController {
     return { success: true, user, description: '', code: 200 };
   }
 
-  async authenticate(req, user = undefined) {
+  async authenticate(req, res) {
 
     try {
-
+      let user = req.user;
       if (!user) {
         const { email, password } = req.body;
         user = new UserModel();
@@ -56,7 +58,13 @@ class SessionController {
       console.log('session.controller.js', 'authenticate', 'user', user);
       console.log('session.controller.js', 'authenticate', 'req.session.cartId', req.session.cartId);
       console.log('session.controller.js', 'authenticate', 'user.cart.toString()', user.cart.toString());
-      return { success: true, user, description: '', code: 200 };
+
+      let { usuario, pass } = req.body;
+      let token = jwt.sign({ usuario, pass, role: 'user' }, jwtConfig.secretOrKey, { expiresIn: jwtConfig.tokenLife });
+      res.cookie(jwtConfig.tokenName, token, { maxAge: 60 * 60 * 1000, httpOnly: true });
+
+      return res.status(200).redirect('/');
+
     } catch (error) {
       return console.error(`Session Service error -> ${error}`);
     }
@@ -65,9 +73,13 @@ class SessionController {
   logout(req, res) {
     if (req.session?.login) {
       req.session.destroy();
-      return { success: true, code: 200 };
+      return res.status(200).redirect('../../sessions/login');
     }
-    return res.status(400).render('logout', { error: true, message: 'Ups, sesión no encontrada.' });
+    return res.status(400).render('logout', { error: true, title: 'Cerrar sesión', message: 'Ups, sesión no encontrada.' });
+  }
+
+  getCurrentData(req, res) {
+    return res.status(200).render('logout', { title: 'Sesión Actual', message: JSON.stringify(req.user, null, 2), error: false });
   }
 }
 
