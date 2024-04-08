@@ -6,11 +6,11 @@ const router = express.Router();
 
 // Sessions
 // Login view
-router.get('/sessions/login', (req, res) => {
+router.get('/users/login', (req, res) => {
   res.status(200).render('login');
 });
 // Failed login result
-router.get('/sessions/failedLogin', async (req, res) => {
+router.get('/users/failedLogin', async (req, res) => {
   return res.status(400).render('logout', { error: true, message: 'Ups, error de estrategía de inicio de sesión.' });
 });
 

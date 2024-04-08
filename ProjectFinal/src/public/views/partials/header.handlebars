@@ -20,9 +20,12 @@
 
     <form class="form-inline">
       <div class="btn-group dropleft float-left">
-        {{#if session.login}}
+        {{log 'HANDLEBLARS LOG this.user' this.user}}
+        {{log 'HANDLEBLARS LOG user' user}}
+        {{log 'HANDLEBLARS LOG user' user}}
+        {{#if user.login}}
         <button type="button" class="btn  dropdown-toggle text-uppercase text-white" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          {{session.userName}}
+          {{user.userName}}
         </button>
         {{else}}
         <button type="button" class="btn  dropdown-toggle text-uppercase text-white" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -30,11 +33,11 @@
         </button>
         {{/if}}
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          {{#if session.login}}
-          <a class="dropdown-item" href="/carts/{{session.cartId}}">Mi Carrito</a>
+          {{#if user.login}}
+          <a class="dropdown-item" href="/carts/{{user.cartId}}">Mi Carrito</a>
           <a class="dropdown-item" href="/users/account">Editar cuenta</a>
           <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="/sessions/logout">Cerrar sesión</a>
+          <a class="dropdown-item" href="/users/logout">Cerrar sesión</a>
           {{else}}
           <a class="dropdown-item" href="/">Inciar Sesión</a>
           <a class="dropdown-item" href="/users/createAccount">Crear cuenta</a>

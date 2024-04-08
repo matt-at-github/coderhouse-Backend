@@ -1,8 +1,8 @@
-const ChatService = require('../services/chat.service.js');
+const ChatModel = require('../models/chat.model.js');
 
 class ChatController {
 
-  async getAllMessages(req) {
+  async getAllMessages(req, res) {
 
     try {
       const filter = req.query.filter ? JSON.parse(req.query.filter) : undefined;
@@ -10,39 +10,68 @@ class ChatController {
       const limit = parseInt(req.query.limit) || 10;
       const page = parseInt(req.query.page) || 1;
 
-      const result = await ChatService.getMessages(filter, limit, page, sort);
+      const result = await getMessages(filter, limit, page, sort);
       if (!result.success) {
-        return { code: 400, message: result.message, success: false };
+        return res.status(400).json({ message: result.message });
       }
-      return { code: 200, data: result, success: true };
+      return res.status(200).json({ data: result });
     } catch (error) {
-      return { code: 500, message: error.message || 'Internal Server Error', success: false };
+      return res.status(500).json({ message: `Chat controller error -> ${error.message}` });
     }
   }
 
-  async getChat(req) {
+  async getChat(req, res) {
     try {
-      const result = await ChatService.find({ user: req.params.email });
-      return { code: 200, data: result, success: true };
+      // TODO: get chat for logged user.
+      const result = await ChatModel.find({ user: req.params.email });
+      return res.status(200).json({ data: result });
     }
     catch (error) {
-      return { code: 500, message: error.message || 'Internal Server Error', success: false };
+      return res.status(500).json({ message: `Chat controller error -> ${error.message}` });
     }
   }
 
-  async createMessage(req) {
+  async createMessage(req, res) {
     try {
 
-      const result = await (new ChatService({ user: req.params.email, message: req.body.message })).save();
+      const result = await (new ChatModel({ user: req.params.email, message: req.body.message })).save();
       if (!result) {
-        return { code: 400, message: result.message, success: false };
+        return res.status(400).json({ message: result.message });
       }
-      return { code: 200, data: result, success: true };
+      return res.status(200).json({ data: result });
     }
     catch (error) {
-      return { code: 500, message: error.message || 'Internal Server Error', success: false };
+      return res.status(500).json({ message: `Chat controller error -> ${error.message}` });
     }
   }
 }
 
 module.exports = ChatController;
+
+//Auxiliary methods
+async function getMessages(queryFilter = {}, queryLimit = 10, queryPage = 1, querySort = { id: 1 }) {
+  try {
+    const { docs, totalDocs, limit, page, totalPages, hasNextPage, nextPage, hasPrevPage, prevPage, pagingCounter } = await ChatModel.paginate(queryFilter, { limit: queryLimit, page: queryPage, sort: querySort });
+
+    const messages = docs.map(m => {
+      return m.toObject();
+    });
+
+    return {
+      success: messages.length > 0,
+      totalDocs,
+      page,
+      totalPages,
+      limit,
+      hasNextPage,
+      nextPage,
+      hasPrevPage,
+      prevPage,
+      pagingCounter,
+      payload: messages
+    };
+
+  } catch (error) {
+    return console.error(`Product Service error -> ${error}`);
+  }
+}

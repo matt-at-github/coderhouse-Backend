@@ -1,11 +1,11 @@
-const { mongoConnectionConfig: mongoConnection } = require('../config/config.js');
+const { mongoConnectionConfig } = require('../config/config.js');
 const mongoose = require('mongoose');
 
 class Database {
   static #instance;
 
   constructor() {
-    mongoose.connect(mongoConnection.url)
+    mongoose.connect(mongoConnectionConfig.url)
       .then(() => console.log('Conexión exitosa a MongoDB'))
       .catch((error) => console.error(`Error: ${error}`));
   }

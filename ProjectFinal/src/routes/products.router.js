@@ -4,10 +4,16 @@ const router = express.Router();
 const ProductController = require('../controllers/product.controller.js');
 const productController = new ProductController();
 
+/*
+ * La única observación que puedo marcarte es que en el archivo products.router.js 
+ * falta incluir los endpoints que realizan las 
+ * solicitudes POST, PUT y DELETE asociadas a las productos. Estos endpoints no podrán faltar en la 3ra preentrega. 
+ */
+
 // // Get all products / Get Products by query
-router.get('/', productController.getProducts);
+router.get('/', productController.renderProducts.bind(productController));
 
 // Get product by ID
-router.get('/:pid', productController.getProductByID);
+router.get('/:pid', productController.renderProductByID);
 
 module.exports = router;

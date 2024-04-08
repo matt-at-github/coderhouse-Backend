@@ -6,7 +6,7 @@ const MongoStore = require("connect-mongo");
 require("./db.connection.js");
 
 const userRouter = require("./routes/user.router.js");
-const sessionRouter = require("./routes/sessions.router.js");
+const sessionRouter = require("./routes/users.router.js");
 
 const PUERTO = 8080;
 const secret = 'mySecretKey'
@@ -20,7 +20,7 @@ app.use(cookieParser(secret));
 // const FileStore = require("session-file-store"); 
 // const fileStore = FileStore(session); // Inicialización del módulo
 // const fileStorage = new fileStore({ 
-//   path: "./src/sessions", // dónde se van a guardar
+//   path: "./src/users", // dónde se van a guardar
 //   ttl: 5, // tiempo de vida del archivo (en segundos)
 //   retries: 2, // re intentos de lectura.
 // });
@@ -70,6 +70,6 @@ app.get("/logout", (req, res) => {
 
 
 app.use("/api/users", userRouter);
-app.use("/api/sessions", sessionRouter);
+app.use("/api/users", sessionRouter);
 
 app.listen(PUERTO, () => { console.log(`Server up! http://localhost:${PUERTO}`) })

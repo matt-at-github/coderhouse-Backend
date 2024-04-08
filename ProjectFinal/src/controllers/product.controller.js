@@ -1,100 +1,85 @@
-const { responseDialog } = require('../utils/response.js');
-
 const ProductsMongoDBDAO = require('../DAO/products/products.mongoDb.dao.js');
+const { jwtConfig } = require('../config/config.js');
 const productDAO = new ProductsMongoDBDAO();
 
 class ProductController {
 
   async getProducts(req, res) {
-    console.log('product.controller', 'getProducts');
     try {
-      if (!req.session.login) { return res.redirect('/sessions/login'); }
-
-      const products = await productDAO.getProducts(req);
-      if (!products.success) {
-        return responseDialog(res, 400, products.message);
-      }
-
-      return res.render('products', {
-        products: products.payload,
-        totalDocs: products.totalDocs,
-        page: products.page,
-        totalPages: products.totalPages,
-        limit: products.limit,
-        hasNextPage: products.hasNextPage,
-        nextPage: products.nextPage,
-        hasPrevPage: products.hasPrevPage,
-        prevPage: products.prevPage,
-        pagingCounter: products.pagingCounter,
-        session: req.session
-      });
-
+      const data = await getProductData(req);
+      return res.json(data);
     } catch (error) {
-      return responseDialog(res, 500, 'Product Controller error', error);
+      return res.status(500).json({ error: 'Internal Server Error', message: error.message });
+    }
+  }
+
+  async renderProducts(req, res) {
+    try {
+      if (!req.cookies[jwtConfig.tokenName]) { return res.redirect('users/login'); }
+      console.log('product.controller', 'req.user', req.use);
+      const data = await getProductData(req);
+      return res.render('products', data);
+    } catch (error) {
+      return res.status(500).render('error', { error: 'Internal Server Error', message: error.message });
     }
   }
 
   async getProductByID(req, res) {
     try {
-
-      const product = await productDAO.getProductByID(req);
-      if (!product) {
-        return responseDialog(res, 400, product.message);
-      }
-
-      return res.render('product', {
-        id: product._id,
-        title: product.title,
-        description: product.description,
-        price: product.price,
-        session: req.session
-      });
-
+      const data = await getProductDataByID(req);
+      return res.json(data);
     } catch (error) {
-      return responseDialog(res, 500, 'Product Controller error', error);
+      return res.status(500).json({ error: 'Internal Server Error', message: error.message });
     }
   }
 
-  async createProduct(req) {
+  async renderProductByID(req, res) {
+    try {
+      const data = await getProductDataByID(req);
+      return res.render('product', data);
+    } catch (error) {
+      return res.status(500).render('error', { error: 'Internal Server Error', message: error.message });
+    }
+  }
+
+  async createProduct(req, res) {
     try {
 
       const validation = runBodyValidations(req.body);
       if (!validation.success) {
-        return { code: validation.code, message: validation.message, success: false };
+        return res.status(validation.code).json({ message: validation.message });
       }
 
       const result = await productDAO.createProduct(req);
       if (!result) {
-        return { code: 400, message: result.message, success: false };
+        return res.status(400).json({ message: result.message });
       }
-
-      return { code: 200, data: result, success: true };
+      return res.status(200).json({ data: result });
     } catch (error) {
       return { code: 500, message: error.message || 'Internal Server Error', success: false };
     }
   }
 
-  async editProduct(req) {
+  async editProduct(req, res) {
     try {
       const updateProduct = await ProductsMongoDBDAO.editProduct(req);
       if (!updateProduct) {
-        return { code: 404, message: 'Product not found.', success: false };
+        return res.status(404).json({ message: 'Product not found.' });
       }
-
-      return { code: 200, data: updateProduct, success: true };
+      return res.status(200).json({ data: updateProduct });
     } catch (error) {
       return { code: 500, message: error.message || 'Internal Server Error', success: false };
     }
   }
 
-  async deleteProduct(req) {
+  async deleteProduct(req, res) {
     try {
 
       const deleteProduct = await productDAO.deleteProduct(req);
       if (!deleteProduct) {
-        return { code: 404, message: 'Product not found.', success: false };
+        return res.status(404).json({ message: 'Product not found.' });
       }
-      return { code: 200, data: deleteProduct, success: true };
+      return res.status(200).json({ data: deleteProduct });
     } catch (error) {
       return { code: 500, message: error.message || 'Internal Server Error', success: false };
     }
@@ -104,6 +89,43 @@ class ProductController {
 module.exports = ProductController;
 
 // Auxliary methods
+async function getProductDataByID(req) {
+  try {
+    const product = await productDAO.getProductByID(req);
+    if (!product) {
+      throw new Error('No product found.');
+    }
+    return product;
+  } catch (error) {
+    throw new Error('Error getting product data: ' + error.message);
+  }
+}
+
+async function getProductData(req) {
+  try {
+    const products = await productDAO.getProducts(req);
+    if (!products.success) {
+      throw new Error(products.message);
+    }
+
+    return {
+      products: products.payload,
+      totalDocs: products.totalDocs,
+      page: products.page,
+      totalPages: products.totalPages,
+      limit: products.limit,
+      hasNextPage: products.hasNextPage,
+      nextPage: products.nextPage,
+      hasPrevPage: products.hasPrevPage,
+      prevPage: products.prevPage,
+      pagingCounter: products.pagingCounter,
+      session: req.session
+    };
+  } catch (error) {
+    throw new Error('Error getting product data: ' + error.message);
+  }
+}
+
 function runBodyValidations(toValidate) {
 
   const validateFields = (toValidate) => {

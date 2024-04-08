@@ -49,7 +49,7 @@ class UserMongoDBDAO {
       const result = await UserModel.create(user);
       return result;
     } catch (error) {
-      throw new Error(`Error at creating cart. ${error}`);
+      throw new Error(`Error at creating user. ${error}`);
     }
   }
 }
