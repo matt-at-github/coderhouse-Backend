@@ -21,7 +21,7 @@ class CartController {
       const productsOnCart = await productDAO.getProductsByID(cart.products.map(m => m.product));
       console.log('cart.controller', 'generateTicket', 'productsOnCart', productsOnCart);
       const productsToShip = [];
-      let amount = 0;
+      let purchaseAmount = 0;
       // Remove items from cart that have enough stock. Products to be shipped are stored in away.
       // eslint-disable-next-line no-unused-vars
       productsOnCart.forEach((productOnCart, index) => {
@@ -34,7 +34,7 @@ class CartController {
           // If cartProduct is found and stock is greater then bought quantity,
           // calculate amount, remove from cart and prepare to ship.          
           productsToShip.push({ _id: productOnCart._id, newStock: productOnCart.stock - cartProduct.quantity });
-          amount += cartProduct.quantity * productOnCart.price;
+          purchaseAmount += cartProduct.quantity * productOnCart.price;
           const productIndex = cart.products.findIndex(product => product.product._id.toString() === productOnCart._id.toString());
           if (productIndex !== -1) {
             cart.products.splice(productIndex, 1);
@@ -45,7 +45,7 @@ class CartController {
       });
 
       if (productsToShip.length === 0) {
-        return res.status(400).json({ title: 'Compra cancelada', message: 'No había productos para enviar.' });
+        return res.status(400).render('error', { title: 'Compra cancelada', message: 'No había productos para enviar.' });
       }
       cart.save();
 
@@ -54,8 +54,8 @@ class CartController {
 
       const userData = getUserData(req);
       console.log('cart.controller', 'getUserData', userData);
-      const ticket = await ticketController.createTicket(new Date(), amount, userData.email);
-      res.status(200).json({ title: 'Compra completada exitosamente', ticket });
+      const { code, amount, buyer } = await ticketController.createTicket(new Date(), purchaseAmount, userData.email);
+      res.status(200).render('communicate', { title: 'Compra completada exitosamente', message: JSON.stringify({ code, amount, buyer }), icon: 'bag-check' });
     } catch (error) {
       res.status(500).render('error', { title: 'Error al finalizar la compra', message: error });
     }
