@@ -10,7 +10,7 @@ const productController = new ProductController();
  * solicitudes POST, PUT y DELETE asociadas a las productos.
  * Estos endpoints no podrán faltar en la 3ra preentrega. 
  * 
- * Fede: Estos endpoints se encuentran en ProjectFinal\src\routes\API\api.products.router.js
+ * Federico: Estos endpoints se encuentran en ProjectFinal\src\routes\API\api.products.router.js
  * De ser necesario que esten todos en el mismo router los muevo, pero quería tener los endpoints separados.
  */
 
