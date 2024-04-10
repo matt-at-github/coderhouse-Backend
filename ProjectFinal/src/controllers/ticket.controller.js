@@ -16,7 +16,7 @@ class TicketController {
 
 async function getTicketCode() {
   const code = (await TicketModel.findOne().sort({ code: -1 }).limit(1).exec())?.code;
-  return Number.parseInt(code);
+  return Number.parseInt(code ?? 0);
 }
 
 module.exports = TicketController;

@@ -70,6 +70,21 @@ class CartController {
     }
   }
 
+  async renderCartByID(req, res) {
+    console.log('cart.controller', 'renderCartByID', req.params.cid);
+    try {
+      const cart = await cartDAO.getCartByID(req.params.cid, true);
+      if (!cart) {
+        res.status(404).send({ message: 'No cart found' });
+      }
+      console.log('cart.controller', 'renderCartByID', 'cart', cart);
+      const products = cart.products.map(m => { return m.toObject(); });
+      res.status(200).render('myCart', { products });
+    } catch (error) {
+      res.status(500).send({ message: error.message || 'Internal Server Error' });
+    }
+  }
+
   async getCartByID(req, res) {
     console.log('cart.controller', 'getCartByID', req.params.cid);
     try {
@@ -98,8 +113,7 @@ class CartController {
   }
 
   async addItemToCart(req, res) {
-    console.log('car.controller', 'addItemToCart', req.params);
-    console.log('car.controller', 'addItemToCart', req.query);
+    console.log('car.controller', 'addItemToCart', req.params, req.query);
     try {
       const cartId = req.params.cid;
       const cart = await cartDAO.getCartByID(cartId, false);
@@ -115,15 +129,49 @@ class CartController {
       }
 
       const prodId = req.params.pid;
+      console.log('car.controller', 'addItemToCart', 'cart.products', cart.products);
       const existingProductIndex = cart.products.findIndex(f => f.product.toString() === prodId.toString());
+      console.log('car.controller', 'addItemToCart', 'existingProductIndex', existingProductIndex);
       if (existingProductIndex !== -1) {
         cart.products[existingProductIndex].quantity += 1;
       } else {
         cart.products.push({ product: productToAdd._id, quantity: 1 });
       }
 
-      const updatedCart = await cartDAO.updateCart(cart);
-      res.status(200).send({ data: updatedCart });
+      await cartDAO.updateCart(cart);
+      res.status(200).send({ quantity: cart.products[existingProductIndex]?.quantity ?? 1 });
+    } catch (error) {
+      console.error(`Cart controller error -> ${error}`);
+      res.status(500).send({ message: `Cart controller error -> ${error}` });
+    }
+  }
+
+  async substracItemFromCart(req, res) {
+    console.log('car.controller', 'substracItemToCart', req.params, req.query);
+    try {
+      const cartId = req.params.cid;
+      const cart = await cartDAO.getCartByID(cartId, false);
+      if (!cart) {
+        res.status(404).send({ message: 'No cart found.' });
+        return;
+      }
+
+      const productToSubstract = await productDAO.getProductByID(req);
+      if (!productToSubstract) {
+        res.status(404).send({ message: 'No such product found.' });
+        return;
+      }
+
+      const prodId = req.params.pid;
+      const existingProductIndex = cart.products.findIndex(f => f.product.toString() === prodId.toString());
+      if (existingProductIndex !== -1) {
+        cart.products[existingProductIndex].quantity -= 1;
+      } else {
+        cart.products.splice(existingProductIndex, 1);
+      }
+
+      await cartDAO.updateCart(cart);
+      res.status(200).send({ quantity: cart.products[existingProductIndex].quantity });
     } catch (error) {
       res.status(500).send({ message: error.message || 'Internal Server Error' });
     }
@@ -137,8 +185,8 @@ class CartController {
         return;
       }
 
-      const productToAdd = await productDAO.getProductByID(req);
-      if (!productToAdd) {
+      const productToSubstract = await productDAO.getProductByID(req);
+      if (!productToSubstract) {
         res.status(404).send({ message: 'No such product found.' });
         return;
       }
@@ -172,6 +220,7 @@ class CartController {
   }
 
   async clearCart(req, res) {
+    console.log('cart.controller', 'clearCart');
     try {
       const cartId = req.params.cid;
       const cart = await CartModel.findOne({ _id: cartId });
@@ -180,8 +229,8 @@ class CartController {
         return;
       }
       cart.products = [];
-      const clearedCart = await cart.save({ new: true });
-      res.status(200).send({ data: clearedCart });
+      const newCart = await cart.save({ new: true });
+      res.status(200).send(newCart);
     } catch (error) {
       res.status(500).send({ message: error.message || 'Internal Server Error' });
     }
@@ -189,25 +238,21 @@ class CartController {
 
   async removeItemFromCart(req, res) {
     try {
+      console.log('cart.controller', 'removeItemFromCart');
       const cartId = req.params.cid;
       const cart = await CartModel.findById(cartId);
       if (!cart) {
         res.status(404).send({ message: 'No cart found.' });
         return;
       }
-      const pid = req.params.pid;
-      const productToRemove = await productDAO.findById(pid);
+      const productToRemove = await productDAO.getProductByID(req);
       if (!productToRemove) {
         res.status(404).send({ message: 'No such product found.' });
         return;
       }
       const productIndex = cart.products.findIndex(f => f.product.toString() === productToRemove._id.toString());
       if (productIndex !== -1) {
-        if (cart.products[productIndex].quantity > 1) {
-          cart.products[productIndex].quantity -= 1;
-        } else {
-          cart.products.splice(productIndex, 1);
-        }
+        cart.products.splice(productIndex, 1);
       } else {
         res.status(404).send({ message: 'Product not found' });
         return;

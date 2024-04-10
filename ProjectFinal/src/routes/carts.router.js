@@ -8,7 +8,7 @@ const cartController = new CartController();
 router.get('/', cartController.getAllCarts);
 
 // Get cart by ID
-router.get('/:cid', cartController.getCartByID);
+router.get('/:cid', cartController.renderCartByID);
 
 // Get cart by ID
 router.get('/:cid/purchase', cartController.generateTicket);
@@ -17,7 +17,9 @@ router.get('/:cid/purchase', cartController.generateTicket);
 router.post('/', cartController.createCart);
 
 // Add item to cart
-router.post('/:cid/product/:pid', authenticateRole(['user']), cartController.addItemToCart);
+router.post('/:cid/products/:pid', authenticateRole(['user']), cartController.addItemToCart);
+// Edit cart's product quantity
+router.post('/:cid/products/:pid/substract', authenticateRole(['user']), cartController.substracItemFromCart);
 
 // Edit cart's product quantity
 router.put('/:cid/products/:pid', authenticateRole(['user']), cartController.editProductQuantity);
@@ -29,6 +31,6 @@ router.put('/:cid', cartController.editCart);
 router.delete('/:cid', cartController.clearCart);
 
 // Remove item from cart
-router.delete('/:cid/product/:pid', cartController.removeItemFromCart);
+router.delete('/:cid/products/:pid', cartController.removeItemFromCart);
 
 module.exports = router;

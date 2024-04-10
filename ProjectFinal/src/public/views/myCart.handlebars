@@ -1,0 +1,140 @@
+{{!-- https://www.bootdey.com/snippets/view/shopping-cart-with-selected-products-order-summary-and-checkout-button --}}
+
+<div class="container">
+
+  <div class="row justify-content-center">
+
+    <nav style="width:80%" class="navbar navbar-expand-lg bg-light my-3 rounded justify-content-between">
+      <h3>Mi Carrito</h3>
+
+      <a href="/carts/{{user.cartId}}/purchase" class="btn btn-info btn-primary mr-1">
+        Comprar
+        <i class="bi bi-cart-check-fill"></i>
+      </a>
+
+      <a onclick="clearCart()" class="btn btn-warning btn-rounded mr-1">
+        Vaciar
+        <i class="bi bi-trash"></i>
+      </a>
+    </nav>
+
+    {{#each products}}
+    <div class="col-4" id="product_{{this.product._id}}">
+      <a class="text-reset" href="/products/{{this.product._id}}">
+        <div class="card">
+          <img src="https://www.bootdey.com/image/100x80/008B8B/000000" class="card-img-top" alt="...">
+          <div class="card-body">
+            <h5 class="card-title">{{this.product.title}}</h5>
+            <p class="card-text">{{this.product.description}}</p>
+          </div>
+          <div class="card-footer">
+            <h5 id="cartQuantity_{{this.product._id}}">Tienes pedidos: {{this.quantity}}</h5>
+            <a onclick="addToCart('{{this.product._id}}')" class="btn btn-info btn-rounded mr-1">
+              <i class="bi bi-plus"></i>
+            </a>
+            <a onclick="substractFromCart('{{this.product._id}}')" class="btn btn-danger btn-rounded mr-1">
+              <i class="bi bi-dash"></i>
+            </a>
+            <a onclick="removeFromCart('{{this.product._id}}')" class="btn btn-warning btn-rounded mr-1">
+              <i class="bi bi-trash"></i>
+            </a>
+          </div>
+        </div>
+      </a>
+    </div>
+    {{/each}}
+  </div>
+
+  {{!-- <div class="row d-flex justify-content-between">
+    <a class="btn btn-info {{#unless hasPrevPage }}disabled{{/unless}}" onclick="addUrlParameter('page',{{prevPage}})"><i class="bi bi-arrow-left me-1 float-left"></i>Anterior</a>
+    <div class="justify-content-center border">
+      <a class="btn text-white bg-secondary disabled">{{page}}</a> de <a class="btn text-white bg-secondary disabled">{{totalPages}}</a>
+    </div>
+    <a class="btn btn-info {{#unless hasNextPage }}disabled{{/unless}}" onclick="addUrlParameter('page',{{nextPage}})"><i class="bi bi-arrow-right me-1 float-right"></i>Siguente</a>
+  </div>
+</div> --}}
+<script>
+  function clearCart() {   
+    fetch(`/carts/{{user.cartId}}`, {
+      method: 'DELETE',
+      headers: {
+        "Content-Type": "application/json",
+      }
+    })
+    .then(response => {
+      if (response.ok) {
+          // Cart cleared successfully
+          window.location.reload();
+      } else {
+          // Cart clearing failed
+          throw new Error('Failed to clear cart');
+      }
+    })
+    .catch(error => {
+        // Handle errors
+        console.error('Error:', error);
+    });
+  }
+
+  function removeFromCart(id) {   
+    fetch(`/carts/{{user.cartId}}/products/${id}`, {
+      method: 'DELETE',
+      headers: {
+        "Content-Type": "application/json",
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log(data)
+        // Handle the response data
+        const cartQuantityElement = document.getElementById(`product_${id}`);
+        if (cartQuantityElement) {
+            cartQuantityElement.remove();
+        }
+    })
+    .catch(error => {
+        // Handle errors
+        console.error('Error:', error);
+    });
+  };
+  function substractFromCart(id) {   
+    fetch(`/carts/{{user.cartId}}/products/${id}/substract`, {
+      method: 'POST',
+      headers: {
+        "Content-Type": "application/json",
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Handle the response data
+        const cartQuantityElement = document.getElementById(`cartQuantity_${id}`);
+        if (cartQuantityElement) {
+            cartQuantityElement.textContent = `Tienes pedidos: ${data.quantity}`;
+        }
+    })
+    .catch(error => {
+        // Handle errors
+        console.error('Error:', error);
+    });
+  };
+  function addToCart(id) {   
+    fetch(`/carts/{{user.cartId}}/products/${id}`, {
+      method: 'POST',
+      headers: {
+        "Content-Type": "application/json",
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Handle the response data
+        const cartQuantityElement = document.getElementById(`cartQuantity_${id}`);
+        if (cartQuantityElement) {
+            cartQuantityElement.textContent = `Tienes pedidos: ${data.quantity}`;
+        }
+    })
+    .catch(error => {
+        // Handle errors
+        console.error('Error:', error);
+    });
+  };
+</script>

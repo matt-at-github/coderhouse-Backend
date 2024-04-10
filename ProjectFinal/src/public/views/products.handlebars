@@ -42,12 +42,11 @@
 </div>
 <script>
   function addToCart(id) {   
-    fetch('/carts', {
+    fetch(`/carts/{{user.cartId}}/products/${id}`, {
       method: 'POST',
       headers: {
         "Content-Type": "application/json",
-      },
-      body:  JSON.stringify({productsId: id}),
+      }
     })
     .then(response => response.json())
     .then(data => {

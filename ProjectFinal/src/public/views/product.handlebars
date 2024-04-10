@@ -33,7 +33,7 @@
 </div>
 <script>
   function addToCart(id) {   
-    fetch(`/carts/{{user.cartId}}/product/${id}`, {
+    fetch(`/carts/{{user.cartId}}/products/${id}`, {
       method: 'POST',
       headers: {
         "Content-Type": "application/json",
