@@ -11,13 +11,9 @@ class CartMongoDBDAO {
     }
   }
 
-  async getCart(req) {
+  async getCartByID(cartId, populate) {
     try {
-
-      const populate = req.query.populate === 'true';
-      const cid = req.params.cid;
-
-      const query = CartModel.findById(cid);
+      const query = CartModel.findById(cartId);
       if (populate) { query.populate('products.product'); }
       const cart = await query;
       return cart;

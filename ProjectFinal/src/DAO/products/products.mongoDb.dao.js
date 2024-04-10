@@ -36,6 +36,16 @@ class ProductsMongoDBDAO {
     }
   }
 
+  async getProductsByID(req) {
+    console.log('products.mongo.dao', 'getProductsbyID');
+    try {
+      const product = await ProductModel.findOne({ _id: req.params.pid });
+      return product;
+    } catch (error) {
+      throw new Error('Error at getting product', error);
+    }
+  }
+
   async getProductByID(req) {
     console.log('products.mongo.dao', 'getProductsbyID');
     try {
@@ -64,6 +74,19 @@ class ProductsMongoDBDAO {
     } catch (error) {
       throw new Error('Error at creating product', error);
       // return { code: 500, message: error.message || 'Internal Server Error', success: false };
+    }
+  }
+
+  async batchUpdateProductsStock([productsToUpdate]) {
+    console.log('products.mongo.dao', 'batchUpdateProductsStock');
+    const updatedProducts = [];
+    try {
+      productsToUpdate.forEach(async (product) => {
+        updatedProducts.push(await ProductModel.findByIdAndUpdate(product._id, { stock: product.stock }, { new: true }));
+      });
+      return updatedProducts;
+    } catch (error) {
+      throw new Error('Error at updating product', error);
     }
   }
 

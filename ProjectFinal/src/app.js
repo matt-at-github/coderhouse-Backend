@@ -27,7 +27,7 @@ app.use(cors());
 const productsRouter = require('./routes/products.router');
 const productsAPIRouter = require('./routes/API/api.products.router.js');
 const cartsRouter = require('./routes/carts.router.js');
-// const cartsAPIRouter = require('./routes/API/api.carts.router.js');
+const cartsAPIRouter = require('./routes/API/api.carts.router.js');
 const chatAPIRouter = require('./routes/API/api.chat.router.js');
 const usersRouter = require('./routes/users.router.js');
 const usersAPIRouter = require('./routes/API/api.users.router.js');
@@ -49,7 +49,7 @@ app.use('/', viewsRouter);
 
 // API Routes
 app.use('/api/products', productsAPIRouter);
-// app.use('/carts', cartsAPIRouter);
+app.use('/carts', cartsAPIRouter);
 app.use('/api/chats', chatAPIRouter);
 app.use('/api/users', usersAPIRouter);
 

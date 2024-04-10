@@ -3,12 +3,56 @@ const CartMongoDBDAO = require('../DAO/carts/carts.mongodDb.dao.js');
 
 const cartDAO = new CartMongoDBDAO;
 
+const ProductsMongoDBDAO = require('../DAO/products/products.mongoDb.dao.js');
+const productDAO = new ProductsMongoDBDAO();
+
+const TicketController = require('../controllers/ticket.controller.js');
+const { jwtConfig } = require('../config/config.js');
+const { getUserData } = require('../middleware/checkrole.js');
+const ticketController = new TicketController();
 class CartController {
 
   productDao;
 
   constructor(ps = undefined) {
     this.productDao = ps;
+  }
+
+  async generateTicket(req, res) {
+    try {
+
+      const cart = await cartDAO.getCartByID(req.params.cid, false);
+      const productsOnCart = await productDAO.getProductsByID(cart.products);
+
+      const productsToShip = [];
+      let amount = 0;
+      // Remove items from cart that have enough stock. Products to be shipped are stored in away.
+      productsOnCart.forEach((product, index) => {
+
+        const cartProduct = cart.products.find(f => f._id === product._id);
+        if (product.stock >= cartProduct.quantity) {
+          productsToShip.push(product);
+          amount += cartProduct.quantity * product.price;
+          const productIndex = cart.products.findIndex(cart => cart.product.toString() === product._id.toString());
+          if (productIndex !== -1) {
+            cart.products.splice(productIndex, 1);
+          } else {
+            console.error('Error deleting product from cart', product, productsOnCart);
+          }
+        }
+      });
+
+      cart.save();
+
+      const stockUpdated = await productDAO.batchUpdateProductsStock(productsToShip);
+      console.log(stockUpdated);
+
+      const email = getUserData(req)?.email;
+      const ticket = await ticketController.createTicket(new Date(), amount, email);
+      res.send(200).json({ title: 'Compra completada exitosamente', ticket });
+    } catch (error) {
+      res.status(500).render('error', { title: 'Error al finalizar la compra', message: error });
+    }
   }
 
   async getAllCarts(req, res) {
@@ -22,7 +66,7 @@ class CartController {
 
   async getCartByID(req, res) {
     try {
-      const cart = cartDAO.getCart(req);
+      const cart = cartDAO.getCartByID(req.params.cid, req.query.populate);
       if (!cart) {
         res.status(404).send({ message: 'No cart found' });
       } else {
@@ -48,7 +92,7 @@ class CartController {
 
   async addItemToCart(req, res) {
     try {
-      const cart = await cartDAO.getCart(req);
+      const cart = await cartDAO.getCartByID(req.params.cid, req.query.populate);
       if (!cart) {
         res.status(404).send({ message: 'No cart found.' });
         return;
@@ -77,7 +121,7 @@ class CartController {
 
   async editProductQuantity(req, res) {
     try {
-      const cart = await cartDAO.getCart(req);
+      const cart = await cartDAO.getCartByID(req.params.cid, req.query.populate);
       if (!cart) {
         res.status(404).send({ message: 'No cart found.' });
         return;

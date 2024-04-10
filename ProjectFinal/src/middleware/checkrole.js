@@ -22,4 +22,14 @@ const authenticateRole = (allowedRoles) => (req, res, next) => {
   }
 };
 
-module.exports = authenticateRole;
+const getUserData = (req) => {
+
+  const token = req.cookies[jwtConfig.tokenName];
+  if (token) {
+    jwt.verify(token, jwtConfig.secretOrKey, (err, decoded) => {
+      return err ? null : decoded.user;
+    });
+  }
+};
+
+module.exports = { authenticateRole, getUserData };

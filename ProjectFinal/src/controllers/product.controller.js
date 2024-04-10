@@ -1,6 +1,7 @@
 const ProductsMongoDBDAO = require('../DAO/products/products.mongoDb.dao.js');
-const { jwtConfig } = require('../config/config.js');
 const productDAO = new ProductsMongoDBDAO();
+
+const { jwtConfig } = require('../config/config.js');
 
 class ProductController {
 
