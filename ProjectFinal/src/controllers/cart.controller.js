@@ -162,16 +162,22 @@ class CartController {
         return;
       }
 
+      let quantity;
       const prodId = req.params.pid;
       const existingProductIndex = cart.products.findIndex(f => f.product.toString() === prodId.toString());
       if (existingProductIndex !== -1) {
         cart.products[existingProductIndex].quantity -= 1;
-      } else {
-        cart.products.splice(existingProductIndex, 1);
+        quantity = cart.products[existingProductIndex].quantity;
+        console.log('cart.products[existingProductIndex].quantity', cart.products[existingProductIndex].quantity);
+        if (cart.products[existingProductIndex].quantity <= 0) {
+          cart.products.splice(existingProductIndex, 1);
+          quantity = 0;
+        }
       }
+      console.log('cart.products[existingProductIndex].quantity', { quantity: cart.products[existingProductIndex]?.quantity ?? 0 });
 
       await cartDAO.updateCart(cart);
-      res.status(200).send({ quantity: cart.products[existingProductIndex].quantity });
+      res.status(200).send({ quantity });
     } catch (error) {
       res.status(500).send({ message: error.message || 'Internal Server Error' });
     }

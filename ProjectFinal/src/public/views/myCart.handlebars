@@ -87,9 +87,9 @@
     .then(data => {
       console.log(data)
         // Handle the response data
-        const cartQuantityElement = document.getElementById(`product_${id}`);
-        if (cartQuantityElement) {
-            cartQuantityElement.remove();
+        const cartProductElement = document.getElementById(`product_${id}`);
+        if (cartProductElement) {
+            cartProductElement.remove();
         }
     })
     .catch(error => {
@@ -106,10 +106,18 @@
     })
     .then(response => response.json())
     .then(data => {
+      console.log('data', data);
         // Handle the response data
         const cartQuantityElement = document.getElementById(`cartQuantity_${id}`);
         if (cartQuantityElement) {
+          if (data.quantity === 0) {
+            const cartProductElement = document.getElementById(`product_${id}`);
+            if (cartProductElement) {
+              cartProductElement.remove();
+            }
+          } else {
             cartQuantityElement.textContent = `Tienes pedidos: ${data.quantity}`;
+          }
         }
     })
     .catch(error => {
