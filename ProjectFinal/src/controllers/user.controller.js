@@ -31,15 +31,15 @@ class UserController {
 
   async createUser(req, res) {
     try {
-      const user = createUser(req);
+      const user = await createUser(req);
       if (user.error) {
         return res.status(user.code).json({ message: user.message });
       }
       const isAdmin = user.role === 'admin';
-
-      let token = jwt.sign({ user, isAdmin }, jwtConfig.secretOrKey, { expiresIn: jwtConfig.tokenLife });
+      const userDTO = new UserDTO(user);
+      let token = jwt.sign({ user: userDTO, isAdmin }, jwtConfig.secretOrKey, { expiresIn: jwtConfig.tokenLife });
       res.cookie(jwtConfig.tokenName, token, { maxAge: cookieParserConfig.life_span, httpOnly: true });
-
+      res.locals.user = userDTO;
       return res.status(200).json({ token });
     } catch (error) {
       return res.status(500).json({ message: `User controller error -> ${error}.` });
@@ -49,16 +49,16 @@ class UserController {
   async renderCreateUser(req, res) {
 
     try {
-
-      const user = createUser(req);
+      console.log('user.controller', 'renderCreateUser');
+      const user = await createUser(req);
       if (user.error) {
         return res.status(user.code).json({ message: user.message });
       }
       const isAdmin = user.role === 'admin';
-
-      let token = jwt.sign({ user, isAdmin }, jwtConfig.secretOrKey, { expiresIn: jwtConfig.tokenLife });
+      const userDTO = new UserDTO(user);
+      let token = jwt.sign({ user: userDTO, isAdmin }, jwtConfig.secretOrKey, { expiresIn: jwtConfig.tokenLife });
       res.cookie(jwtConfig.tokenName, token, { maxAge: cookieParserConfig.life_span, httpOnly: true });
-
+      res.locals.user = userDTO;
       return res.status(200).redirect('/');
     } catch (error) {
       return { code: 500, message: error.message || 'Internal Server Error', success: false };
@@ -95,7 +95,7 @@ class UserController {
       const req = { body };
 
       console.log('user.controller', 'body', req);
-      const response = await userDAO.createUser(req); //await UserModel.create(user);
+      const response = await userDAO.createUser(req);
       if (!response) {
         return { code: 400, message: response.message, success: false };
       }
@@ -120,8 +120,6 @@ class UserController {
   async login(req, res) {
 
     console.log('user.controller', 'login', 'req.body', req.body);
-    // console.log('user.controller', 'login', 'req', req);
-    // console.log('user.controller', 'login', 'res', res);
     try {
       let user = req.user;
       if (!user) {
@@ -153,11 +151,11 @@ class UserController {
 
       console.log('user.controller.js', 'authenticate', 'user', user);
       console.log('user.controller.js', 'authenticate', 'user.cartId', user.cartId);
-      console.log('user.controller.js', 'authenticate', 'user.cart.toString()', user.cart.toString());
+      console.log('user.controller.js', 'authenticate', 'user.cart.toString()', user.cartId.toString());
 
       let token = jwt.sign({ user: userDTO, isAdmin }, jwtConfig.secretOrKey, { expiresIn: jwtConfig.tokenLife });
       res.cookie(jwtConfig.tokenName, token, { maxAge: cookieParserConfig.life_span, httpOnly: true });
-
+      res.locals.user = userDTO;
       console.log('user.controller', req.user);
       return res.status(200).redirect('/');
     } catch (error) {
@@ -166,16 +164,16 @@ class UserController {
   }
 
   getCurrent(req, res) {
-    console.log('user.controller', 'getCurrentdata', req.user);
-    const userDto = new UserDTO(req.user);
-    const isAdmin = req.user.role === 'admin';
-    return res.render('error', { title: 'Sesión Actual', message: JSON.stringify({ user: userDto, isAdmin }, null, 2), error: false, user: userDto });
+    console.log('user.controller', 'getCurrent');
+    const user = res.locals.user;
+    const isAdmin = user.role === 'admin';
+    return res.render('error', { title: 'Sesión Actual', message: JSON.stringify({ user: user, isAdmin }, null, 2), error: false, user: user });
   }
 
   logout(req, res) {
-    if (req.session?.login) {
-      req.user.destroy();
-      return res.status(200).redirect('../../users/login');
+    console.log('user.controller', 'logout');
+    if (req.cookies[jwtConfig.tokenName]) {
+      return res.clearCookie(jwtConfig.tokenName).status(200).redirect('../../users/login');
     }
     return res.status(400).render('logout', { error: true, title: 'Cerrar sesión', message: 'Ups, sesión no encontrada.' });
   }

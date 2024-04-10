@@ -11,7 +11,7 @@ const productController = new ProductController();
  */
 
 // // Get all products / Get Products by query
-router.get('/', productController.renderProducts.bind(productController));
+router.get('/', productController.renderProducts);
 
 // Get product by ID
 router.get('/:pid', productController.renderProductByID);

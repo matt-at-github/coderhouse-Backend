@@ -20,9 +20,6 @@
 
     <form class="form-inline">
       <div class="btn-group dropleft float-left">
-        {{log 'HANDLEBLARS LOG this.user' this.user}}
-        {{log 'HANDLEBLARS LOG user' user}}
-        {{log 'HANDLEBLARS LOG user' user}}
         {{#if user.login}}
         <button type="button" class="btn  dropdown-toggle text-uppercase text-white" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           {{user.userName}}
@@ -35,6 +32,7 @@
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
           {{#if user.login}}
           <a class="dropdown-item" href="/carts/{{user.cartId}}">Mi Carrito</a>
+          <a class="dropdown-item" href="/carts/{{user.cartId}}/purchase">Finalizar compra</a>
           <a class="dropdown-item" href="/users/account">Editar cuenta</a>
           <div class="dropdown-divider"></div>
           <a class="dropdown-item" href="/users/logout">Cerrar sesión</a>

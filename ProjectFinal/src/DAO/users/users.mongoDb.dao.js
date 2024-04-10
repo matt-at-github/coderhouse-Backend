@@ -30,23 +30,22 @@ class UserMongoDBDAO {
     try {
 
       console.log('user.mongoDB.dao', 'createUser', 'req', req.body);
-      console.log('user.mongoDB.dao', 'createUser', 'req.body.first_name', req.body.first_name);
       let { first_name, last_name, email, password, age } = req.body;
       age = Number(age);
 
-      const cart = new CartModel();
-      await cart.save();
-
+      const cart = await new CartModel().save();
+      console.log('user.mongoDB.dao', 'createUser', 'cart', cart);
       let user = {
         first_name,
         last_name,
         email,
         age,
         password: createHash(password),
-        cart
+        cartId: cart._id,
       };
 
       const result = await UserModel.create(user);
+      console.log('users.mongoDB.dao', 'createUser', result);
       return result;
     } catch (error) {
       throw new Error(`Error at creating user. ${error}`);

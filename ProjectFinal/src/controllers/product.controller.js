@@ -17,7 +17,7 @@ class ProductController {
   async renderProducts(req, res) {
     try {
       if (!req.cookies[jwtConfig.tokenName]) { return res.redirect('users/login'); }
-      console.log('product.controller', 'req.user', req.use);
+      console.log('product.controller', 'res.locals.user', res.locals.user);
       const data = await getProductData(req);
       return res.render('products', data);
     } catch (error) {

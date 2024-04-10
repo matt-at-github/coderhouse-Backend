@@ -1,55 +1,61 @@
 const CartModel = require('../models/carts.model.js');
 const CartMongoDBDAO = require('../DAO/carts/carts.mongodDb.dao.js');
 
-const cartDAO = new CartMongoDBDAO;
+const cartDAO = new CartMongoDBDAO();
 
 const ProductsMongoDBDAO = require('../DAO/products/products.mongoDb.dao.js');
 const productDAO = new ProductsMongoDBDAO();
 
 const TicketController = require('../controllers/ticket.controller.js');
-const { jwtConfig } = require('../config/config.js');
-const { getUserData } = require('../middleware/checkrole.js');
 const ticketController = new TicketController();
+
+const { getUserData } = require('../middleware/checkrole.js');
+
 class CartController {
-
-  productDao;
-
-  constructor(ps = undefined) {
-    this.productDao = ps;
-  }
 
   async generateTicket(req, res) {
     try {
-
-      const cart = await cartDAO.getCartByID(req.params.cid, false);
-      const productsOnCart = await productDAO.getProductsByID(cart.products);
-
+      console.log('cart.controller', 'generateTicket', req.params);
+      const cart = await cartDAO.getCartByID(req.params.cid, true);
+      console.log('cart.controller', 'generateTicket', 'cart.products', cart);
+      const productsOnCart = await productDAO.getProductsByID(cart.products.map(m => m.product));
+      console.log('cart.controller', 'generateTicket', 'productsOnCart', productsOnCart);
       const productsToShip = [];
       let amount = 0;
       // Remove items from cart that have enough stock. Products to be shipped are stored in away.
-      productsOnCart.forEach((product, index) => {
+      // eslint-disable-next-line no-unused-vars
+      productsOnCart.forEach((productOnCart, index) => {
 
-        const cartProduct = cart.products.find(f => f._id === product._id);
-        if (product.stock >= cartProduct.quantity) {
-          productsToShip.push(product);
-          amount += cartProduct.quantity * product.price;
-          const productIndex = cart.products.findIndex(cart => cart.product.toString() === product._id.toString());
+        console.log('cart.controller', 'generateTicket', 'productOnCart', productOnCart.title, productOnCart._id.toString());
+
+        const cartProduct = cart.products.find(product => product.product._id.toString() === productOnCart._id.toString());
+
+        if (cartProduct && productOnCart.stock >= cartProduct.quantity) {
+          // If cartProduct is found and stock is greater then bought quantity,
+          // calculate amount, remove from cart and prepare to ship.          
+          productsToShip.push({ _id: productOnCart._id, newStock: productOnCart.stock - cartProduct.quantity });
+          amount += cartProduct.quantity * productOnCart.price;
+          const productIndex = cart.products.findIndex(product => product.product._id.toString() === productOnCart._id.toString());
           if (productIndex !== -1) {
             cart.products.splice(productIndex, 1);
           } else {
-            console.error('Error deleting product from cart', product, productsOnCart);
+            console.error('Product not found in cart', productOnCart, productsOnCart);
           }
         }
       });
 
+      if (productsToShip.length === 0) {
+        return res.status(400).json({ title: 'Compra cancelada', message: 'No había productos para enviar.' });
+      }
       cart.save();
 
       const stockUpdated = await productDAO.batchUpdateProductsStock(productsToShip);
       console.log(stockUpdated);
 
-      const email = getUserData(req)?.email;
-      const ticket = await ticketController.createTicket(new Date(), amount, email);
-      res.send(200).json({ title: 'Compra completada exitosamente', ticket });
+      const userData = getUserData(req);
+      console.log('cart.controller', 'getUserData', userData);
+      const ticket = await ticketController.createTicket(new Date(), amount, userData.email);
+      res.status(200).json({ title: 'Compra completada exitosamente', ticket });
     } catch (error) {
       res.status(500).render('error', { title: 'Error al finalizar la compra', message: error });
     }
@@ -65,8 +71,9 @@ class CartController {
   }
 
   async getCartByID(req, res) {
+    console.log('cart.controller', 'getCartByID', req.params.cid);
     try {
-      const cart = cartDAO.getCartByID(req.params.cid, req.query.populate);
+      const cart = await cartDAO.getCartByID(req.params.cid, true);
       if (!cart) {
         res.status(404).send({ message: 'No cart found' });
       } else {
@@ -91,14 +98,17 @@ class CartController {
   }
 
   async addItemToCart(req, res) {
+    console.log('car.controller', 'addItemToCart', req.params);
+    console.log('car.controller', 'addItemToCart', req.query);
     try {
-      const cart = await cartDAO.getCartByID(req.params.cid, req.query.populate);
+      const cartId = req.params.cid;
+      const cart = await cartDAO.getCartByID(cartId, false);
       if (!cart) {
         res.status(404).send({ message: 'No cart found.' });
         return;
       }
 
-      const productToAdd = await this.productDao.getProductByID(req);
+      const productToAdd = await productDAO.getProductByID(req);
       if (!productToAdd) {
         res.status(404).send({ message: 'No such product found.' });
         return;
@@ -127,7 +137,7 @@ class CartController {
         return;
       }
 
-      const productToAdd = await this.productDao.getProductByID(req);
+      const productToAdd = await productDAO.getProductByID(req);
       if (!productToAdd) {
         res.status(404).send({ message: 'No such product found.' });
         return;
@@ -186,7 +196,7 @@ class CartController {
         return;
       }
       const pid = req.params.pid;
-      const productToRemove = await this.productDao.findById(pid);
+      const productToRemove = await productDAO.findById(pid);
       if (!productToRemove) {
         res.status(404).send({ message: 'No such product found.' });
         return;

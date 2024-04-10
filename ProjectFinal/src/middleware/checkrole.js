@@ -23,10 +23,10 @@ const authenticateRole = (allowedRoles) => (req, res, next) => {
 };
 
 const getUserData = (req) => {
-
+  console.log('checkrole', 'getUserdata');
   const token = req.cookies[jwtConfig.tokenName];
   if (token) {
-    jwt.verify(token, jwtConfig.secretOrKey, (err, decoded) => {
+    return jwt.verify(token, jwtConfig.secretOrKey, (err, decoded) => {
       return err ? null : decoded.user;
     });
   }

@@ -36,11 +36,11 @@ class ProductsMongoDBDAO {
     }
   }
 
-  async getProductsByID(req) {
-    console.log('products.mongo.dao', 'getProductsbyID');
+  async getProductsByID(productsId) {
+    // console.log('products.mongo.dao', 'getProductsbyID', 'productsId', productsId);
     try {
-      const product = await ProductModel.findOne({ _id: req.params.pid });
-      return product;
+      const products = await ProductModel.find({ _id: { $in: productsId } });
+      return products;
     } catch (error) {
       throw new Error('Error at getting product', error);
     }
@@ -77,12 +77,13 @@ class ProductsMongoDBDAO {
     }
   }
 
-  async batchUpdateProductsStock([productsToUpdate]) {
+  async batchUpdateProductsStock(productsToUpdate) {
     console.log('products.mongo.dao', 'batchUpdateProductsStock');
     const updatedProducts = [];
     try {
       productsToUpdate.forEach(async (product) => {
-        updatedProducts.push(await ProductModel.findByIdAndUpdate(product._id, { stock: product.stock }, { new: true }));
+        console.log('products.mongo.dao', 'batchUpdateProductsStock', 'product', product);
+        updatedProducts.push(await ProductModel.findByIdAndUpdate(product._id, { stock: product.newStock }, { new: true }));
       });
       return updatedProducts;
     } catch (error) {

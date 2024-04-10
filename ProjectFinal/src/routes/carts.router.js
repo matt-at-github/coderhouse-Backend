@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const CartController = require('../controllers/cart.controller.js');
-const authenticateRole = require('../middleware/checkrole.js');
+const { authenticateRole } = require('../middleware/checkrole.js');
 const cartController = new CartController();
 
 // Get all carts
@@ -11,7 +11,7 @@ router.get('/', cartController.getAllCarts);
 router.get('/:cid', cartController.getCartByID);
 
 // Get cart by ID
-router.get('/:cid/purhcase', cartController.generateTicket);
+router.get('/:cid/purchase', cartController.generateTicket);
 
 // Create new cart
 router.post('/', cartController.createCart);

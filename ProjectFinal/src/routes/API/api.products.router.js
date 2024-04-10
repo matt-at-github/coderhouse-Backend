@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const ProductController = require('../../controllers/product.controller.js');
-const authenticateRole = require('../../middleware/checkrole.js');
+const { authenticateRole } = require('../../middleware/checkrole.js');
 const productController = new ProductController();
 
 // Get all products / Get Products by query

@@ -27,7 +27,7 @@ app.use(cors());
 const productsRouter = require('./routes/products.router');
 const productsAPIRouter = require('./routes/API/api.products.router.js');
 const cartsRouter = require('./routes/carts.router.js');
-const cartsAPIRouter = require('./routes/API/api.carts.router.js');
+// const cartsAPIRouter = require('./routes/API/api.carts.router.js');
 const chatAPIRouter = require('./routes/API/api.chat.router.js');
 const usersRouter = require('./routes/users.router.js');
 const usersAPIRouter = require('./routes/API/api.users.router.js');
@@ -41,15 +41,15 @@ app.engine('handlebars', handlebarsInstance.engine());
 app.set('view engine', 'handlebars');
 app.set('views', `${__dirname}/public/views`); // Por qué ./public/views no funciona?
 
-//AuthMiddleware
-const authMiddleware = require('./middleware/auth.js');
-app.use(authMiddleware);
+// User information injection
+const extractUserInfo = require('./middleware/userInformationInject.js');
+app.use(extractUserInfo);
 
 app.use('/', viewsRouter);
 
 // API Routes
 app.use('/api/products', productsAPIRouter);
-app.use('/carts', cartsAPIRouter);
+// app.use('/carts', cartsAPIRouter);
 app.use('/api/chats', chatAPIRouter);
 app.use('/api/users', usersAPIRouter);
 
@@ -77,8 +77,3 @@ const httpServer = app.listen(port, () => console.log(`Server running at http://
 const socketIOManager = require('./controllers/messages.controller.js');
 const socket = new socketIOManager(httpServer);
 socket.init();
-
-// Authentication middleware
-async function authorization(req, res, next) {
-  return next();
-}

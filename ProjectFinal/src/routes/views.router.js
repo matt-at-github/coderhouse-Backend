@@ -1,4 +1,5 @@
 const express = require('express');
+const { jwtConfig } = require('../config/config');
 const router = express.Router();
 
 // router.use('/products');
@@ -17,12 +18,8 @@ router.get('/users/failedLogin', async (req, res) => {
 // Users
 // Crear cuenta
 router.get('/users/createAccount', (req, res) => {
-  if (req.session.login) { return res.status(200).redirect('/'); } // TODO: Cambiar a Profile Settings
+  if (req.cookies[jwtConfig.tokenName]) { return res.status(200).redirect('/'); } // TODO: Cambiar a Profile Settings
   return res.status(200).render('createAccount');
-});
-// Account view
-router.get('/users/logout', (req, res) => {
-  res.status(200).render('logout');
 });
 
 // Account view

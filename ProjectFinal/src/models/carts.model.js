@@ -8,7 +8,6 @@ const schemaCarts = new mongoose.Schema({
       product: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'products',
-        required: true
       },
       quantity: {
         type: Number,

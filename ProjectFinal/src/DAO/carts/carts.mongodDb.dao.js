@@ -4,21 +4,21 @@ class CartMongoDBDAO {
 
   async getCarts() {
     try {
-      const carts = await CartModel.find().populate('products.product');
-      return carts;
+      return await CartModel.find().populate('products.product');
     } catch (error) {
       throw new Error('Error at getting carts', error);
     }
   }
 
   async getCartByID(cartId, populate) {
+    console.log('carts.mongoDB.dao', 'getCartByID', cartId, populate);
     try {
-      const query = CartModel.findById(cartId);
-      if (populate) { query.populate('products.product'); }
-      const cart = await query;
-      return cart;
+      if (populate) {
+        return await CartModel.findById(cartId).populate('products.product');
+      }
+      return await CartModel.findById(cartId);
     } catch (error) {
-      throw new Error('Error at getting cart', error);
+      return `Error at getting cart ${error}`;
     }
   }
 

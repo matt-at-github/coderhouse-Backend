@@ -5,7 +5,7 @@ const UserController = require('../controllers/user.controller.js');
 const userController = new UserController();
 
 const passport = require('passport');
-const authenticateRole = require('../middleware/checkrole.js');
+const { authenticateRole } = require('../middleware/checkrole.js');
 
 // Create new Account
 router.post('/createAccount', userController.renderCreateUser);

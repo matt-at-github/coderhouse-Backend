@@ -33,16 +33,16 @@
 </div>
 <script>
   function addToCart(id) {   
-    fetch('/carts', {
+    fetch(`/carts/{{user.cartId}}/product/${id}`, {
       method: 'POST',
       headers: {
         "Content-Type": "application/json",
-      },
-      body:  JSON.stringify({productsId: id}),
+      }
     })
     .then(response => response.json()
       .then(data => {
           // Handle the response data
+          console.log(data)
       })
     )
     .catch(error => {
