@@ -16,15 +16,18 @@
     <div class="col-4">
       <a class="text-reset" href="/products/{{this._id}}">
         <div class="card">
-          <img src="https://www.bootdey.com/image/100x80/008B8B/000000" class="card-img-top" alt="...">
+          {{#if this.thumbnails}}
+          <img src='{{this.thumbnails}}' class="card-img-top" alt="...">
+          {{else}}
+          <img src='https://www.bootdey.com/image/100x80/008B8B/000000' class="card-img-top" alt="...">
+          {{/if}}
           <div class="card-body">
             <h5 class="card-title">{{this.title}}</h5>
             <p class="card-text">{{this.description}}</p>
           </div>
-          <div class="card-footer">
-            <a onclick="addToCart('{{this._id}}')" class="btn btn-info btn-rounded mr-1">
-              <i class="bi bi-cart2"></i>
-            </a>
+          <div class="card-footer justify-content-between">
+            <h4>$ {{this.price}}</h4>
+            <h6>Solo quedan {{this.stock}}</h6>
           </div>
         </div>
       </a>

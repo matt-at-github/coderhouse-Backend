@@ -14,6 +14,8 @@ const productController = new ProductController();
  * De ser necesario que esten todos en el mismo router los muevo, pero quería tener los endpoints separados.
  */
 
+router.get('/mockingproducts', productController.renderMockedProducts.bind(productController));
+
 // // Get all products / Get Products by query
 router.get('/', productController.renderProducts);
 

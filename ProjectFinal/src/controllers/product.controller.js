@@ -2,8 +2,68 @@ const ProductsMongoDBDAO = require('../DAO/products/products.mongoDb.dao.js');
 const productDAO = new ProductsMongoDBDAO();
 
 const { jwtConfig } = require('../config/config.js');
+const { generateProduct } = require('./utils/generators.js');
 
 class ProductController {
+
+  mockProducts;
+  paginatedProducts;
+  constructor() {
+    this.mockProducts = [];
+    this.paginatedProducts = {};
+  }
+
+  renderMockedProducts(req, res) {
+    console.log('product.controller', 'renderMockedProducts');
+    try {
+      console.log('product.controller', 'renderMockedProducts', 'products', this.mockProducts.length);
+      if (this.mockProducts.length === 0) {
+        let pagination = 1;
+        // console.log('product.controller', 'renderMockedProducts', 'pagination', pagination);
+        for (let index = 0; index < 100; index++) {
+          const product = generateProduct();
+          this.mockProducts.push(product);
+
+          if (!this.paginatedProducts[pagination]) { this.paginatedProducts[pagination] = []; }
+          this.paginatedProducts[pagination].push(product);
+          if (this.paginatedProducts[pagination].length % 10 === 0) {
+            // console.log('product.controller', 'renderMockedProducts', `this.paginatedProducts[${pagination}]`, this.paginatedProducts[pagination]?.map(m => m.title));
+            pagination++;
+          }
+        }
+        // console.log('product.controller', 'renderMockedProducts', 'products', this.mockProducts.length);
+      }
+
+      const page = parseInt(req.query.page ?? 1);
+      const totalPages = this.mockProducts.length / 10;
+      console.log('product.controller', 'renderMockedProducts', 'page', page > 1, {
+
+        hasNextPage: page < totalPages,
+        nextPage: page < totalPages ? page + 1 : undefined,
+
+        hasPrevPage: page > 1,
+        prevPage: page > 1 ? page - 1 : undefined,
+
+        pagingCounter: page
+      });
+
+      const toRender = {
+        products: this.paginatedProducts[page],
+        totalDocs: this.mockProducts.length,
+        page: page,
+        totalPages,
+        limit: 10,
+        hasNextPage: page < totalPages,
+        nextPage: page < totalPages ? page + 1 : undefined,
+        hasPrevPage: page > 1,
+        prevPage: page > 1 ? page - 1 : undefined,
+        pagingCounter: page
+      };
+      res.render('products', toRender);
+    } catch (error) {
+      return res.status(500).json({ message: 'Internal Server Error', error });
+    }
+  }
 
   async getProducts(req, res) {
     try {
