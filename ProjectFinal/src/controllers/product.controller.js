@@ -1,6 +1,10 @@
 const ProductsMongoDBDAO = require('../DAO/products/products.mongoDb.dao.js');
 const productDAO = new ProductsMongoDBDAO();
 
+const CustomError = require('../services/errors/utils/errors.js');
+const { EErrors } = require('../services/errors/utils/enums.js');
+const { productCreateValidationError } = require('../services/errors/productErrors.js');
+
 const { jwtConfig } = require('../config/config.js');
 const { generateProduct } = require('./utils/generators.js');
 
@@ -88,6 +92,7 @@ class ProductController {
   async getProductByID(req, res) {
     try {
       const data = await getProductDataByID(req);
+      if (!data) { return res.status(404).json({ message: 'Product not found.' }); }
       return res.json(data);
     } catch (error) {
       return res.status(500).json({ error: 'Internal Server Error', message: error.message });
@@ -103,21 +108,25 @@ class ProductController {
     }
   }
 
-  async createProduct(req, res) {
+  async createProduct(req, res, next) {
     try {
-
+      console.log('product.controller', 'createProduct', 'body', req.body);
       const validation = runBodyValidations(req.body);
+      console.log('product.controller', 'createProduct', 'validation', validation);
       if (!validation.success) {
-        return res.status(validation.code).json({ message: validation.message });
+        console.log('product.controller', 'createProduct', 'creating custom error');
+        throw CustomError.createError({ code: EErrors.FIELD_MANDATORY, cause: 'Fallo en validación', message: productCreateValidationError(req.body) });
+        // return res.status(validation.code).json({ message: validation.message });
       }
-
       const result = await productDAO.createProduct(req);
+      console.log('product.controller', 'createProduct', 'result', result);
       if (!result) {
         return res.status(400).json({ message: result.message });
       }
       return res.status(200).json({ data: result });
     } catch (error) {
-      return { code: 500, message: error.message || 'Internal Server Error', success: false };
+      // return { code: 500, message: error.message || 'Internal Server Error', success: false };
+      next(error);
     }
   }
 
@@ -153,9 +162,6 @@ module.exports = ProductController;
 async function getProductDataByID(req) {
   try {
     const product = await productDAO.getProductByID(req);
-    if (!product) {
-      throw new Error('No product found.');
-    }
     return product;
   } catch (error) {
     throw new Error('Error getting product data: ' + error.message);

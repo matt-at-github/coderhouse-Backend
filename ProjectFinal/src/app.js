@@ -17,10 +17,11 @@ initializePassport();
 app.use(passport.initialize());
 
 // Middelware
+const errorHandler = require('./middleware/errorHandler.js');
 app.use(express.json());
 app.use(cookieParser(cookie_parser.secret_key));
 app.use(express.urlencoded({ extended: true }));
-
+app.use(errorHandler);
 app.use(cors());
 
 // Routes 

@@ -12,7 +12,8 @@ router.get('/', productController.getProducts);
 router.get('/:pid', productController.getProductByID);
 
 // Create new product
-router.post('/', authenticateRole(['admin']), productController.createProduct);
+// router.post('/', authenticateRole(['admin']), productController.createProduct);
+router.post('/', productController.createProduct);
 
 // Edit product
 router.put('/:pid', authenticateRole(['admin']), productController.editProduct);
