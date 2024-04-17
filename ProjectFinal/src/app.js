@@ -59,7 +59,7 @@ app.use('/products', productsRouter);
 app.use('/chats', authenticateRole(['user']), chatRouter);
 app.use('/users', usersRouter);
 app.use('/carts', cartsRouter);
-app.use('/realtimeProducts', realTimeProductRouter);
+app.use('/realtimeProducts', realTimeProductRouter); // TODO: Implementar campo categoria. + Stock actual
 
 // Home route -> login
 app.get('/', (req, res) => { return res.redirect('/products'); });
