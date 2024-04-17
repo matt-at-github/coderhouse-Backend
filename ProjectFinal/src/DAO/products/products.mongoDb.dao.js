@@ -6,16 +6,17 @@ class ProductsMongoDBDAO {
     console.log('products.mongo.dao', 'getProducts');
     try {
 
-      const queryFilter = req.query.filter ? JSON.parse(req.query.filter) : undefined;
-      const querySort = req.query.sort ? JSON.parse(req.query.sort) : undefined;
-      const queryLimit = parseInt(req.query.limit) || 10;
-      const queryPage = parseInt(req.query.page) || 1;
+      const queryFilter = req?.query?.filter ? JSON.parse(req.query.filter) : undefined;
+      const querySort = req?.query?.sort ? JSON.parse(req.query.sort) : undefined;
+      const queryLimit = parseInt(req?.query?.limit) || 10;
+      const queryPage = parseInt(req?.query?.page) || 1;
 
       const { docs, totalDocs, limit, page, totalPages, hasNextPage, nextPage, hasPrevPage, prevPage, pagingCounter } = await ProductModel.paginate(queryFilter, { limit: queryLimit, page: queryPage, sort: querySort });
 
       const products = docs.map(m => {
         return m.toObject();
       });
+      console.log('products.mongo.dao', 'getProducts', 'products.length', products.length);
 
       return {
         success: products.length > 0,
@@ -57,22 +58,26 @@ class ProductsMongoDBDAO {
   }
 
   async createProduct(req) {
-    console.log('products.mongo.dao', 'createProduct');
+    console.log('products.mongo.dao', 'createProduct', 'req', req);
     try {
 
-      const product = await ProductModel.find({ code: req.body.code });
+      const product = await ProductModel.findOne({ code: req.body.code });
+      console.log('products.mongo.dao', 'createProduct', 'product', product);
       if (product) {
         return { code: 401, message: 'Product already exists', success: false };
       }
 
-      const result = await (new ProductModel(req.body)).save();
+      const newProduct = new ProductModel(req.body);
+      console.log('products.mongo.dao', 'createProduct', 'newProduct', newProduct);
+      const result = await newProduct.save();
+      console.log('products.mongo.dao', 'createProduct', 'result', result);
       if (!result) {
-        return { code: 400, message: result.message, success: false };
+        return { code: 400, message: result.message ?? result, success: false };
       }
 
-      return product;
+      return newProduct;
     } catch (error) {
-      throw new Error('Error at creating product', error);
+      throw new Error(`Error at creating product ${error}`, error);
       // return { code: 500, message: error.message || 'Internal Server Error', success: false };
     }
   }
@@ -102,7 +107,7 @@ class ProductsMongoDBDAO {
   }
 
   async deleteProduct(req) {
-    console.log('products.mongo.dao', 'deleteProduct');
+    console.log('products.mongo.dao', 'deleteProduct', 'req', req);
     try {
       const deletedProduct = await ProductModel.findByIdAndDelete(req.params.pid);
       return deletedProduct;

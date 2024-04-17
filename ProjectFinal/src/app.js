@@ -25,14 +25,16 @@ app.use(errorHandler);
 app.use(cors());
 
 // Routes 
+const { authenticateRole } = require('./middleware/checkrole.js');
+
 const productsRouter = require('./routes/products.router');
 const productsAPIRouter = require('./routes/API/api.products.router.js');
 const cartsRouter = require('./routes/carts.router.js');
-// const cartsAPIRouter = require('./routes/API/api.carts.router.js');
-const chatAPIRouter = require('./routes/API/api.chat.router.js');
+const chatRouter = require('./routes/chat.router.js');
 const usersRouter = require('./routes/users.router.js');
 const usersAPIRouter = require('./routes/API/api.users.router.js');
 const viewsRouter = require('./routes/views.router.js');
+const realTimeProductRouter = require('./routes/realtimeProducts.router.js');
 
 app.use(express.static(`${__dirname}/public`));
 app.use('/favicon.ico', express.static(`${__dirname}/public/img/favicon.png`));
@@ -50,14 +52,14 @@ app.use('/', viewsRouter);
 
 // API Routes
 app.use('/api/products', productsAPIRouter);
-// app.use('/carts', cartsAPIRouter);
-app.use('/api/chats', chatAPIRouter);
 app.use('/api/users', usersAPIRouter);
 
 // Routes
 app.use('/products', productsRouter);
+app.use('/chats', authenticateRole(['user']), chatRouter); // TODO : Update to direcly show chat for logged user
 app.use('/users', usersRouter);
 app.use('/carts', cartsRouter);
+app.use('/realtimeProducts', realTimeProductRouter);
 
 // Home route -> login
 app.get('/', (req, res) => { return res.redirect('/products'); });
@@ -75,6 +77,6 @@ app.get('*', function (req, res) {
 const httpServer = app.listen(port, () => console.log(`Server running at http://localhost:${port}`));
 
 // Socket.io
-const socketIOManager = require('./controllers/messages.controller.js');
+const socketIOManager = require('./controllers/socketIO.controller.js');
 const socket = new socketIOManager(httpServer);
 socket.init();

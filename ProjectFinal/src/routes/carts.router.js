@@ -18,6 +18,7 @@ router.post('/', cartController.createCart);
 
 // Add item to cart
 router.post('/:cid/products/:pid', authenticateRole(['user']), cartController.addItemToCart);
+
 // Edit cart's product quantity
 router.post('/:cid/products/:pid/substract', authenticateRole(['user']), cartController.substracItemFromCart);
 

@@ -78,6 +78,52 @@ class ProductController {
     }
   }
 
+  async getRealTimeProducts() {
+    try {
+      const req = { query: { limit: 1000 } };
+      return await productDAO.getProducts(req);
+    } catch (error) {
+      return { status: 500, error: 'Internal Server Error', message: error.message };
+    }
+  }
+
+  async createRealtimeProduct(body) {
+    try {
+      console.log('product.controller', 'createRealtimeProduct', 'body', body);
+      const validation = runBodyValidations(body);
+      console.log('product.controller', 'createRealtimeProduct', 'validation', validation);
+      if (!validation.success) {
+        console.log('product.controller', 'createRealtimeProduct', 'creating custom error');
+        throw CustomError.createError({ code: EErrors.FIELD_MANDATORY, cause: 'Fallo en validación', message: productCreateValidationError(body) });
+        // return res.status(validation.code).json({ message: validation.message });
+      }
+      const result = await productDAO.createProduct({ body });
+      console.log('product.controller', 'createRealtimeProduct', 'result', result);
+      if (!result) {
+        return { message: result.message ?? result, status: 400 };
+      }
+      return { result, status: 200, success: true };
+    } catch (error) {
+      console.error({ code: 500, message: error.message || 'Internal Server Error', success: false });
+      return ({ code: 500, message: error.message || 'Internal Server Error', success: false });
+    }
+  }
+
+  async deleteRealtimeProduct(id) {
+    try {
+      console.log('product.controller', 'deleteRealtimeProduct', 'id', id);
+      const result = await productDAO.deleteProduct({ params: { pid: id } });
+      console.log('product.controller', 'deleteRealtimeProduct', 'result', result);
+      if (!result) {
+        return { message: result.message ?? result, status: 400, success: true };
+      }
+      return { result: result, status: 200, success: true, message: 'Producto borrado' };
+    } catch (error) {
+      console.error({ code: 500, message: error.message || 'Internal Server Error', success: false });
+      return ({ code: 500, message: error.message || 'Internal Server Error', success: false });
+    }
+  }
+
   async renderProducts(req, res) {
     try {
       if (!req.cookies[jwtConfig.tokenName]) { return res.redirect('users/login'); }
@@ -125,7 +171,7 @@ class ProductController {
       }
       return res.status(200).json({ data: result });
     } catch (error) {
-      // return { code: 500, message: error.message || 'Internal Server Error', success: false };
+      console.error({ code: 500, message: error.message || 'Internal Server Error', success: false });
       next(error);
     }
   }
@@ -156,8 +202,6 @@ class ProductController {
   }
 }
 
-module.exports = ProductController;
-
 // Auxliary methods
 async function getProductDataByID(req) {
   try {
@@ -186,7 +230,7 @@ async function getProductData(req) {
       hasPrevPage: products.hasPrevPage,
       prevPage: products.prevPage,
       pagingCounter: products.pagingCounter,
-      session: req.session
+      // session: req.session
     };
   } catch (error) {
     throw new Error('Error getting product data: ' + error.message);
@@ -216,3 +260,5 @@ function runBodyValidations(toValidate) {
 
   return { success: true };
 }
+
+module.exports = ProductController;

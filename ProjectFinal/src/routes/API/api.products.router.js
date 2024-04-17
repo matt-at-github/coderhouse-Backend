@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
 
-const ProductController = require('../../controllers/product.controller.js');
 const { authenticateRole } = require('../../middleware/checkrole.js');
+
+const ProductController = require('../../controllers/product.controller.js');
 const productController = new ProductController();
 
 // Get all products / Get Products by query
@@ -12,7 +13,6 @@ router.get('/', productController.getProducts);
 router.get('/:pid', productController.getProductByID);
 
 // Create new product
-// router.post('/', authenticateRole(['admin']), productController.createProduct);
 router.post('/', productController.createProduct);
 
 // Edit product

@@ -11,7 +11,7 @@ function createProductNode(product) {
   child.getElementsByClassName('card-text')[0].innerHTML = product.description;
 
   child.querySelector('button').addEventListener('click', () => {
-    socket.emit('deleteProduct', product.id);
+    socket.emit('deleteProduct', product._id);
   });
 
   child.classList.remove('d-none');
@@ -21,7 +21,8 @@ function createProductNode(product) {
 socket.on('connectionResponse', (data) => {
   const wrapper = document.getElementById('productWrapper');
   wrapper.innerHTML = '';
-  data.message.forEach(product => {
+  console.log(data);
+  data.payload.forEach(product => {
     createProductNode(product);
   });
 });
@@ -65,7 +66,7 @@ socket.on('productDeleted', (response) => {
   const wrapper = document.getElementById('productWrapper');
   wrapper.innerHTML = '';
 
-  response.products.message.forEach((product) => {
+  response.products.payload.forEach((product) => {
     createProductNode(product);
   });
 });

@@ -27,15 +27,4 @@ router.get('/users/account', (req, res) => {
   res.status(200).render('editAccount', { message: req.session });
 });
 
-// Chat
-// Show chat
-router.get('/chat/', (req, res) => {
-  try {
-    // Sokect.io it is used on this view.
-    res.status(200).render('chat', { session: req.session });
-  } catch (error) {
-    return res.status(500).send({ message: error.message || 'Internal Server Error' });
-  }
-});
-
 module.exports = router;

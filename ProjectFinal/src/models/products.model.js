@@ -12,6 +12,7 @@ const schemaProducts = Schema({
   thumbnails: [String],
   code: { type: String, required: true, unique: true },
   stock: { type: Number, required: true },
+  category: { type: String },
   status: { type: Boolean, def: true }
 });
 

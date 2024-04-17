@@ -151,7 +151,7 @@ class UserController {
 
       console.log('user.controller.js', 'authenticate', 'user', user);
       console.log('user.controller.js', 'authenticate', 'user.cartId', user.cartId);
-      console.log('user.controller.js', 'authenticate', 'user.cart.toString()', user.cartId.toString());
+      console.log('user.controller.js', 'authenticate', 'user.cart.toString()', user.cartId?.toString());
 
       let token = jwt.sign({ user: userDTO, isAdmin }, jwtConfig.secretOrKey, { expiresIn: jwtConfig.tokenLife });
       res.cookie(jwtConfig.tokenName, token, { maxAge: cookieParserConfig.life_span, httpOnly: true });

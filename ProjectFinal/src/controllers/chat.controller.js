@@ -2,6 +2,14 @@ const ChatModel = require('../models/chat.model.js');
 
 class ChatController {
 
+  renderChat(req, res) {
+    try {
+      res.status(200).render('chat');
+    } catch (error) {
+      return res.status(500).send({ message: error.message || 'Internal Server Error' });
+    }
+  }
+
   async getAllMessages(req, res) {
 
     try {

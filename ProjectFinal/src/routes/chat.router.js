@@ -1,14 +1,18 @@
-// const express = require('express');
-// const router = express.Router();
+const express = require('express');
+const router = express.Router();
 
-// router.get('/', (req, res) => {
+const ChatController = require('../controllers/chat.controller.js');
+const chatController = new ChatController();
 
-//   try {
-//     // Sokect.io it is used on this view.
-//     res.status(200).render('chat', { session: req.session });
-//   } catch (error) {
-//     return res.status(500).send({ message: error.message || 'Internal Server Error' });
-//   }
-// });
+router.get('/',  chatController.renderChat);
 
-// module.exports = router;
+// Get all messages 
+router.get('/:id',  chatController.getAllMessages);
+
+// Get Messages for a User
+router.get('/:email', chatController.getChat);
+
+// Creates new message for User
+router.post('/:email', chatController.createMessage);
+
+module.exports = router;
