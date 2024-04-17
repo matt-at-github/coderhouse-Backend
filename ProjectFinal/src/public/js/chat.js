@@ -8,7 +8,7 @@ const chatBox = document.getElementById('chatBox');
 
 // Cargamos el chat al salir del campo de identificación
 
-userBox.addEventListener('blur', () => {
+document.addEventListener('DOMContentLoaded', () => {
   if (userBox.value.trim().length > 0) {
     socket.emit('pullMessages', { user: userBox.value });
     userBox.style = 'cursor: not-allowed; pointer-events: none; background-color: lightgrey;';

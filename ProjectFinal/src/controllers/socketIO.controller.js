@@ -19,8 +19,9 @@ class SocketIOManager {
       console.log('Socket Client Connected');
 
       await socket.on('pullMessages', async (data) => {
-        console.log('Socket Client', 'pullMessages');
+        console.log('Socket Client', 'pullMessages', 'data', data);
         const messages = await ChatModel.find({ user: data.user });
+        console.log('Socket Client', 'pullMessages', 'messages', messages);
         socket.emit('reply', messages);
       });
 

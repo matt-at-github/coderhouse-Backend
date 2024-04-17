@@ -4,8 +4,6 @@ const router = express.Router();
 const ChatController = require('../controllers/chat.controller.js');
 const chatController = new ChatController();
 
-router.get('/',  chatController.renderChat);
-
 // Get all messages 
 router.get('/:id',  chatController.getAllMessages);
 

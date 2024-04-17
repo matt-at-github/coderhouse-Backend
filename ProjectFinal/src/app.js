@@ -56,7 +56,7 @@ app.use('/api/users', usersAPIRouter);
 
 // Routes
 app.use('/products', productsRouter);
-app.use('/chats', authenticateRole(['user']), chatRouter); // TODO : Update to direcly show chat for logged user
+app.use('/chats', authenticateRole(['user']), chatRouter);
 app.use('/users', usersRouter);
 app.use('/carts', cartsRouter);
 app.use('/realtimeProducts', realTimeProductRouter);
