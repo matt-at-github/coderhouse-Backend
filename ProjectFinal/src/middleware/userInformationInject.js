@@ -7,7 +7,7 @@ function extractUserInfo(req, res, next) {
   if (token) {
     jwt.verify(token, jwtConfig.secretOrKey, (err, decoded) => {
       if (!err) { res.locals = { user: decoded.user }; }
-      console.log('userInformationInject', 'decoded.user', decoded.user);
+      req.logger.debug('userInformationInject', 'decoded.user', decoded.user);
     });
   }
   next();

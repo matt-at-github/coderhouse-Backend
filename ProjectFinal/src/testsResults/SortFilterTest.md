@@ -10,7 +10,7 @@
 ```
 pm.test("Show products code, title, stock and price", function () {
   const payload = pm.response.json().payload;
-  console.log(payload.map(m => {
+  req.logger.debug(payload.map(m => {
       return { code: m.code.substring(0,3), title: m.title.substring(0,10), stock: m.stock, price:m.price.$numberDecimal }
   }));
 });

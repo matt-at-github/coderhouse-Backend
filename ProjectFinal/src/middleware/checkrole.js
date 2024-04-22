@@ -10,7 +10,7 @@ const authenticateRole = (allowedRoles) => (req, res, next) => {
         res.status(403).render('error', { title: 'Acceso denegado', message: 'Token inválido.' });
       } else {
         const userRole = decoded.user.role;
-        console.log('checkrole', 'authenticateRole', 'userRole', userRole);
+        req.logger.debug('checkrole', 'authenticateRole', 'userRole', userRole);
         if (allowedRoles.includes(userRole)) {
           next();
         } else {
@@ -24,7 +24,7 @@ const authenticateRole = (allowedRoles) => (req, res, next) => {
 };
 
 const getUserData = (req) => {
-  console.log('checkrole', 'getUserdata');
+  req.logger.debug('checkrole', 'getUserdata');
   const token = req.cookies[jwtConfig.tokenName];
   if (token) {
     return jwt.verify(token, jwtConfig.secretOrKey, (err, decoded) => {

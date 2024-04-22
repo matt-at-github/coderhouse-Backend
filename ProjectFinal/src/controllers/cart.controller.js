@@ -15,18 +15,18 @@ class CartController {
 
   async generateTicket(req, res) {
     try {
-      console.log('cart.controller', 'generateTicket', req.params);
+      req.logger.debug('cart.controller', 'generateTicket', req.params);
       const cart = await cartDAO.getCartByID(req.params.cid, true);
-      console.log('cart.controller', 'generateTicket', 'cart.products', cart);
+      req.logger.debug('cart.controller', 'generateTicket', 'cart.products', cart);
       const productsOnCart = await productDAO.getProductsByID(cart.products.map(m => m.product));
-      console.log('cart.controller', 'generateTicket', 'productsOnCart', productsOnCart);
+      req.logger.debug('cart.controller', 'generateTicket', 'productsOnCart', productsOnCart);
       const productsToShip = [];
       let purchaseAmount = 0;
       // Remove items from cart that have enough stock. Products to be shipped are stored in away.
       // eslint-disable-next-line no-unused-vars
       productsOnCart.forEach((productOnCart, index) => {
 
-        console.log('cart.controller', 'generateTicket', 'productOnCart', productOnCart.title, productOnCart._id.toString());
+        req.logger.debug('cart.controller', 'generateTicket', 'productOnCart', productOnCart.title, productOnCart._id.toString());
 
         const cartProduct = cart.products.find(product => product.product._id.toString() === productOnCart._id.toString());
 
@@ -50,10 +50,10 @@ class CartController {
       cart.save();
 
       const stockUpdated = await productDAO.batchUpdateProductsStock(productsToShip);
-      console.log(stockUpdated);
+      req.logger.debug(stockUpdated);
 
       const userData = getUserData(req);
-      console.log('cart.controller', 'getUserData', userData);
+      req.logger.debug('cart.controller', 'getUserData', userData);
       const { code, amount, buyer } = await ticketController.createTicket(new Date(), purchaseAmount, userData.email);
       res.status(200).render('communicate', { title: 'Compra completada exitosamente', message: JSON.stringify({ code, amount, buyer }), icon: 'bag-check' });
     } catch (error) {
@@ -71,13 +71,13 @@ class CartController {
   }
 
   async renderCartByID(req, res) {
-    console.log('cart.controller', 'renderCartByID', req.params.cid);
+    req.logger.debug('cart.controller', 'renderCartByID', req.params.cid);
     try {
       const cart = await cartDAO.getCartByID(req.params.cid, true);
       if (!cart) {
         res.status(404).send({ message: 'No cart found' });
       }
-      console.log('cart.controller', 'renderCartByID', 'cart', cart);
+      req.logger.debug('cart.controller', 'renderCartByID', 'cart', cart);
       const products = cart.products.map(m => { return m.toObject(); });
       res.status(200).render('myCart', { products });
     } catch (error) {
@@ -86,7 +86,7 @@ class CartController {
   }
 
   async getCartByID(req, res) {
-    console.log('cart.controller', 'getCartByID', req.params.cid);
+    req.logger.debug('cart.controller', 'getCartByID', req.params.cid);
     try {
       const cart = await cartDAO.getCartByID(req.params.cid, true);
       if (!cart) {
@@ -113,7 +113,7 @@ class CartController {
   }
 
   async addItemToCart(req, res) {
-    console.log('car.controller', 'addItemToCart', req.params, req.query);
+    req.logger.debug('car.controller', 'addItemToCart', req.params, req.query);
     try {
       const cartId = req.params.cid;
       const cart = await cartDAO.getCartByID(cartId, false);
@@ -129,9 +129,9 @@ class CartController {
       }
 
       const prodId = req.params.pid;
-      console.log('car.controller', 'addItemToCart', 'cart.products', cart.products);
+      req.logger.debug('car.controller', 'addItemToCart', 'cart.products', cart.products);
       const existingProductIndex = cart.products.findIndex(f => f.product.toString() === prodId.toString());
-      console.log('car.controller', 'addItemToCart', 'existingProductIndex', existingProductIndex);
+      req.logger.debug('car.controller', 'addItemToCart', 'existingProductIndex', existingProductIndex);
       if (existingProductIndex !== -1) {
         cart.products[existingProductIndex].quantity += 1;
       } else {
@@ -147,7 +147,7 @@ class CartController {
   }
 
   async substracItemFromCart(req, res) {
-    console.log('car.controller', 'substracItemToCart', req.params, req.query);
+    req.logger.debug('car.controller', 'substracItemToCart', req.params, req.query);
     try {
       const cartId = req.params.cid;
       const cart = await cartDAO.getCartByID(cartId, false);
@@ -168,13 +168,13 @@ class CartController {
       if (existingProductIndex !== -1) {
         cart.products[existingProductIndex].quantity -= 1;
         quantity = cart.products[existingProductIndex].quantity;
-        console.log('cart.products[existingProductIndex].quantity', cart.products[existingProductIndex].quantity);
+        req.logger.debug('cart.products[existingProductIndex].quantity', cart.products[existingProductIndex].quantity);
         if (cart.products[existingProductIndex].quantity <= 0) {
           cart.products.splice(existingProductIndex, 1);
           quantity = 0;
         }
       }
-      console.log('cart.products[existingProductIndex].quantity', { quantity: cart.products[existingProductIndex]?.quantity ?? 0 });
+      req.logger.debug('cart.products[existingProductIndex].quantity', { quantity: cart.products[existingProductIndex]?.quantity ?? 0 });
 
       await cartDAO.updateCart(cart);
       res.status(200).send({ quantity });
@@ -226,7 +226,7 @@ class CartController {
   }
 
   async clearCart(req, res) {
-    console.log('cart.controller', 'clearCart');
+    req.logger.debug('cart.controller', 'clearCart');
     try {
       const cartId = req.params.cid;
       const cart = await CartModel.findOne({ _id: cartId });
@@ -244,7 +244,7 @@ class CartController {
 
   async removeItemFromCart(req, res) {
     try {
-      console.log('cart.controller', 'removeItemFromCart');
+      req.logger.debug('cart.controller', 'removeItemFromCart');
       const cartId = req.params.cid;
       const cart = await CartModel.findById(cartId);
       if (!cart) {
