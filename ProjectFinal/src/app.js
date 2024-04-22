@@ -7,8 +7,8 @@ const handlebarsInstance = require('express-handlebars');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
 
-const addLogger = require('./utils/logger.js');
-app.use(addLogger);
+// const addLogger = require('./utils/logger.js');
+// app.use(addLogger);
 
 // Mongo connection
 require('./db/db.connection.js');

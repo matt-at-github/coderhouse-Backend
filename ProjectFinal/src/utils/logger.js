@@ -1,5 +1,6 @@
 const winston = require('winston');
 
+// Custom logging levels.
 const levels = {
   level: {
     fatal: 5,
