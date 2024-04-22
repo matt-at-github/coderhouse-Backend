@@ -3,7 +3,7 @@ const passport = require('passport');
 const passportCall = (strategy) => {
   return async (req, res, next) => {
     passport.authenticate(strategy, (error, user, info) => {
-      console.log('util', 'passport.authenticate', user, info, error);
+      // req.logger.info('util', 'passport.authenticate', user, info, error);
       if (error) {
         return next(error);
       }
