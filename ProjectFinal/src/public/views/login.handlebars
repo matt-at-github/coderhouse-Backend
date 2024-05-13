@@ -25,7 +25,7 @@
       </div>
 
       <div class="row justify-content-center pt-4">
-        <div class="col-4">
+        <div class="col">
           <button type="submit" class="btn btn-info" id="localLogin">
             <span class="glyphicon glyphicon-share-alt"></span>
             Iniciar sesión
@@ -33,19 +33,27 @@
         </div>
 
       </form>
-      {{!-- <div class="col-4">
+      {{!-- <div class="col">
         <a type="submit" class="btn btn-secondary" href="/users/github" id="githubLogin" onclick="spinner('githubLogin',false)">
           <span class="glyphicon glyphicon-share-alt"></span>
           GitHub
         </a>
       </div> --}}
 
-      <div class="col-4">
+      <div class="col">
+        <a href="/users/recoverPassword" class="btn btn-outline-primary">
+          <span class="glyphicon glyphicon-share-alt"></span>
+          Recuperar contraseña
+        </a>
+      </div>
+
+      <div class="col">
         <a href="/users/createAccount" class="btn btn-outline-primary">
           <span class="glyphicon glyphicon-share-alt"></span>
           Crear cuenta
         </a>
       </div>
+
     </div>
 
   </div>

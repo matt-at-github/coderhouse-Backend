@@ -12,6 +12,9 @@ router.post('/createAccount', userController.renderCreateUser);
 
 router.post('/login', userController.login);
 
+router.get('/recoverPassword', userController.renderRecoverPassword);
+router.post('/recoverPassword', userController.recoverPassword);
+
 // TODO: Rework!!
 // // Login with GitHub
 // router.get('/github',

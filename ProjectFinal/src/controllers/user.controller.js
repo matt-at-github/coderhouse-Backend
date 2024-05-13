@@ -1,12 +1,16 @@
 const UserModel = require('../models/users.model.js');
 const UserMongoDBDAO = require('../DAO/users/users.mongoDb.dao.js');
-const userDAO = new UserMongoDBDAO();
 
+const userDAO = new UserMongoDBDAO();
 const UserDTO = require('../DTO/user.dto.js');
+
+const EmailManager = require('../services/email.js');
+const emailManager = new EmailManager();
 
 const jwt = require('jsonwebtoken');
 
 const { isValidPassword } = require('../utils/hashBcrypt.js');
+const { generateResetToken } = require('../utils/jwt.js');
 const { jwtConfig, cookieParserConfig } = require('../config/config.js');
 
 async function createUser(req) {
@@ -160,6 +164,40 @@ class UserController {
       return res.status(200).redirect('/');
     } catch (error) {
       return req.logger.error(`User controller error -> ${error}`);
+    }
+  }
+
+  renderRecoverPassword(req, res) {
+    return res.render('recoverPassword');
+  }
+
+  async recoverPassword(req, res) {
+    console.log(req.body);
+    const { email } = req.body;
+    try {
+      // Buscar al usuario por su correo electrónico
+      const user = await UserModel.findOne({ email });
+      if (!user) {
+        return res.status(404).json({ message: 'Usuario no encontrado' });
+      }
+
+      // Generar un token 
+      const token = generateResetToken();
+
+      // Guardar el token en el usuario
+      user.resetToken = {
+        token: token,
+        expiresAt: new Date(Date.now() + 3600000) // 1 hora de duración
+      };
+      await user.save();
+
+      // Enviar correo electrónico con el enlace de restablecimiento utilizando EmailService
+      await emailManager.sendPasswordResetMail(email, user.first_name, token);
+
+      res.status(200).json({ message: 'Correo envíado exitosamente' }); // todo
+    } catch (error) {
+      req.logger.error(error);
+      res.status(500).send('Error interno del servidor');
     }
   }
 
