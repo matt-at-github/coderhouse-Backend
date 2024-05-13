@@ -17,9 +17,9 @@ const initializePassport = () => {
     secretOrKey: jwtConfig.secretOrKey,
   }, async (jwt_payload, done) => {
     try {
-      console.log('passport.config', 'JWT', 'jwt_payload', jwt_payload);
+      //  req.logger.debug('passport.config', 'JWT', 'jwt_payload', jwt_payload);
       const result = await userController.findUserById(jwt_payload.user.id);
-      console.log('passport.config', 'JWT', result);
+      // req.logger.debug('passport.config', 'JWT', result);
       if (!result.success) {
         return done(null, false);
       }
@@ -30,7 +30,7 @@ const initializePassport = () => {
   }));
 
   passport.serializeUser((user, done) => {
-    console.log('passport.config', 'serializeUser', user);
+    // req.logger.debug('passport.config', 'serializeUser', user);
     done(null, user);
   });
 
@@ -40,12 +40,12 @@ const initializePassport = () => {
 
       // if (user.role === 'admin') { return done(null, user); }
 
-      console.log('passport.config', 'deserializeUser', user.id);
+      // req.logger.debug('passport.config', 'deserializeUser', user.id);
       let result = await userController.findUserById(user.id);
 
-      console.log('passport.config', 'deserializeUser', result.success);
+      // req.logger.debug('passport.config', 'deserializeUser', result.success);
       if (!result.success) { return done(result.message, false); }
-      console.log('passport.config', 'deserializeUser', result.user);
+      // req.logger.debug('passport.config', 'deserializeUser', result.user);
       return done(null, result.user);
     }
     catch (error) {

@@ -73,6 +73,7 @@ async function getMessages(queryFilter = {}, queryLimit = 10, queryPage = 1, que
     };
 
   } catch (error) {
-    return console.error(`Product Service error -> ${error}`);
+    // return req.logger.error(`Product Service error -> ${error}`);
+    return error;
   }
 }

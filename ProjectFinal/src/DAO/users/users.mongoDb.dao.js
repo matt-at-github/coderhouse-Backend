@@ -8,7 +8,7 @@ class UserMongoDBDAO {
   async getUserByID(id) {
     try {
       const user = await UserModel.findById(id);
-      console.log('users.mongodb.dao', 'getUserByID', id);
+      // req.logger.debug('users.mongodb.dao', 'getUserByID', id);
       return user;
     } catch (error) {
       throw new Error(`Error at getting user. ${error}`);
@@ -17,9 +17,9 @@ class UserMongoDBDAO {
 
   async getUserByEmail(email) {
     try {
-      console.log('users.mongodb.dao', 'getUserByEmail', email);
+      // req.logger.debug('users.mongodb.dao', 'getUserByEmail', email);
       const user = await UserModel.findOne({ email: email });
-      console.log('users.mongodb.dao', 'getUserByEmail', email);
+      // req.logger.debug('users.mongodb.dao', 'getUserByEmail', email);
       return user;
     } catch (error) {
       throw new Error(`Error at getting user. ${error}`);
@@ -29,12 +29,12 @@ class UserMongoDBDAO {
   async createUser(req) {
     try {
 
-      console.log('user.mongoDB.dao', 'createUser', 'req', req.body);
+      req.logger.debug('user.mongoDB.dao', 'createUser', 'req', req.body);
       let { first_name, last_name, email, password, age } = req.body;
       age = Number(age);
 
       const cart = await new CartModel().save();
-      console.log('user.mongoDB.dao', 'createUser', 'cart', cart);
+      req.logger.debug('user.mongoDB.dao', 'createUser', 'cart', cart);
       let user = {
         first_name,
         last_name,
@@ -45,7 +45,7 @@ class UserMongoDBDAO {
       };
 
       const result = await UserModel.create(user);
-      console.log('users.mongoDB.dao', 'createUser', result);
+      req.logger.debug('users.mongoDB.dao', 'createUser', result);
       return result;
     } catch (error) {
       throw new Error(`Error at creating user. ${error}`);

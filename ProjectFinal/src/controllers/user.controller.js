@@ -108,7 +108,7 @@ class UserController {
 
   async findUserById(id) {
     try {
-      req.logger.debug('user.controller', 'findUserById', id);
+      // req.logger.debug('user.controller', 'findUserById', id);
       const user = await userDAO.getUserByID(id);
       if (!user) { return { code: 400, message: 'Usuario no encontrado', success: false }; }
       return { code: 200, user, success: true };
@@ -159,7 +159,7 @@ class UserController {
       req.logger.debug('user.controller', req.user);
       return res.status(200).redirect('/');
     } catch (error) {
-      return console.error(`User controller error -> ${error}`);
+      return req.logger.error(`User controller error -> ${error}`);
     }
   }
 

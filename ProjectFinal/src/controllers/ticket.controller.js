@@ -6,7 +6,7 @@ class TicketController {
     try {
       const code = await getTicketCode() + 1;
       const newTicket = await TicketModel.create({ code, purchase_datetime, amount, buyer });
-      console.log('ticket.controller', 'createTicket', 'newTicket', newTicket);
+      // req.logger.debug('ticket.controller', 'createTicket', 'newTicket', newTicket);
       return newTicket;
     } catch (error) {
       return `Ticket controller error -> ${error}.`;

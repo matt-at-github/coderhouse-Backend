@@ -66,7 +66,7 @@ class SessionController {
       return res.status(200).redirect('/');
 
     } catch (error) {
-      return console.error(`Session Service error -> ${error}`);
+      return req.logger.error(`Session Service error -> ${error}`);
     }
   }
 

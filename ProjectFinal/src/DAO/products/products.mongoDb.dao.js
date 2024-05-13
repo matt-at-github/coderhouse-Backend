@@ -33,7 +33,7 @@ class ProductsMongoDBDAO {
       };
 
     } catch (error) {
-      return console.error(`Product Service error -> ${error}`);
+      return req.logger.error(`Product Service error -> ${error}`);
     }
   }
 

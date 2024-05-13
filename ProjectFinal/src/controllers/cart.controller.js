@@ -39,7 +39,7 @@ class CartController {
           if (productIndex !== -1) {
             cart.products.splice(productIndex, 1);
           } else {
-            console.error('Product not found in cart', productOnCart, productsOnCart);
+            req.logger.error('Product not found in cart', productOnCart, productsOnCart);
           }
         }
       });
@@ -141,7 +141,7 @@ class CartController {
       await cartDAO.updateCart(cart);
       res.status(200).send({ quantity: cart.products[existingProductIndex]?.quantity ?? 1 });
     } catch (error) {
-      console.error(`Cart controller error -> ${error}`);
+      req.logger.error(`Cart controller error -> ${error}`);
       res.status(500).send({ message: `Cart controller error -> ${error}` });
     }
   }

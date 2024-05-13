@@ -1,5 +1,4 @@
 function productCreateValidationError(product) {
-  console.log('productErrors.js', 'productCreateValidationError', 'product', product);
   return `Faltó un campo obligatorio para poder crear el producto. 
   Recibimos esto:
     - code:  ${product.code}.

@@ -11,7 +11,7 @@ class CartMongoDBDAO {
   }
 
   async getCartByID(cartId, populate) {
-    console.log('carts.mongoDB.dao', 'getCartByID', cartId, populate);
+    // req.logger.debug('carts.mongoDB.dao', 'getCartByID', cartId, populate);
     try {
       if (populate) {
         return await CartModel.findById(cartId).populate('products.product');

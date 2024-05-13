@@ -70,7 +70,7 @@ app.get('/loggerTest', (req, res) => {
   req.logger.info('Mensaje de Info');
   req.logger.warning('Mensaje de Warning');
   res.send('Test de logs');
-  console.log(node_env);
+  req.logger.debug(node_env);
 });
 
 // Home route -> login

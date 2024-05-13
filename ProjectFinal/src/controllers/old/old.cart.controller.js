@@ -38,7 +38,7 @@ class CartManager {
 
     const cart = await this.#getCartById(cartId);
     if (!cart) {
-      console.error(`Cart ID ${cartId} not found. Update cancelled.`);
+      // req.logger.error(`Cart ID ${cartId} not found. Update cancelled.`);
       return { success: false, message: `Cart ID ${cartId} not found. Update cancelled.` };
     }
 
@@ -74,7 +74,7 @@ class CartManager {
         await fs.writeFile(this.path, JSON.stringify(content, null, 2));
       }
     } catch (error) {
-      console.error(`Error at Database writting: ${error}.`);
+      // req.logger.error(`Error at Database writting: ${error}.`);
     }
   }
 
@@ -86,7 +86,7 @@ class CartManager {
       }
       return [{}];
     } catch (error) {
-      console.error(`Error at Database reading: ${error}.`);
+      // req.logger.error(`Error at Database reading: ${error}.`);
     }
   }
 }

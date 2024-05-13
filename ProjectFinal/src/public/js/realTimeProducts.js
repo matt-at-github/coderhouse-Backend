@@ -21,14 +21,14 @@ function createProductNode(product) {
 socket.on('connectionResponse', (data) => {
   const wrapper = document.getElementById('productWrapper');
   wrapper.innerHTML = '';
-  console.log(data);
+  // req.logger.debug(data);
   data.payload.forEach(product => {
     createProductNode(product);
   });
 });
 
 const abortUpdate = document.getElementById('abortUpdate');
-abortUpdate.addEventListener('click', () => { console.log('update aborted'); });
+abortUpdate.addEventListener('click', () => {  });
 
 const regiterNewProduct = document.getElementById('registerProduct');
 regiterNewProduct.addEventListener('click', () => {

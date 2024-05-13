@@ -12,14 +12,14 @@ class SocketIOManager {
 
     this.io.on('connection', async (socket) => {
 
-      console.log('Client connected');
+      // req.logger.debug('Client connected');
 
       socket.on('regiterNewProduct', async (data) => {
-        console.log('regiterNewProduct', data);
+        // req.logger.debug('regiterNewProduct', data);
         if (data) {
           const { title, description, price, thumbnails, code, stock, status } = data;
           const newProduct = await productManager.addProduct(title, description, price, thumbnails, code, stock, status);
-          console.log('newProduct', newProduct);
+          // req.logger.debug('newProduct', newProduct);
           if (newProduct.success) {
             this.io.sockets.emit('regiterNewProductResponse', { success: newProduct.success, title: 'Successful creation', text: 'New product created!.', product: newProduct.message });
           } else {

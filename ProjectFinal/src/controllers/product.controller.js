@@ -89,37 +89,37 @@ class ProductController {
 
   async createRealtimeProduct(body) {
     try {
-      req.logger.debug('product.controller', 'createRealtimeProduct', 'body', body);
+      // req.logger.debug('product.controller', 'createRealtimeProduct', 'body', body);
       const validation = runBodyValidations(body);
-      req.logger.debug('product.controller', 'createRealtimeProduct', 'validation', validation);
+      // req.logger.debug('product.controller', 'createRealtimeProduct', 'validation', validation);
       if (!validation.success) {
-        req.logger.debug('product.controller', 'createRealtimeProduct', 'creating custom error');
+        // req.logger.debug('product.controller', 'createRealtimeProduct', 'creating custom error');
         throw CustomError.createError({ code: EErrors.FIELD_MANDATORY, cause: 'Fallo en validación', message: productCreateValidationError(body) });
         // return res.status(validation.code).json({ message: validation.message });
       }
       const result = await productDAO.createProduct({ body });
-      req.logger.debug('product.controller', 'createRealtimeProduct', 'result', result);
+      // req.logger.debug('product.controller', 'createRealtimeProduct', 'result', result);
       if (!result) {
         return { message: result.message ?? result, status: 400 };
       }
       return { result, status: 200, success: true };
     } catch (error) {
-      console.error({ code: 500, message: error.message || 'Internal Server Error', success: false });
+      // req.logger.error({ code: 500, message: error.message || 'Internal Server Error', success: false });
       return ({ code: 500, message: error.message || 'Internal Server Error', success: false });
     }
   }
 
   async deleteRealtimeProduct(id) {
     try {
-      req.logger.debug('product.controller', 'deleteRealtimeProduct', 'id', id);
+      // req.logger.debug('product.controller', 'deleteRealtimeProduct', 'id', id);
       const result = await productDAO.deleteProduct({ params: { pid: id } });
-      req.logger.debug('product.controller', 'deleteRealtimeProduct', 'result', result);
+      // req.logger.debug('product.controller', 'deleteRealtimeProduct', 'result', result);
       if (!result) {
         return { message: result.message ?? result, status: 400, success: true };
       }
       return { result: result, status: 200, success: true, message: 'Producto borrado' };
     } catch (error) {
-      console.error({ code: 500, message: error.message || 'Internal Server Error', success: false });
+      // req.logger.error({ code: 500, message: error.message || 'Internal Server Error', success: false });
       return ({ code: 500, message: error.message || 'Internal Server Error', success: false });
     }
   }
@@ -171,7 +171,7 @@ class ProductController {
       }
       return res.status(200).json({ data: result });
     } catch (error) {
-      console.error({ code: 500, message: error.message || 'Internal Server Error', success: false });
+      req.logger.error({ code: 500, message: error.message || 'Internal Server Error', success: false });
       next(error);
     }
   }

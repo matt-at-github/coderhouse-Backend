@@ -15,12 +15,12 @@ class ProductManager {
 
     const productToUpdate = await this.#getProductById(id);
     if (!productToUpdate) {
-      console.error(`Product ID ${id} not found. Update cancelled.`);
+      // req.logger.error(`Product ID ${id} not found. Update cancelled.`);
       return { success: false, message: `Product ID ${id} not found. Update cancelled.` };
     }
 
     if (code && this.#isCodeDuplicated(code)) {
-      console.error(`Product code for product ID '${id}' duplicated. Product was not updated.`);
+      // req.logger.error(`Product code for product ID '${id}' duplicated. Product was not updated.`);
       return { success: false, message: `Product code for product ID '${id}' duplicated. Product was not updated.` };
     }
 
@@ -35,7 +35,7 @@ class ProductManager {
     });
 
     if (!this.#replaceProduct(productToUpdate, productToUpdate)) {
-      console.error(`Product ID ${id} not updated, ID not found.`);
+      // req.logger.error(`Product ID ${id} not updated, ID not found.`);
       return { success: false, message: `Product ID ${id} not updated, ID not found.` };
     }
 
@@ -46,7 +46,7 @@ class ProductManager {
   async deleteProductByID(id) {
     const productToDelete = await this.#getProductById(id);
     if (!productToDelete) {
-      console.error(`Product ID ${id} not found. Delete not done!`);
+      // req.logger.error(`Product ID ${id} not found. Delete not done!`);
       return { success: false, message: `Product ID ${id} not found. Delete not done!` };
     }
 
@@ -56,7 +56,7 @@ class ProductManager {
       return { success: true, message: `Product ID ${id} deleted succesfully.` };
     }
 
-    console.error(`Product ID ${id} was not deleted, ID not found.`);
+    // req.logger.error(`Product ID ${id} was not deleted, ID not found.`);
     return { success: false, message: `Product ID ${id} was not deleted, ID not found.` };
   }
 
@@ -86,13 +86,13 @@ class ProductManager {
 
     const invalidField = validateFields();
     if (invalidField.length > 0) {
-      console.error(`Fields [${invalidField.join(', ')}] empty. All fields are mandatory. Product was not added.`);
+      // req.logger.error(`Fields [${invalidField.join(', ')}] empty. All fields are mandatory. Product was not added.`);
 
       return { success: false, message: `Fields [${invalidField.join(', ')}] empty. All fields are mandatory. Product was not added.` };
     }
 
     if (this.#isCodeDuplicated(code)) {
-      console.error(`Product code for '${title}' duplicated. Product was not added.`);
+      // req.logger.error(`Product code for '${title}' duplicated. Product was not added.`);
       return { success: false, message: `Product code for '${title}' is duplicated. Product was not added.` };
     }
 
@@ -157,7 +157,7 @@ class ProductManager {
         await fs.writeFile(this.path, JSON.stringify(content, null, 2));
       }
     } catch (error) {
-      console.error(`Error at Database writting: ${error}.`);
+      // req.logger.error(`Error at Database writting: ${error}.`);
     }
   }
 
@@ -169,7 +169,7 @@ class ProductManager {
       }
       return [{}];
     } catch (error) {
-      console.error(`Error at Database reading: ${error}.`);
+      // req.logger.error(`Error at Database reading: ${error}.`);
     }
   }
 }
