@@ -15,6 +15,7 @@ const projectConfiguration = {
 };
 
 const configObject = {
+  node_env: process.env.NODE_ENV,
   port: process.env.PORT,
   mongoConnectionConfig: {
     url: process.env.MONGO_URL,

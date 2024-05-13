@@ -19,7 +19,7 @@ class SessionController {
     req.session.isAdmin = user.role === 'admin'; // TODO: Improve
     req.session.cartId = user.cart.toString();
 
-    console.log('session.controller.js', 'login', 'req.session.cartId', req.session.cartId);
+    req.logger.debug('session.controller.js', 'login', 'req.session.cartId', req.session.cartId);
     return { success: true, user, description: '', code: 200 };
   }
 
@@ -56,9 +56,9 @@ class SessionController {
       req.session.isAdmin = user.role === 'admin'; // TODO: Improve
       req.session.cartId = user.cart.toString();
 
-      console.log('session.controller.js', 'authenticate', 'user', user);
-      console.log('session.controller.js', 'authenticate', 'req.session.cartId', req.session.cartId);
-      console.log('session.controller.js', 'authenticate', 'user.cart.toString()', user.cart.toString());
+      req.logger.debug('session.controller.js', 'authenticate', 'user', user);
+      req.logger.debug('session.controller.js', 'authenticate', 'req.session.cartId', req.session.cartId);
+      req.logger.debug('session.controller.js', 'authenticate', 'user.cart.toString()', user.cart.toString());
 
       let token = jwt.sign({ name: user.first_name, password: user.password, role: user.role }, jwtConfig.secretOrKey, { expiresIn: jwtConfig.tokenLife });
       res.cookie(jwtConfig.tokenName, token, { maxAge: 60 * 60 * 1000, httpOnly: true });

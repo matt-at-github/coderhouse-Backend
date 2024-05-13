@@ -1,4 +1,4 @@
-const { cookieParserConfig: cookie_parser, port } = require('./config/config.js');
+const { cookieParserConfig: cookie_parser, port, node_env } = require('./config/config.js');
 
 const express = require('express');
 const app = express();
@@ -7,8 +7,8 @@ const handlebarsInstance = require('express-handlebars');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
 
-// const addLogger = require('./utils/logger.js');
-// app.use(addLogger);
+const addLogger = require('./utils/logger.js');
+app.use(addLogger);
 
 // Mongo connection
 require('./db/db.connection.js');
@@ -63,6 +63,15 @@ app.use('/chats', authenticateRole(['user']), chatRouter);
 app.use('/users', usersRouter);
 app.use('/carts', cartsRouter);
 app.use('/realtimeProducts', realTimeProductRouter); // TODO: Implementar campo categoria. + Stock actual
+
+app.get('/loggerTest', (req, res) => {
+  req.logger.error('Error fatal, vamos a morir');
+  req.logger.debug('Mensaje de debug');
+  req.logger.info('Mensaje de Info');
+  req.logger.warning('Mensaje de Warning');
+  res.send('Test de logs');
+  console.log(node_env);
+});
 
 // Home route -> login
 app.get('/', (req, res) => { return res.redirect('/products'); });
