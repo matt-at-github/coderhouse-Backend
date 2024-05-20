@@ -129,7 +129,7 @@ class CartController {
       }
 
       const userData = getUserData(req);
-      if (productToAdd?.owner.toString() === userData.id) {
+      if (productToAdd?.owner?.toString() === userData.id) {
         res.status(403).send({ message: 'No puedes agregar un producto tuyo a tu carrito' });
         return;
       }

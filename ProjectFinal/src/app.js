@@ -41,6 +41,7 @@ const cartsRouter = require('./routes/carts.router.js');
 const chatRouter = require('./routes/chat.router.js');
 const usersRouter = require('./routes/users.router.js');
 const usersAPIRouter = require('./routes/API/api.users.router.js');
+const cartsAPIRouter = require('./routes/API/api.carts.router.js');
 const viewsRouter = require('./routes/views.router.js');
 const realTimeProductRouter = require('./routes/realtimeProducts.router.js');
 
@@ -65,6 +66,7 @@ app.use('/', viewsRouter);
 // API Routes
 app.use('/api/products', productsAPIRouter);
 app.use('/api/users', usersAPIRouter);
+app.use('/api/carts', cartsAPIRouter);
 
 // Routes
 app.use('/products', productsRouter);

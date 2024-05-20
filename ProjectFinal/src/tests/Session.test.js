@@ -19,7 +19,6 @@ describe('Session testing', function () {
     const response = await requester.post('/users/login').send(loginCredentials);
 
     const cookieName = response.headers['set-cookie'][0].split('=')[0];
-    console.log(cookieName);
     expect(cookieName).to.be.equal('OnlyShopToken');
   });
 
