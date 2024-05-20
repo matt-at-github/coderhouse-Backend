@@ -149,16 +149,13 @@ class UserController {
             user.last_name = '';
             user.role = 'admin';
           } else {
-            return res.render('error', { message: 'Contraseña incorrecta' });
+            return res.status(404).render('error', { message: 'Credenciales inválidas' });
           }
         } else {
 
           user = await userDAO.getUserByEmail(email);
-          if (!user) {
-            return res.render('error', { message: 'Usuario no encontrado' });
-          }
-          if (!isValidPassword(password, user)) {
-            return res.render('error', { message: 'Contraseña incorrecta' });
+          if (!user || !isValidPassword(password, user)) {
+            return res.status(404).render('error', { message: 'Credenciales inválidas' });
           }
         }
       }
