@@ -52,6 +52,10 @@ app.engine('handlebars', handlebarsInstance.engine());
 app.set('view engine', 'handlebars');
 app.set('views', `${__dirname}/public/views`); // Por qué ./public/views no funciona?
 
+// Swagger
+const initSwagger = require('./utils/swagger.js').initSwagger();
+app.use('/apidocs', initSwagger.serve, initSwagger.setup);
+
 // User information injection
 const extractUserInfo = require('./middleware/userInformationInject.js');
 app.use(extractUserInfo);
