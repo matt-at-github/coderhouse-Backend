@@ -38,6 +38,7 @@
       method: 'POST',
       headers: {
         "Content-Type": "application/json",
+        "Authorization" : `Bearer ${localStorage.getItem('OnlyShopToken')}`
       }
     })
     .then(response => response.json()

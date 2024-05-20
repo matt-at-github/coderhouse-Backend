@@ -15,7 +15,7 @@ class EmailManager {
   async sendPurchaseMail(email, first_name, ticket) {
     try {
       const mailOptions = {
-        from: 'Soporte Professionals <matias.soporte@professionals.com.ar>',
+        from: 'Soporte OnlyShop <matias.soporte@OnlyShop.com.ar>',
         to: email,
         subject: 'Confirmación de compra',
         html: `
@@ -34,7 +34,7 @@ class EmailManager {
   async sendPasswordResetMail(email, first_name, token) {
     try {
       const mailOptions = {
-        from: 'Soporte Professionals <matias.soporte@professionals.com.ar>',
+        from: 'Soporte OnlyShop <matias.soporte@OnlyShop.com.ar>',
         to: email,
         subject: 'Restablecimiento de Contraseña',
         html: `
@@ -43,7 +43,7 @@ class EmailManager {
                     <p>Has solicitado restablecer tu contraseña. Utiliza el siguiente código para cambiar tu contraseña:</p>
                     <p><strong>${token}</strong></p>
                     <p>Este código expirará en 1 hora.</p>
-                    <a href="http://localhost:8080/password">Restablecer Contraseña</a>
+                    <a href="http://localhost:8080/users/resetPassword">Restablecer Contraseña</a>
                     <p>Si no solicitaste este restablecimiento, ignora este correo.</p>
                 `
       };

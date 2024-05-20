@@ -7,7 +7,7 @@ const { authenticateRole } = require('../middleware/checkrole');
 const router = express.Router();
 
 router.get('/',
-  authenticateRole(['admin']),
+  authenticateRole(['admin', 'premium']),
   realTimeProduct.renderRealTimeProduct);
 
 module.exports = router;

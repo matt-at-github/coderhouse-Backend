@@ -13,7 +13,8 @@ const schemaProducts = Schema({
   code: { type: String, required: true, unique: true },
   stock: { type: Number, required: true },
   category: { type: String },
-  status: { type: Boolean, def: true }
+  status: { type: Boolean, def: true },
+  owner: { type: mongoose.Schema.Types.ObjectId }
 });
 
 schemaProducts.plugin(mongoosePaginate);

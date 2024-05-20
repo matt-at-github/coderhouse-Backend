@@ -6,4 +6,6 @@ const userController = new UserController();
 
 router.post('/createAccount', userController.createUser);
 
+router.post('/premium/:uid', userController.changeUserRole);
+
 module.exports = router;

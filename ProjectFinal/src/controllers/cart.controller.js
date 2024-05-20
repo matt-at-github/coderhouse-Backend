@@ -128,6 +128,12 @@ class CartController {
         return;
       }
 
+      const userData = getUserData(req);
+      if (productToAdd?.owner.toString() === userData.id) {
+        res.status(403).send({ message: 'No puedes agregar un producto tuyo a tu carrito' });
+        return;
+      }
+
       const prodId = req.params.pid;
       req.logger.debug('car.controller', 'addItemToCart', 'cart.products', cart.products);
       const existingProductIndex = cart.products.findIndex(f => f.product.toString() === prodId.toString());

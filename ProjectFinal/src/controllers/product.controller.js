@@ -18,9 +18,9 @@ class ProductController {
   }
 
   renderMockedProducts(req, res) {
-    req.logger.debug('product.controller', 'renderMockedProducts');
+    //req.logger.debug('product.controller', 'renderMockedProducts');
     try {
-      req.logger.debug('product.controller', 'renderMockedProducts', 'products', this.mockProducts.length);
+      //req.logger.debug('product.controller', 'renderMockedProducts', 'products', this.mockProducts.length);
       if (this.mockProducts.length === 0) {
         let pagination = 1;
         // req.logger.debug('product.controller', 'renderMockedProducts', 'pagination', pagination);
@@ -40,16 +40,16 @@ class ProductController {
 
       const page = parseInt(req.query.page ?? 1);
       const totalPages = this.mockProducts.length / 10;
-      req.logger.debug('product.controller', 'renderMockedProducts', 'page', page > 1, {
+      // req.logger.debug('product.controller', 'renderMockedProducts', 'page', page > 1, {
 
-        hasNextPage: page < totalPages,
-        nextPage: page < totalPages ? page + 1 : undefined,
+      //   hasNextPage: page < totalPages,
+      //   nextPage: page < totalPages ? page + 1 : undefined,
 
-        hasPrevPage: page > 1,
-        prevPage: page > 1 ? page - 1 : undefined,
+      //   hasPrevPage: page > 1,
+      //   prevPage: page > 1 ? page - 1 : undefined,
 
-        pagingCounter: page
-      });
+      //   pagingCounter: page
+      // });
 
       const toRender = {
         products: this.paginatedProducts[page],
@@ -89,16 +89,16 @@ class ProductController {
 
   async createRealtimeProduct(body) {
     try {
-      // req.logger.debug('product.controller', 'createRealtimeProduct', 'body', body);
+      console.log('product.controller', 'createRealtimeProduct', 'body', body);
       const validation = runBodyValidations(body);
-      // req.logger.debug('product.controller', 'createRealtimeProduct', 'validation', validation);
+      console.log('product.controller', 'createRealtimeProduct', 'validation', validation);
       if (!validation.success) {
-        // req.logger.debug('product.controller', 'createRealtimeProduct', 'creating custom error');
+        console.log('product.controller', 'createRealtimeProduct', 'creating custom error');
         throw CustomError.createError({ code: EErrors.FIELD_MANDATORY, cause: 'Fallo en validación', message: productCreateValidationError(body) });
         // return res.status(validation.code).json({ message: validation.message });
       }
       const result = await productDAO.createProduct({ body });
-      // req.logger.debug('product.controller', 'createRealtimeProduct', 'result', result);
+      console.log('product.controller', 'createRealtimeProduct', 'result', result);
       if (!result) {
         return { message: result.message ?? result, status: 400 };
       }
@@ -111,9 +111,11 @@ class ProductController {
 
   async deleteRealtimeProduct(id) {
     try {
-      // req.logger.debug('product.controller', 'deleteRealtimeProduct', 'id', id);
+      console.log('product.controller', 'deleteRealtimeProduct', 'id', id);
+      // const product = await productDAO.getProductByID(id);
+
       const result = await productDAO.deleteProduct({ params: { pid: id } });
-      // req.logger.debug('product.controller', 'deleteRealtimeProduct', 'result', result);
+      console.log('product.controller', 'deleteRealtimeProduct', 'result', result);
       if (!result) {
         return { message: result.message ?? result, status: 400, success: true };
       }
@@ -127,7 +129,7 @@ class ProductController {
   async renderProducts(req, res) {
     try {
       if (!req.cookies[jwtConfig.tokenName]) { return res.redirect('users/login'); }
-      req.logger.debug('product.controller', 'res.locals.user', res.locals.user);
+      //req.logger.debug('product.controller', 'res.locals.user', res.locals.user);
       const data = await getProductData(req);
       return res.render('products', data);
     } catch (error) {
@@ -156,16 +158,16 @@ class ProductController {
 
   async createProduct(req, res, next) {
     try {
-      req.logger.debug('product.controller', 'createProduct', 'body', req.body);
+      //req.logger.debug('product.controller', 'createProduct', 'body', req.body);
       const validation = runBodyValidations(req.body);
-      req.logger.debug('product.controller', 'createProduct', 'validation', validation);
+      //req.logger.debug('product.controller', 'createProduct', 'validation', validation);
       if (!validation.success) {
-        req.logger.debug('product.controller', 'createProduct', 'creating custom error');
+        //req.logger.debug('product.controller', 'createProduct', 'creating custom error');
         throw CustomError.createError({ code: EErrors.FIELD_MANDATORY, cause: 'Fallo en validación', message: productCreateValidationError(req.body) });
         // return res.status(validation.code).json({ message: validation.message });
       }
       const result = await productDAO.createProduct(req);
-      req.logger.debug('product.controller', 'createProduct', 'result', result);
+      //req.logger.debug('product.controller', 'createProduct', 'result', result);
       if (!result) {
         return res.status(400).json({ message: result.message });
       }

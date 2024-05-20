@@ -12,6 +12,7 @@ const jwt = require('jsonwebtoken');
 const { isValidPassword } = require('../utils/hashBcrypt.js');
 const { generateResetToken } = require('../utils/jwt.js');
 const { jwtConfig, cookieParserConfig } = require('../config/config.js');
+const { getUserData } = require('../middleware/checkrole.js');
 
 async function createUser(req) {
   try {
@@ -32,6 +33,19 @@ async function createUser(req) {
 }
 
 class UserController {
+
+  async changeUserRole(req, res) {
+    try {
+      const user = await userDAO.getUserByID(req.params.uid);
+      if (!user) { return res.status(404).render('error', { message: 'User not found' }); }
+
+      await userDAO.changeRole(user);
+
+      return res.status(200).send({ message: `Cuenta de ${user.first_name} actualizada.` });
+    } catch (error) {
+      return res.status(500).send({ message: 'Internal server error.' });
+    }
+  }
 
   async createUser(req, res) {
     try {
@@ -153,9 +167,9 @@ class UserController {
       const userDTO = new UserDTO(user);
       const isAdmin = user.role === 'admin';
 
-      req.logger.debug('user.controller.js', 'authenticate', 'user', user);
-      req.logger.debug('user.controller.js', 'authenticate', 'user.cartId', user.cartId);
-      req.logger.debug('user.controller.js', 'authenticate', 'user.cart.toString()', user.cartId?.toString());
+      // req.logger.debug('user.controller.js', 'authenticate', 'user', user);
+      // req.logger.debug('user.controller.js', 'authenticate', 'user.cartId', user.cartId);
+      // req.logger.debug('user.controller.js', 'authenticate', 'user.cart.toString()', user.cartId?.toString());
 
       let token = jwt.sign({ user: userDTO, isAdmin }, jwtConfig.secretOrKey, { expiresIn: jwtConfig.tokenLife });
       res.cookie(jwtConfig.tokenName, token, { maxAge: cookieParserConfig.life_span, httpOnly: true });
@@ -172,11 +186,12 @@ class UserController {
   }
 
   async recoverPassword(req, res) {
-    console.log(req.body);
-    const { email } = req.body;
+
     try {
+
+      const { email } = req.body;
       // Buscar al usuario por su correo electrónico
-      const user = await UserModel.findOne({ email });
+      const user = await UserModel.findOne({ email: email });
       if (!user) {
         return res.status(404).json({ message: 'Usuario no encontrado' });
       }
@@ -188,13 +203,64 @@ class UserController {
       user.resetToken = {
         token: token,
         expiresAt: new Date(Date.now() + 3600000) // 1 hora de duración
+        // expiresAt: new Date(Date.now() + 5000) // 1 hora de duración
       };
       await user.save();
+      console.log(user);
 
       // Enviar correo electrónico con el enlace de restablecimiento utilizando EmailService
       await emailManager.sendPasswordResetMail(email, user.first_name, token);
 
       res.status(200).json({ message: 'Correo envíado exitosamente' }); // todo
+    } catch (error) {
+      req.logger.error(error);
+      res.status(500).send('Error interno del servidor');
+    }
+  }
+
+  renderResetPassword(req, res) {
+    return res.render('resetPassword');
+  }
+
+  // TODO: Refactorizar las respuesta de los errores para que el front maneje la redirección. 
+  async resetPassword(req, res) {
+    try {
+
+      req.logger.info(`Resetting password for ${req.body.email} | ${JSON.stringify(req.body)}`);
+
+      const user = await userDAO.getUserByEmail(req.body.email);
+      if (!user) {
+        req.logger.error(`Usuario no encontrado para ${req.body.emai}`);
+        return res.render('error', { message: 'Usuario no encontrado' });
+      }
+
+      const resetToken = req.body.token;
+      const newPassword = req.body.password; // Extract new password from request body
+
+      // Validate the token again to ensure its authenticity
+      if (!resetToken || user.resetToken.token !== resetToken) {
+        req.logger.error(`Token inválido para ${req.body.email}`);
+        return res.render('error', { title: 'Reinicio de contraseña', message: 'El token de restablecimiento de contraseña es inválido.' });
+      }
+
+      // Verificar si el token ha expirado
+      const now = new Date();
+      if (now > user.resetToken.expiresAt) {
+
+        req.logger.error(`Token caducado para ${req.body.email}`);
+        return res.render('error', { title: 'Reinicio de contraseña', message: 'El token de restablecimiento de contraseña cadoucó, por favor vuelve a pedir uno.' });
+      }
+
+      // Update the user's password in the database
+      const updateResult = await userDAO.updatePassword(user.email, newPassword);
+      if (!updateResult.success) {
+        req.logger.error(`No se puedo actualizar la contraseña para ${req.body.emai} | ${updateResult.message}`);
+        return res.status(updateResult.status).send(updateResult.message);
+      }
+
+      return res.status(200)
+        .redirect('/users/login');
+
     } catch (error) {
       req.logger.error(error);
       res.status(500).send('Error interno del servidor');

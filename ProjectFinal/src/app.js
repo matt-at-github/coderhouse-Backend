@@ -2,6 +2,7 @@ const { cookieParserConfig: cookie_parser, port, node_env } = require('./config/
 
 const express = require('express');
 const app = express();
+const handlebars = require('handlebars');
 const handlebarsInstance = require('express-handlebars');
 
 const cookieParser = require('cookie-parser');
@@ -18,6 +19,10 @@ const passport = require('passport');
 const initializePassport = require('./config/passport.config.js');
 initializePassport();
 app.use(passport.initialize());
+
+handlebars.registerHelper('json', function (context) {
+  return JSON.stringify(context);
+});
 
 // Middelware
 const errorHandler = require('./middleware/errorHandler.js');

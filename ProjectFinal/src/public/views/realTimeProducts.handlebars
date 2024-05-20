@@ -1,5 +1,4 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js" defer></script>
-<script src="js/realTimeProducts.js" defer></script>
 
 <div class="container">
   <div class="row justify-content-md-center">
@@ -85,7 +84,7 @@
 
         </div>
       </div>
-      
+
       <div class="col mb-1 d-none" id="parent">
         <div class="card">
           <a class="text-reset productLink" id="productLink">
@@ -104,3 +103,12 @@
     </div>
   </div>
 </div>
+
+<script>
+  // Pass the locals to a global variable
+  window.locals = {
+    user: {{{json user}}}
+  };
+</script>
+
+<script src="js/realTimeProducts.js" defer></script>

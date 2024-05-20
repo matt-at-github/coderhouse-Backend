@@ -16,17 +16,14 @@ class SocketIOManager {
 
     this.io.on('connection', async (socket) => {
 
-      // req.logger.debug('Socket Client Connected');
-
+      // ==========================================================================================
+      // Chat
       await socket.on('pullMessages', async (data) => {
-        // req.logger.debug('Socket Client', 'pullMessages', 'data', data);
         const messages = await ChatModel.find({ user: data.user });
-        // req.logger.debug('Socket Client', 'pullMessages', 'messages', messages);
         socket.emit('reply', messages);
       });
 
       await socket.on('message', async (data) => {
-        // req.logger.debug('Socket Client', 'new message');
         const newMessage = new ChatModel({ user: data.user, message: data.message });
         await newMessage.save();
         this.io.sockets.emit('message', data);
@@ -35,12 +32,14 @@ class SocketIOManager {
         socket.emit('reply', messages);
       });
 
+      // ==========================================================================================
+      // Real time Products      
+      this.io.sockets.emit('connectionResponse', await productController.getRealTimeProducts());
+
       await socket.on('regiterNewProduct', async (data) => {
-        // req.logger.debug('Socket Client', 'regiterNewProduct', data);
         if (data) {
-          const { title, description, price, thumbnails, code, stock, status } = data;
-          const newProduct = await productController.createRealtimeProduct({ title, description, price, thumbnails, code, stock, status });
-          // req.logger.debug('Socket Client', 'regiterNewProduct', 'newProduct', newProduct);
+          const { title, description, price, thumbnails, code, stock, status, owner } = data;
+          const newProduct = await productController.createRealtimeProduct({ title, description, price, thumbnails, code, stock, status, owner });
           if (newProduct.success) {
             this.io.sockets.emit('regiterNewProductResponse', { success: newProduct.success, title: 'Successful creation', text: 'New product created!.', product: newProduct.message });
             this.io.sockets.emit('connectionResponse', await productController.getRealTimeProducts());
@@ -49,8 +48,6 @@ class SocketIOManager {
           }
         }
       });
-
-      this.io.sockets.emit('connectionResponse', await productController.getRealTimeProducts());
 
       await socket.on('deleteProduct', async (data) => {
         // req.logger.debug('Socket Client', 'deleteProduct');

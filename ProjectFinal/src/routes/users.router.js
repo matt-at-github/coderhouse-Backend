@@ -15,6 +15,9 @@ router.post('/login', userController.login);
 router.get('/recoverPassword', userController.renderRecoverPassword);
 router.post('/recoverPassword', userController.recoverPassword);
 
+router.get('/resetPassword', userController.renderResetPassword);
+router.post('/resetPassword', userController.resetPassword);
+
 // TODO: Rework!!
 // // Login with GitHub
 // router.get('/github',
@@ -30,6 +33,8 @@ router.get('/current',
   authenticateRole(['user']),
   // passport.authenticate('jwt', { session: false }), // TODO: SOLVE
   userController.getCurrent);
+
+router.get('/logout', userController.logout);
 
 router.get('/logout', userController.logout);
 module.exports = router;

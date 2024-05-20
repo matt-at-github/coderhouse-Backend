@@ -6,13 +6,22 @@ function createProductNode(product) {
   const wrapper = document.getElementById('productWrapper');
 
   const child = document.getElementById('parent').cloneNode(true);
-  child.getElementsByClassName('text-reset productLink')[0].href = `/api/products/${product.id}`;
+  child.getElementsByClassName('text-reset productLink')[0].href = `/api/products/${product._id}`;
   child.getElementsByClassName('card-title')[0].innerHTML = product.title;
   child.getElementsByClassName('card-text')[0].innerHTML = product.description;
 
-  child.querySelector('button').addEventListener('click', () => {
-    socket.emit('deleteProduct', product._id);
-  });
+  const user = window.locals.user;
+  const button = child.querySelector('button');
+  if (user.role === 'admin' || product.owner?.toString() === user.id) {
+    button.classList.remove('d-none');
+    child.querySelector('button').addEventListener('click', () => {
+      socket.emit('deleteProduct', product._id);
+    });
+  } else {
+    if (button) {
+      button.classList.add('d-none');
+    }
+  }
 
   child.classList.remove('d-none');
   wrapper.appendChild(child);
@@ -21,14 +30,13 @@ function createProductNode(product) {
 socket.on('connectionResponse', (data) => {
   const wrapper = document.getElementById('productWrapper');
   wrapper.innerHTML = '';
-  // req.logger.debug(data);
   data.payload.forEach(product => {
     createProductNode(product);
   });
 });
 
 const abortUpdate = document.getElementById('abortUpdate');
-abortUpdate.addEventListener('click', () => {  });
+abortUpdate.addEventListener('click', () => { });
 
 const regiterNewProduct = document.getElementById('registerProduct');
 regiterNewProduct.addEventListener('click', () => {
@@ -81,6 +89,7 @@ function getFieldsValues() {
     thumbnails: [],
     stock: document.getElementById('stock').value,
     status: true,
+    owner: window.locals.user.id
   };
   return Object.values(product).includes('') ? false : product;
 }
