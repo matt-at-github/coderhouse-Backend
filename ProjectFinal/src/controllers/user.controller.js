@@ -12,7 +12,6 @@ const jwt = require('jsonwebtoken');
 const { isValidPassword } = require('../utils/hashBcrypt.js');
 const { generateResetToken } = require('../utils/jwt.js');
 const { jwtConfig, cookieParserConfig } = require('../config/config.js');
-const { getUserData } = require('../middleware/checkrole.js');
 
 async function createUser(req) {
   try {

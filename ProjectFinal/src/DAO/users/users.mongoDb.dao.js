@@ -2,7 +2,6 @@ const UserModel = require('../../models/users.model.js');
 const CartModel = require('../../models/carts.model.js');
 
 const { createHash, isOldPassword } = require('../../utils/hashBcrypt.js');
-const passport = require('passport');
 
 class UserMongoDBDAO {
 

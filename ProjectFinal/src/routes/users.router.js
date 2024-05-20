@@ -4,7 +4,7 @@ const router = express.Router();
 const UserController = require('../controllers/user.controller.js');
 const userController = new UserController();
 
-const passport = require('passport');
+// const passport = require('passport');
 const { authenticateRole } = require('../middleware/checkrole.js');
 
 // Create new Account
