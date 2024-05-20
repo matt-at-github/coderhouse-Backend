@@ -13,29 +13,42 @@ const requester = supertest('http://localhost:8080');
 
 describe('Session testing', function () {
 
-  it('Al iniciar sesión, debe retornar el token', async function () {
+  it('Recibir un array al pedir todos los productos', async function () {
 
-    const loginCredentials = { email: 'matiasnicolasmoresi@gmail.com', password: '1234' };
-    const response = await requester.post('/users/login').send(loginCredentials);
-
-    const cookieName = response.headers['set-cookie'][0].split('=')[0];
-    console.log(cookieName);
-    expect(cookieName).to.be.equal('OnlyShopToken');
+    const response = await requester.get('/api/products');
+    expect(Array.isArray(response._body.products)).to.be.true;
   });
 
-  it('iniciar sesión con mail inválido', async function () {
+  it('Obtener los detalles del producto al pedirlo', async function () {
 
-    const loginCredentials = { email: 'matiasnicolasmoresi@gmail', password: '123' };
-    const response = await requester.post('/users/login').send(loginCredentials);
-
-    expect(response.status).to.be.equal(404);
+    const response = await requester.get('/api/products/65d37daf9e1fc34968b99133');
+    expect(response._body).to.have.property('title');
+    expect(response._body).to.have.property('description');
+    expect(response._body).to.have.property('price');
+    expect(response._body).to.have.property('code');
+    expect(response._body).to.have.property('stock');
   });
 
-  it('iniciar sesión con contraseña inválido', async function () {
+  it('Crear nuevo producto', async function () {
 
-    const loginCredentials = { email: 'matiasnicolasmoresi@gmail.com', password: '123' };
-    const response = await requester.post('/users/login').send(loginCredentials);
+    const newProduct = {
+      code: 'testprod',
+      title: 'producto prueba',
+      description: 'Esto es una prueba',
+      price: 12,
+      stock: 100,
+      status: true
+    };
+    const response = await requester.post('/api/products').send(newProduct);
 
-    expect(response.status).to.be.equal(404);
+    const prod = response._body.data;
+
+    expect(prod).to.have.property('title');
+    expect(prod).to.have.property('description');
+    expect(prod).to.have.property('price');
+    expect(prod).to.have.property('code');
+    expect(prod).to.have.property('stock');
+    expect(prod).to.have.property('status');
   });
+
 });

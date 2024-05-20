@@ -4,7 +4,7 @@
   "description": "",
   "main": "src/app.js",
   "scripts": {
-    "test": "mocha ./src/tests/Carts.test.js",
+    "test": "mocha ./src/tests/Products.test.js",
     "dev": "nodemon ./src/app.js --mode dev",
     "start": "node ./src/app.js --mode prod",
     "lint": "npx eslint --fix src"
