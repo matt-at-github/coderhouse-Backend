@@ -94,7 +94,6 @@ class UserMongoDBDAO {
       return { success: true, status: 200, message: 'Password updated successfully.' };
     } catch (error) {
       // If an error occurs, return error response
-      console.error('Error updating password:', error);
       return { success: false, status: 500, message: 'Internal Server Error' };
     }
   }
