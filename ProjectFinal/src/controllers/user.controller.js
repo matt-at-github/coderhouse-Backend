@@ -203,10 +203,8 @@ class UserController {
       user.resetToken = {
         token: token,
         expiresAt: new Date(Date.now() + 3600000) // 1 hora de duración
-        // expiresAt: new Date(Date.now() + 5000) // 1 hora de duración
       };
       await user.save();
-      console.log(user);
 
       // Enviar correo electrónico con el enlace de restablecimiento utilizando EmailService
       await emailManager.sendPasswordResetMail(email, user.first_name, token);

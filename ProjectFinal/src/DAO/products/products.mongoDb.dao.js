@@ -56,19 +56,15 @@ class ProductsMongoDBDAO {
   }
 
   async createProduct(req) {
-    console.log('products.mongo.dao', 'createProduct', 'req', req);
     try {
 
       const product = await ProductModel.findOne({ code: req.body.code });
-      console.log('products.mongo.dao', 'createProduct', 'product', product);
       if (product) {
         return { code: 401, message: 'Product already exists', success: false };
       }
 
       const newProduct = new ProductModel(req.body);
-      console.log('products.mongo.dao', 'createProduct', 'newProduct', newProduct);
       const result = await newProduct.save();
-      console.log('products.mongo.dao', 'createProduct', 'result', result);
       if (!result) {
         return { code: 400, message: result.message ?? result, success: false };
       }
@@ -103,7 +99,6 @@ class ProductsMongoDBDAO {
   }
 
   async deleteProduct(req) {
-    //console.log('products.mongo.dao', 'deleteProduct', 'req', req);
     try {
       const deletedProduct = await ProductModel.findByIdAndDelete(req.params.pid);
       return deletedProduct;

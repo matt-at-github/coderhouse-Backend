@@ -89,16 +89,13 @@ class ProductController {
 
   async createRealtimeProduct(body) {
     try {
-      console.log('product.controller', 'createRealtimeProduct', 'body', body);
+      
       const validation = runBodyValidations(body);
-      console.log('product.controller', 'createRealtimeProduct', 'validation', validation);
+      
       if (!validation.success) {
-        console.log('product.controller', 'createRealtimeProduct', 'creating custom error');
         throw CustomError.createError({ code: EErrors.FIELD_MANDATORY, cause: 'Fallo en validación', message: productCreateValidationError(body) });
-        // return res.status(validation.code).json({ message: validation.message });
       }
       const result = await productDAO.createProduct({ body });
-      console.log('product.controller', 'createRealtimeProduct', 'result', result);
       if (!result) {
         return { message: result.message ?? result, status: 400 };
       }
@@ -111,11 +108,8 @@ class ProductController {
 
   async deleteRealtimeProduct(id) {
     try {
-      console.log('product.controller', 'deleteRealtimeProduct', 'id', id);
-      // const product = await productDAO.getProductByID(id);
-
+      
       const result = await productDAO.deleteProduct({ params: { pid: id } });
-      console.log('product.controller', 'deleteRealtimeProduct', 'result', result);
       if (!result) {
         return { message: result.message ?? result, status: 400, success: true };
       }
