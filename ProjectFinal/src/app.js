@@ -81,10 +81,6 @@ app.get('*', function (req, res) {
   res.status(404).render('logout', { message: 'Esta página no existe.' });
 });
 
-// Multer
-//
-//
-
 // Server init
 const httpServer = app.listen(port, () => console.log(`Server running at http://localhost:${port}`));
 

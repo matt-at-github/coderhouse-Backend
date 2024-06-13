@@ -15,6 +15,7 @@ const projectConfiguration = {
 };
 
 const configObject = {
+  domain: process.env.DOMAIN,
   node_env: process.env.NODE_ENV,
   port: process.env.PORT,
   mongoConnectionConfig: {
@@ -36,7 +37,11 @@ const configObject = {
       clientId: process.env.PASSPORT_GITHUB_CLIENT_ID,
       clientSecret: process.env.PASSPORT_GITHUB_CLIENT_SECRET
     }
-  }
+  },
+  nodemailConfig: {
+    accountSupport: process.env.MAILER_ACCOUNT_SUPPORT,
+    password: process.env.MAILER_PASSWORD
+  },
 };
 
 module.exports = configObject;

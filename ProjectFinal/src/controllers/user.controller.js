@@ -3,6 +3,8 @@ const UserMongoDBDAO = require('../DAO/users/users.mongoDb.dao.js');
 const userDAO = new UserMongoDBDAO();
 
 const UserDTO = require('../DTO/user.dto.js');
+const MailController = require('../controllers/mail.controller.js');
+const mailController = new MailController();
 
 const jwt = require('jsonwebtoken');
 
@@ -29,6 +31,121 @@ async function createUser(req) {
 
 class UserController {
 
+  async uploadDocuments(req, res) {
+
+    const { uid } = req.params;
+    const uploadedDocuments = req.files;
+
+    try {
+
+      if (!uploadedDocuments) {
+        return res.status(400).send('No se detectaron documentos adjuntos.');
+      }
+
+      const user = await userDAO.getUserByID(uid);
+      if (!user) {
+        return res.status(404).send('Usuario no encontrado');
+      }
+
+      // Verificar si se subieron documentos y actualizar el usuario
+      if (uploadedDocuments) {
+        if (uploadedDocuments.document) {
+          user.documents = user.documents.concat(uploadedDocuments.document.map(doc => ({
+            name: doc.originalname,
+            reference: doc.path
+          })));
+        }
+        if (uploadedDocuments.products) {
+          user.documents = user.documents.concat(uploadedDocuments.products.map(doc => ({
+            name: doc.originalname,
+            reference: doc.path
+          })));
+        }
+        if (uploadedDocuments.profile) {
+          user.documents = user.documents.concat(uploadedDocuments.profile.map(doc => ({
+            name: doc.originalname,
+            reference: doc.path
+          })));
+        }
+      }
+
+      // Guardar los cambios en la base de datos
+      await user.save();
+
+      res.status(200).send('Documentos subidos exitosamente');
+    } catch (error) {
+      console.error(error);
+      res.status(500).send('Error interno del servidor');
+    }
+  }
+
+  async promoteUser(req, res) {
+    try {
+      const { uid } = req.params;
+
+      const user = await userDAO.getUserByID(uid);
+
+      if (!user) {
+        return res.status(404).json({ message: 'Usuario no encontrado' });
+      }
+
+      // Verificar si el usuario ha cargado los documentos requeridos
+      const requiredDocuments = ['Identificación', 'Comprobante de domicilio', 'Comprobante de estado de cuenta'];
+      const userDocuments = user.documents.map(doc => doc.name);
+
+      const hasRequiredDocuments = requiredDocuments.every(doc => userDocuments.includes(doc));
+
+      if (!hasRequiredDocuments) {
+        return res.status(400).json({ message: 'El usuario debe cargar los siguientes documentos: Identificación, Comprobante de domicilio, Comprobante de estado de cuenta' });
+      }
+
+      const newRole = user.role === 'usuario' ? 'premium' : 'usuario';
+
+      const updated = await userDAO.promoteUser(uid, newRole);
+      res.json(updated);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Error interno del servidor' });
+    }
+  }
+
+  async deleteInactiveUsers(req, res) {
+    try {
+      const processLog = [];
+      req.logger.debug('user.controller', 'deleteInactiveUsers');
+      const users = (await userDAO.getElegibleForDeletion()).map(user => new UserDTO(user));
+
+      if (users.length === 0) {
+        return res.status(200).send({ status: 'success', message: 'No hay usuarios inactivos', success: true });
+      }
+
+      for (const user of users) {
+
+        const notificationStatus = await mailController.sendAccountDeleteNotification(user);
+        if (!notificationStatus.success) {
+          processLog.push({ status: 'error', payload: `No email sent to user ${user.email}. Delete process aborted. Error: ${notificationStatus.message}`, success: false });
+        } else {
+          processLog.push({ status: 'success', payload: `Email sent to user ${user.email}. Account deleted.`, success: true });
+        }
+
+        await userDAO.deleteUser(user.id);
+      }
+
+      res.status(200).json(processLog);
+
+    } catch (error) {
+      return res.status(500).json({ message: `User controller error -> ${error}.` });
+    }
+  }
+  async getAllUsers(req, res) {
+    try {
+      req.logger.debug('user.controller', 'getAllUsers');
+      const users = (await userDAO.getAllUsers()).map(user => new UserDTO(user));
+      res.send({ status: 'success', payload: users, success: true });
+    } catch (error) {
+      return res.status(500).json({ message: `User controller error -> ${error}.` });
+    }
+  }
   async createUser(req, res) {
     try {
       const user = await createUser(req);
@@ -153,6 +270,8 @@ class UserController {
       req.logger.debug('user.controller.js', 'authenticate', 'user.cartId', user.cartId);
       req.logger.debug('user.controller.js', 'authenticate', 'user.cart.toString()', user.cartId?.toString());
 
+      await userDAO.updateUser(user.id, { last_connection: new Date() });
+
       let token = jwt.sign({ user: userDTO, isAdmin }, jwtConfig.secretOrKey, { expiresIn: jwtConfig.tokenLife });
       res.cookie(jwtConfig.tokenName, token, { maxAge: cookieParserConfig.life_span, httpOnly: true });
       res.locals.user = userDTO;
@@ -170,8 +289,11 @@ class UserController {
     return res.render('error', { title: 'Sesión Actual', message: JSON.stringify({ user: user, isAdmin }, null, 2), error: false, user: user });
   }
 
-  logout(req, res) {
+  async logout(req, res) {
     req.logger.debug('user.controller', 'logout');
+
+    await userDAO.updateUser(req.user?.id, { last_connection: new Date() });
+
     if (req.cookies[jwtConfig.tokenName]) {
       return res.clearCookie(jwtConfig.tokenName).status(200).redirect('../../users/login');
     }

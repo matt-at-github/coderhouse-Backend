@@ -1,3 +1,5 @@
+const MailController = require('../../controllers/mail.controller.js');
+const mailController = new MailController();
 const ProductModel = require('../../models/products.model.js');
 
 class ProductsMongoDBDAO {
@@ -83,11 +85,10 @@ class ProductsMongoDBDAO {
   }
 
   async batchUpdateProductsStock(productsToUpdate) {
-    req.logger.debug('products.mongo.dao', 'batchUpdateProductsStock');
+
     const updatedProducts = [];
     try {
       productsToUpdate.forEach(async (product) => {
-        req.logger.debug('products.mongo.dao', 'batchUpdateProductsStock', 'product', product);
         updatedProducts.push(await ProductModel.findByIdAndUpdate(product._id, { stock: product.newStock }, { new: true }));
       });
       return updatedProducts;
@@ -109,7 +110,10 @@ class ProductsMongoDBDAO {
   async deleteProduct(req) {
     req.logger.debug('products.mongo.dao', 'deleteProduct', 'req', req);
     try {
-      const deletedProduct = await ProductModel.findByIdAndDelete(req.params.pid);
+      const deletedProduct = await ProductModel.findByIdAndDelete(req.params.pid).populate('owner');
+      if (deletedProduct.onwer.role === 'premium') {
+        mailController.sendProductDeletedNotificaiton(deletedProduct.onwer, deletedProduct);
+      }
       return deletedProduct;
     } catch (error) {
       throw new Error('Error at deleting product', error);

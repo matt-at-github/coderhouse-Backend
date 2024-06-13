@@ -3,6 +3,9 @@
     {
       "name": "CODER",
       "path": "."
+    },
+    {
+      "path": "RecursosBackend-Adoptme"
     }
   ],
   "settings": {}

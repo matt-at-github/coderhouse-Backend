@@ -23,7 +23,6 @@ class ProductController {
       req.logger.debug('product.controller', 'renderMockedProducts', 'products', this.mockProducts.length);
       if (this.mockProducts.length === 0) {
         let pagination = 1;
-        // req.logger.debug('product.controller', 'renderMockedProducts', 'pagination', pagination);
         for (let index = 0; index < 100; index++) {
           const product = generateProduct();
           this.mockProducts.push(product);
@@ -31,11 +30,9 @@ class ProductController {
           if (!this.paginatedProducts[pagination]) { this.paginatedProducts[pagination] = []; }
           this.paginatedProducts[pagination].push(product);
           if (this.paginatedProducts[pagination].length % 10 === 0) {
-            // req.logger.debug('product.controller', 'renderMockedProducts', `this.paginatedProducts[${pagination}]`, this.paginatedProducts[pagination]?.map(m => m.title));
             pagination++;
           }
         }
-        // req.logger.debug('product.controller', 'renderMockedProducts', 'products', this.mockProducts.length);
       }
 
       const page = parseInt(req.query.page ?? 1);
@@ -89,37 +86,29 @@ class ProductController {
 
   async createRealtimeProduct(body) {
     try {
-      // req.logger.debug('product.controller', 'createRealtimeProduct', 'body', body);
+
       const validation = runBodyValidations(body);
-      // req.logger.debug('product.controller', 'createRealtimeProduct', 'validation', validation);
       if (!validation.success) {
-        // req.logger.debug('product.controller', 'createRealtimeProduct', 'creating custom error');
         throw CustomError.createError({ code: EErrors.FIELD_MANDATORY, cause: 'Fallo en validación', message: productCreateValidationError(body) });
-        // return res.status(validation.code).json({ message: validation.message });
       }
       const result = await productDAO.createProduct({ body });
-      // req.logger.debug('product.controller', 'createRealtimeProduct', 'result', result);
       if (!result) {
         return { message: result.message ?? result, status: 400 };
       }
       return { result, status: 200, success: true };
     } catch (error) {
-      // req.logger.error({ code: 500, message: error.message || 'Internal Server Error', success: false });
       return ({ code: 500, message: error.message || 'Internal Server Error', success: false });
     }
   }
 
   async deleteRealtimeProduct(id) {
     try {
-      // req.logger.debug('product.controller', 'deleteRealtimeProduct', 'id', id);
       const result = await productDAO.deleteProduct({ params: { pid: id } });
-      // req.logger.debug('product.controller', 'deleteRealtimeProduct', 'result', result);
       if (!result) {
         return { message: result.message ?? result, status: 400, success: true };
       }
       return { result: result, status: 200, success: true, message: 'Producto borrado' };
     } catch (error) {
-      // req.logger.error({ code: 500, message: error.message || 'Internal Server Error', success: false });
       return ({ code: 500, message: error.message || 'Internal Server Error', success: false });
     }
   }
