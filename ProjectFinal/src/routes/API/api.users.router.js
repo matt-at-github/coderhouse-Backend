@@ -11,7 +11,7 @@ router.delete('/', userController.deleteInactiveUsers);
 
 router.post('/createAccount', userController.createUser);
 
-router.put('/premium/:uid', userController.promoteUser);
+router.put('/premium/:uid', userController.changeUserRole);
 router.post('/premium/:uid/documents',
   upload.fields([{ name: 'document' }, { name: 'products' }, { name: 'profile' }]),
   userController.uploadDocuments);

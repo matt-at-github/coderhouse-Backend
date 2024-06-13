@@ -34,10 +34,11 @@ const UserSchema = mongoose.Schema({
     default: 'user',
     enum: ['user', 'admin', 'premium'],
   },
-  documents: {
-    type: String,
-    ReferenceError: String
-  },
+  documents: [{
+    name: String,
+    reference: String,
+    documentType: String,
+  }],
   last_connection: {
     type: Date,
     default: Date.now

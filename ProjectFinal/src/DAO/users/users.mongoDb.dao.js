@@ -44,7 +44,7 @@ class UserMongoDBDAO {
     }
   }
 
-  async promoteUser(userId, newRole) {
+  async changeUserRole(userId, newRole) {
 
     const user = await UserModel.findById(userId);
 
@@ -52,13 +52,15 @@ class UserMongoDBDAO {
       throw new Error('Usuario no encontrado');
     }
 
-    const requiredDocuments = ['Identificación', 'Comprobante de domicilio', 'Comprobante de estado de cuenta'];
-    const userDocuments = user.documents.map(doc => doc.name);
+    if (newRole !== 'user') {
+      const requiredDocuments = ['Identificación', 'Comprobante de domicilio', 'Comprobante de estado de cuenta'];
+      const userDocuments = user.documents.map(doc => doc.documentType);
 
-    const hasRequiredDocuments = requiredDocuments.every(doc => userDocuments.includes(doc));
+      const hasRequiredDocuments = requiredDocuments.every(doc => userDocuments.includes(doc));
 
-    if (!hasRequiredDocuments) {
-      throw new Error('El usuario debe cargar los siguientes documentos: Identificación, Comprobante de domicilio, Comprobante de estado de cuenta');
+      if (!hasRequiredDocuments) {
+        throw new Error('El usuario debe cargar los siguientes documentos: Identificación, Comprobante de domicilio, Comprobante de estado de cuenta');
+      }
     }
 
     return await UserModel.findByIdAndUpdate(userId, { role: newRole }, { new: true });

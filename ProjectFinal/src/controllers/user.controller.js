@@ -10,6 +10,7 @@ const jwt = require('jsonwebtoken');
 
 const { isValidPassword } = require('../utils/hashBcrypt.js');
 const { jwtConfig, cookieParserConfig } = require('../config/config.js');
+const configObject = require('../config/config.js');
 
 async function createUser(req) {
   try {
@@ -35,11 +36,15 @@ class UserController {
 
     const { uid } = req.params;
     const uploadedDocuments = req.files;
-
+    let documentType = req.body.type;
     try {
 
       if (!uploadedDocuments) {
         return res.status(400).send('No se detectaron documentos adjuntos.');
+      }
+
+      if (!documentType) {
+        return res.status(400).send('Se debe declarar la propiedad (text) type -> [Identificación/Comprobante de domicilio/Comprobante de estado de cuenta].');
       }
 
       const user = await userDAO.getUserByID(uid);
@@ -48,25 +53,13 @@ class UserController {
       }
 
       // Verificar si se subieron documentos y actualizar el usuario
-      if (uploadedDocuments) {
-        if (uploadedDocuments.document) {
-          user.documents = user.documents.concat(uploadedDocuments.document.map(doc => ({
-            name: doc.originalname,
-            reference: doc.path
-          })));
-        }
-        if (uploadedDocuments.products) {
-          user.documents = user.documents.concat(uploadedDocuments.products.map(doc => ({
-            name: doc.originalname,
-            reference: doc.path
-          })));
-        }
-        if (uploadedDocuments.profile) {
-          user.documents = user.documents.concat(uploadedDocuments.profile.map(doc => ({
-            name: doc.originalname,
-            reference: doc.path
-          })));
-        }
+      documentType = documentType.toString().split(',');
+      if (uploadedDocuments.document) {
+        user.documents = user.documents.concat(uploadedDocuments.document.map((doc, idx) => ({
+          name: doc.originalname,
+          reference: doc.path,
+          documentType: documentType[idx]
+        })));
       }
 
       // Guardar los cambios en la base de datos
@@ -74,37 +67,42 @@ class UserController {
 
       res.status(200).send('Documentos subidos exitosamente');
     } catch (error) {
-      console.error(error);
+      req.logger.error(`User controller error -> ${error}`);
       res.status(500).send('Error interno del servidor');
     }
   }
 
-  async promoteUser(req, res) {
+  async changeUserRole(req, res) {
     try {
       const { uid } = req.params;
 
       const user = await userDAO.getUserByID(uid);
-
       if (!user) {
         return res.status(404).json({ message: 'Usuario no encontrado' });
       }
 
-      // Verificar si el usuario ha cargado los documentos requeridos
-      const requiredDocuments = ['Identificación', 'Comprobante de domicilio', 'Comprobante de estado de cuenta'];
-      const userDocuments = user.documents.map(doc => doc.name);
+      const newRole = user.role === 'user' ? 'premium' : 'user';
 
-      const hasRequiredDocuments = requiredDocuments.every(doc => userDocuments.includes(doc));
-
-      if (!hasRequiredDocuments) {
-        return res.status(400).json({ message: 'El usuario debe cargar los siguientes documentos: Identificación, Comprobante de domicilio, Comprobante de estado de cuenta' });
+      // if user is currently premium, change to basic
+      if (user.role === 'premium') {
+        const updated = await userDAO.changeUserRole(user._id, newRole);
+        return res.json(updated);
       }
 
-      const newRole = user.role === 'usuario' ? 'premium' : 'usuario';
+      // Verificar si el usuario ha cargado los documentos requeridos
+      const requiredDocuments = ['Identificación', 'Comprobante de domicilio', 'Comprobante de estado de cuenta'];
+      const userDocuments = (user.documents ?? []).map(doc => doc.documentType);
 
-      const updated = await userDAO.promoteUser(uid, newRole);
+      const hasRequiredDocuments = requiredDocuments.filter(doc => !userDocuments.includes(doc));
+
+      if (hasRequiredDocuments.length > 0) {
+        return res.status(400).json({ message: `El usuario debe cargar los documentos de tipo: ${hasRequiredDocuments.join(', ')}` });
+      }
+
+      const updated = await userDAO.changeUserRole(user._id, newRole);
       res.json(updated);
     } catch (error) {
-      console.error(error);
+      req.logger.error(`User controller error -> ${error}`);
       res.status(500).json({ message: 'Error interno del servidor' });
     }
   }
